@@ -642,10 +642,17 @@
           var sevClass = SEV_PILL_CLASS[rep.severity] || 'med';
           var sevLabel = rep.severityLabel || rep.severity;
           var langName = rep.langLabel || LANG_DISPLAY[rep.lang] || rep.lang;
-          var title = (rep.categoryLabel || cat) + (rep.note ? ' — ' + rep.note : '');
+          // Deliberately English-only for the general table: the worker's
+          // reporting language must never surface outside the click-to-reveal
+          // modal (governance model — only the Safety & Health Manager sees
+          // it there). rep.note is the worker's own free text and may still
+          // be in their language; that's an accepted demo limitation without
+          // a real translation backend, but the category label itself must
+          // not leak the language via its wording.
+          var title = cat + ' hazard' + (rep.note ? ' — ' + rep.note : '');
 
           window.MGMT_REPORTS.unshift({
-            cat: cat, sev: sevLabel, kr: '[모바일 제보] ' + (rep.note || (rep.categoryLabel || cat) + ' 위험'),
+            cat: cat, sev: sevLabel, kr: '[모바일 제보] ' + (rep.note || cat + ' 위험'),
             krLoc: '모바일 앱', date: new Date().toISOString().slice(0, 10), lang: rep.lang,
             native: { vi: [title, ''], uz: [title, ''], zh: [title, ''], en: [title, ''] },
           });
@@ -657,7 +664,7 @@
             '<td class="main">📱 ' + title + '</td>' +
             '<td>' + cat + '</td>' +
             '<td><span class="pill ' + sevClass + '">' + sevLabel + '</span></td>' +
-            '<td>' + langName + '</td>' +
+            '<td>Mobile report</td>' +
             '<td>New</td>';
           var refRow = reportsTable.rows[1] || null;
           (refRow ? refRow.parentNode : reportsTable).insertBefore(tr, refRow);

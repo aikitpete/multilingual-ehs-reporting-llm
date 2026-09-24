@@ -1,5 +1,9 @@
 {
   "lang.name": "English",
+  "welcome.s0": "안전톡",
+  "welcome.s1": "See a hazard.",
+  "welcome.s2": "Say it in your language.",
+  "welcome.s3": "Your manager gets it in Korean.",
   "home.title": "안전톡",
   "home.subtitle": "See it. Report it. In your language.",
   "home.report": "Report a hazard",

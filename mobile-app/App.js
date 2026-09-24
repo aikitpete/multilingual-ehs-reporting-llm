@@ -62,7 +62,7 @@ function buildQuiz(lang, category) {
 export default function App() {
   const [lang, setLang] = useState('en');
   const [showLangSheet, setShowLangSheet] = useState(false);
-  const [screen, setScreen] = useState('home');
+  const [screen, setScreen] = useState('welcome');
   const [reports, setReports] = useState(SEED_REPORTS);
   const [draft, setDraft] = useState(null);
   const [activeReport, setActiveReport] = useState(null);
@@ -155,13 +155,22 @@ export default function App() {
     });
   }
 
+  if (screen === 'welcome') {
+    return (
+      <SafeAreaView style={styles.safeWelcome}>
+        <StatusBar style="light" />
+        <WelcomeSequence tr={tr} onFinish={() => setScreen('home')} />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar style="dark" />
       <Header lang={lang} tr={tr} onLangPress={() => setShowLangSheet(true)} onBack={backFor(screen)} onBackPress={() => setScreen(backFor(screen))} />
 
       {screen === 'home' && (
-        <Home tr={tr} lang={lang} onReport={startReport} onTraining={() => setScreen('training_list')} onLangPress={() => setShowLangSheet(true)} />
+        <Home tr={tr} lang={lang} onReport={startReport} onTraining={() => setScreen('training_list')} onLangPress={() => setShowLangSheet(true)} onReplayWelcome={() => setScreen('welcome')} />
       )}
 
       {screen === 'report_photo' && (
@@ -258,9 +267,38 @@ function Header({ tr, onLangPress, onBack, onBackPress }) {
   );
 }
 
-function Home({ tr, lang, onReport, onTraining, onLangPress }) {
+const WELCOME_SLIDES = ['welcome.s0', 'welcome.s1', 'welcome.s2', 'welcome.s3'];
+const WELCOME_SLIDE_MS = 1600;
+
+function WelcomeSequence({ tr, onFinish }) {
+  const [index, setIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    if (index >= WELCOME_SLIDES.length) {
+      onFinish();
+      return;
+    }
+    const timer = setTimeout(() => setIndex((i) => i + 1), WELCOME_SLIDE_MS);
+    return () => clearTimeout(timer);
+  }, [index]);
+
+  const key = WELCOME_SLIDES[Math.min(index, WELCOME_SLIDES.length - 1)];
+  const isBrand = key === 'welcome.s0';
+
+  return (
+    <View style={styles.welcomeWrap}>
+      <Text style={isBrand ? styles.welcomeBrand : styles.welcomeLine}>{tr(key)}</Text>
+      {/* Presenter-only skip, deliberately invisible so the audience never sees a "Skip" affordance */}
+      <Pressable style={styles.hiddenHotspot} onPress={onFinish} />
+    </View>
+  );
+}
+
+function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome }) {
   return (
     <ScrollView contentContainerStyle={styles.homeWrap}>
+      {/* Presenter-only hotspot to replay the welcome sequence on demand — deliberately invisible, not a demo affordance */}
+      <Pressable style={styles.hiddenHotspot} onPress={onReplayWelcome} />
       <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
         <Pressable style={styles.langPill} onPress={onLangPress}>
           <Text style={styles.langPillLabel}>🌐 {LANGUAGES[lang]['lang.name']}</Text>
@@ -521,6 +559,13 @@ function SecondaryButton({ label, onPress }) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bg },
+  safeWelcome: { flex: 1, backgroundColor: C.ink },
+  welcomeWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
+  welcomeBrand: { fontSize: 56, fontWeight: '800', color: '#fff' },
+  welcomeLine: { fontSize: 24, fontWeight: '700', color: '#fff', textAlign: 'center' },
+  // Zero visual footprint on purpose — a presenter-only control the
+  // audience should never notice, per the demo's requirements.
+  hiddenHotspot: { position: 'absolute', top: 0, left: 0, width: 64, height: 64, zIndex: 50 },
   header: {
     flexDirection: 'row',
     alignItems: 'center',

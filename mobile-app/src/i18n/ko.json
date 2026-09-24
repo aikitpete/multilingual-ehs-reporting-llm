@@ -1,5 +1,9 @@
 {
   "lang.name": "한국어",
+  "welcome.s0": "안전톡",
+  "welcome.s1": "위험을 발견하세요.",
+  "welcome.s2": "당신의 언어로 말하세요.",
+  "welcome.s3": "관리자는 한국어로 받습니다.",
   "home.title": "안전톡",
   "home.subtitle": "위험을 보면, 당신의 언어로 알리세요.",
   "home.report": "위험 신고",

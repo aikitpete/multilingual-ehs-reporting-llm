@@ -1,5 +1,9 @@
 {
   "lang.name": "Tiếng Việt",
+  "welcome.s0": "안전톡",
+  "welcome.s1": "Thấy nguy hiểm.",
+  "welcome.s2": "Nói bằng ngôn ngữ của bạn.",
+  "welcome.s3": "Quản lý nhận được bằng tiếng Hàn.",
   "home.title": "안전톡",
   "home.subtitle": "Thấy nguy hiểm. Báo cáo bằng ngôn ngữ của bạn.",
   "home.report": "Báo cáo nguy hiểm",
