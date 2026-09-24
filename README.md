@@ -41,25 +41,22 @@ for why artifacts-first). One link to all of them: the
 [demo index](https://claude.ai/artifact/9yQt4JXfhugfVSZFfc59qc), now grouped
 into **Slide decks** and **Prototypes**.
 
-### The active deck
+### The deck
 
 - [x] **HTML deck (Title / Problem / Solution / Demo)** — plain HTML, large
       TV-friendly type, real animation and multi-page PDF export. This is
-      the one being actively iterated on — see `docs/HANDOFF.md`.
+      the only deck now — see `docs/HANDOFF.md`.
       — https://claude.ai/artifact/GD94Scrk1hUGMjoFTfND9S
 
-### Two earlier decks (kept, not actively edited)
-
-- [x] Pitch deck (7-slide Slides artifact) — https://claude.ai/artifact/GJVQ4zRT6Qfc8XnP3FViQq
-- [x] AnjeonTok Launch Deck (7-slide Slides artifact, a from-scratch second take)
-      — https://claude.ai/artifact/QUy7uxiF875jk7f2txRRuf
+  The two earlier 7-slide Slides-format decks (the original "Pitch deck" and
+  the from-scratch "AnjeonTok Launch Deck" redesign) have been deleted; this
+  HTML deck fully replaced them.
 
 ### Prototypes
 
-- [x] Mobile app mockup — supervisor view (mockup only, no real iOS build)
-      — https://claude.ai/artifact/1BcqqqNseS5SCXSHTjS7Ty
-- [x] Mobile app mockup — worker view: training feed + report flow (mockup
-      only, no real iOS build) — https://claude.ai/artifact/1osoXtvia9CPKkTZaV1mbk
+- [x] Mobile app mockup — supervisor & worker, one page with a toggle
+      outside the phone frame to switch modes (mockup only, no real iOS
+      build) — https://claude.ai/artifact/1BcqqqNseS5SCXSHTjS7Ty
 - [x] Management dashboard — reporting + an ordering/design page for
       warning signage in Korean + the worker's native language
       — https://claude.ai/artifact/W7QuAyMGnjkjT1CZbXudum

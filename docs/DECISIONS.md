@@ -3,6 +3,24 @@
 Dated, most recent first. Record *why*, not what (the artifacts/git history
 show what).
 
+## 2026-09-24 — Two Slides decks deleted; supervisor/worker mockups merged into one artifact
+
+Peter asked to remove the two older 7-slide Slides-format decks now that the
+HTML deck fully replaced them — deleted both (`GJVQ4zRT6Qfc8XnP3FViQq`,
+`QUy7uxiF875jk7f2txRRuf`); their URLs are gone for good, so every nav
+menu/demo-index/README/HANDOFF reference to them was removed rather than
+left dangling.
+
+He also asked for the supervisor and worker mobile mockups to live on one
+page with a mode toggle placed outside the phone frame (not a tab inside
+it, so it reads as "which app am I looking at" rather than an in-app
+control), plus a more realistic phone chrome. Merged worker's markup/CSS/JS
+into the supervisor artifact (`1BcqqqNseS5SCXSHTjS7Ty`), deleted the
+now-redundant worker artifact, and renumbered the demo index's Prototypes
+list from 4 items to 3. Added a dynamic-island-style notch and side
+buttons to the shared phone-frame CSS for the realism ask. The static
+`site/` export and every prototype's cross-links were re-synced to match.
+
 ## 2026-09-24 — Repo stays private; static site added under `site/` for Netlify
 
 Peter asked for "a proper public repo... that deploys to Netlify." When asked

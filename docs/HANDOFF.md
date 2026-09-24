@@ -1,11 +1,13 @@
 # Handoff
 
 2026-09-24 (updated) — All five pitch deliverables exist and are populated
-with mock data. There are now **three** deck artifacts; see below for which
-one is actually active. Everything below is what a fresh session needs to
-keep going without re-deriving context.
+with mock data. The two earlier Slides-format decks have been **deleted**;
+the HTML deck is now the only deck. The supervisor and worker mobile
+mockups have been **merged into one artifact** with a mode toggle outside
+the phone frame. Everything below is what a fresh session needs to keep
+going without re-deriving context.
 
-## The one to edit: the HTML deck
+## The deck: the HTML deck
 
 **https://claude.ai/artifact/GD94Scrk1hUGMjoFTfND9S** — 4 slides (Title,
 Problem, Solution, Demo), plain HTML (not the Slides artifact type), large
@@ -17,45 +19,40 @@ slide"** — this is the deck to keep iterating on unless told otherwise. See
 (no "ask," no lofty closing lines) — don't reintroduce either without being
 asked.
 
-## The other two decks (still linked, no longer the active target)
-
-- **Pitch deck** (Slides artifact) —
-  `https://claude.ai/artifact/GJVQ4zRT6Qfc8XnP3FViQq` — 7 slides, one
-  continuous hazard-report story.
-- **AnjeonTok Launch Deck** (Slides artifact) —
-  `https://claude.ai/artifact/QUy7uxiF875jk7f2txRRuf` — 7 slides, a second,
-  visually distinct take (different composition/type system) on the same
-  content, built when Peter asked for a from-scratch redesign that didn't
-  reuse the first deck's layouts.
-
-Both were live-edited through Cowork's own Slides editor at various points in
-the session (hence the repeated "someone has since replaced it" version
-conflicts in that session's tool calls) — if picking either back up, `read`
-the current `project/deck.json` and each slide file fresh before editing.
+The two earlier Slides-format decks ("Pitch deck" and "AnjeonTok Launch
+Deck") were deleted on 2026-09-24 once the HTML deck fully replaced them —
+their artifact URLs no longer resolve; don't relink them.
 
 ## The demo index (the one link to everything)
 
-**https://claude.ai/artifact/9yQt4JXfhugfVSZFfc59qc** — now split into two
-groups: **Slide decks** (all three above) and **Prototypes** (the four below).
-Update this page whenever a new deck/prototype is added or an existing one's
-URL changes.
+**https://claude.ai/artifact/9yQt4JXfhugfVSZFfc59qc** — split into two
+groups: **Slide deck** (just the HTML deck now) and **Prototypes** (the
+three below). Update this page whenever a deck/prototype is added, merged,
+or an existing one's URL changes.
 
-## The four prototypes
+## The three prototypes
 
-- Supervisor mobile mockup — `https://claude.ai/artifact/1BcqqqNseS5SCXSHTjS7Ty`
-- Worker training mobile mockup — `https://claude.ai/artifact/1osoXtvia9CPKkTZaV1mbk`
+- Supervisor & worker mobile mockup — one artifact, mode toggle outside the
+  phone frame switches between the two — `https://claude.ai/artifact/1BcqqqNseS5SCXSHTjS7Ty`
 - Management dashboard — `https://claude.ai/artifact/W7QuAyMGnjkjT1CZbXudum`
 - Government dashboard — `https://claude.ai/artifact/7U9dGUEWVq3m3EKDeSKbUx`
 
-All four share one visual system (navy/yellow/off-white/hazard-red, same
-phone-frame chrome with a real status bar + home indicator, a floating
-"Prototypes" nav widget + "Export PDF" button on every page) and real
-click-through interactivity: the supervisor app's report list opens a detail
-overlay and back button that actually work, filter tabs actually filter, the
-worker app has a working Speak/Type toggle and a Settings tab where language
-lives (chosen once, not a blocking gate), and the management dashboard's
-report rows open a modal that reveals the worker's language (hidden from the
-main table by request).
+All three share one visual system (navy/yellow/off-white/hazard-red, same
+phone-frame chrome — now with a dynamic-island-style notch and side
+buttons for a more realistic look — plus a real status bar + home
+indicator, a floating "Prototypes" nav widget + "Export PDF" button on
+every page) and real click-through interactivity: the supervisor mode's
+report list opens a detail overlay and back button that actually work,
+filter tabs actually filter, worker mode has a working Speak/Type toggle
+and a Settings tab where language lives (chosen once, not a blocking gate),
+and the management dashboard's report rows open a modal that reveals the
+worker's language (hidden from the main table by request).
+
+The merged mockup's supervisor and worker modes previously each had their
+own copy of the shared CSS/JS (status bar, tab-switching, PDF export, nav
+widget); merging required de-duplicating that and re-scoping the
+tab-switch/toast JS to the currently-active `.app-mode` container so
+clicking a tab in one mode doesn't affect the other mode's state.
 
 All artifacts are **private** — Peter needs to share each from its page's
 Share menu before anyone outside this session can open the links.
