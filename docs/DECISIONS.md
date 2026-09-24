@@ -3,6 +3,40 @@
 Dated, most recent first. Record *why*, not what (the artifacts/git history
 show what).
 
+## 2026-09-25 — Explicit "Generate with AI" buttons; sample PDF reports
+
+Peter asked for explicit LLM-generation buttons rather than content that
+was already just showing up reactively — the point of the demo is to
+showcase generation happening, not just display pre-filled data. Added a
+"Generate sign with AI" button to Warning Labels (auto-picks the pictogram
+and the worker's language, then reveals the sign with a brief simulated
+"Generating…" delay), converted the report modal's AI analysis from
+always-shown to a "Generate management report" button with the same
+pattern, and added a new **Training materials** tab to the Management
+dashboard with its own "Generate training material" button — turning a
+selected worker report into a training card (photo, translated caption,
+quick-check quiz) the same crew would see.
+
+Fixed three bugs surfaced by review before publishing: the sign's
+pictogram icon used `currentColor` and inherited the page's dark-mode text
+color, making it invisible against the sign's fixed white background
+(fixed by hardcoding the icon's color, since the sign itself is
+intentionally not theme-adaptive); a "Korean only — add a language above"
+placeholder line was unnecessary noise — a Korean-only sign is a
+completely valid real sign, so it's just left blank now; and the inline
+"Export" / "Export compliance report" links on both dashboards had no
+click handler at all — wired them to trigger the existing (working)
+floating Export PDF button instead of duplicating its logic.
+
+Generated two sample PDF reports (Site Safety Report, Compliance Report)
+via headless Chrome print-to-PDF from hand-built HTML matching the
+existing design system, uploaded them as assets on the demo-index
+artifact (`assets` capability), and added a new **Reports** nav group
+linking to them — they open directly in the browser's native PDF viewer.
+Source HTML/PDF kept in this repo under `reports/`; the static `site/`
+export gets its own copies under `site/reports/` since `/_blob/` asset
+URLs only resolve inside the Claude Artifact sandbox, not on Netlify.
+
 ## 2026-09-25 — Rebranded off navy/gold; made the Management dashboard functional
 
 Peter said the shared navy-blue + muted-gold palette "screams corporate/IBM,

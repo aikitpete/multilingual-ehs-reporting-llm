@@ -78,7 +78,7 @@
   .pic-btn svg { width: 22px; height: 22px; }
   .pic-btn.on { border-color: var(--accent-strong); background: var(--accent-bg); color: var(--ink); }
   .sign-preview { background: #FFFFFF; border: 8px solid #242424; border-radius: 10px; padding: 48px 40px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.25); position: sticky; top: 24px; }
-  .sign-pictogram { width: 140px; height: 140px; border-radius: 50%; border: 8px solid #C2402A; background: #fff; display: flex; align-items: center; justify-content: center; flex: none; }
+  .sign-pictogram { width: 140px; height: 140px; border-radius: 50%; border: 8px solid #C2402A; background: #fff; color: #242424; display: flex; align-items: center; justify-content: center; flex: none; }
   .sign-pictogram svg { width: 86px; height: 86px; }
   .sign-hazard-tag { align-self: center; background: #C2402A; color: #fff; font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; padding: 7px 16px; border-radius: 4px; }
   .sign-kr { font-family: 'Rubik', Arial, sans-serif; font-size: 38px; font-weight: 800; margin: 0; color: #C2402A; line-height: 1.2; }
@@ -110,6 +110,22 @@
   .ai-row:last-child { margin-bottom: 0; }
   .ai-row .l { font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
   .ai-row .v { font-size: 13px; color: var(--ink); line-height: 1.5; }
+  .ai-generate-btn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-strong)); color: #F7F3EA; border: none; padding: 12px 20px; border-radius: 10px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit; }
+  .ai-generate-btn svg { width: 15px; height: 15px; flex: none; }
+  .ai-generate-btn[disabled] { opacity: 0.7; cursor: default; }
+  .ai-loading-dots::after { content: ''; animation: ai-dots 1.1s steps(4, end) infinite; }
+  @keyframes ai-dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } 100% { content: ''; } }
+  .ai-reveal { animation: ai-fade-in 0.4s ease both; }
+  @keyframes ai-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .empty-hint { font-size: 13px; color: var(--muted); font-style: italic; padding: 18px 0; text-align: center; }
+  .training-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; }
+  .training-card h4 { margin: 0; font-family: 'Rubik', Arial, sans-serif; font-size: 18px; font-weight: 800; }
+  .training-quiz { background: var(--surface-2); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+  .training-quiz .q { font-weight: 700; font-size: 13.5px; }
+  .training-quiz .opt { font-size: 13px; color: var(--ink-soft); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); }
+  .training-quiz .opt.correct { border-color: var(--can, #3D7A34); color: var(--ink); background: var(--low-bg, #E8F0E0); }
+  .training-langs { display: flex; gap: 6px; flex-wrap: wrap; }
+  .training-langs span { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); color: var(--ink-soft); border: 1px solid var(--border); }
   @media (max-width: 860px) {
     .app { flex-direction: column; }
     nav.side { width: 100%; flex-direction: row; align-items: center; padding: 16px 20px; }
@@ -132,6 +148,7 @@
     <div class="nav-items">
       <div class="nav-item on" data-tab="reports"><span class="k">◆</span><span data-i18n="nav.reports">Reports</span></div>
       <div class="nav-item" data-tab="labels"><span class="k">◆</span><span data-i18n="nav.labels">Warning labels</span></div>
+      <div class="nav-item" data-tab="training"><span class="k">◆</span><span data-i18n="nav.training">Training materials</span></div>
     </div>
     <p class="side-foot">Site 4 · Wonju<br><span data-i18n="side.online">3 supervisors online</span></p>
   </nav>
@@ -149,7 +166,7 @@
         <div class="stat"><span class="n">100%</span><span class="l" data-i18n="stat.training">New hires, safety training on file</span></div>
       </div>
       <div class="panel">
-        <div class="panel-head"><h2 data-i18n="panel.recent">Recent reports</h2><span class="btn-link" data-i18n="action.export">Export</span></div>
+        <div class="panel-head"><h2 data-i18n="panel.recent">Recent reports</h2><span class="btn-link" data-i18n="action.export" id="inline-export-link">Export</span></div>
         <table id="reports-table">
           <tr><th data-i18n="th.hazard">Hazard</th><th data-i18n="th.category">Category</th><th data-i18n="th.severity">Severity</th><th data-i18n="th.location">Location</th><th data-i18n="th.status">Status</th></tr>
           <tr class="row-click" data-lang="Vietnamese"><td class="main">Broken guardrail</td><td>Fall</td><td><span class="pill high">High</span></td><td>4F, east stair</td><td>New</td></tr>
@@ -175,24 +192,31 @@
         <div class="modal-kv lang"><span data-i18n="modal.workerlang">Worker's language</span><b id="modal-lang">Vietnamese</b></div>
         <div class="modal-kv"><span data-i18n="th.status">Status</span><b id="modal-status">New</b></div>
 
-        <div class="ai-panel">
+        <div class="ai-panel" id="modal-ai-panel">
           <div class="ai-badge">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
-            AI analysis — generated from this report
+            AI analysis
           </div>
-          <div class="ai-row">
-            <div class="l">Likely root cause</div>
-            <div class="v" id="ai-rootcause">—</div>
+          <div id="modal-ai-empty" class="empty-hint" style="padding:8px 0 2px">Not generated yet for this report.</div>
+          <div id="modal-ai-content" style="display:none">
+            <div class="ai-row">
+              <div class="l">Likely root cause</div>
+              <div class="v" id="ai-rootcause">—</div>
+            </div>
+            <div class="ai-row">
+              <div class="l">Pattern across reports</div>
+              <div class="v" id="ai-pattern">—</div>
+            </div>
           </div>
-          <div class="ai-row">
-            <div class="l">Pattern across reports</div>
-            <div class="v" id="ai-pattern">—</div>
-          </div>
+          <button type="button" class="ai-generate-btn" id="modal-generate-btn" style="width:100%; justify-content:center; margin-top:10px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
+            <span id="modal-generate-label">Generate management report</span>
+          </button>
         </div>
 
         <div style="margin-top:2px">
           <label data-i18n="modal.corrective" style="font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.4px">Corrective action <span style="color:var(--accent); text-transform:none; font-weight:600">— AI-drafted, edit as needed</span></label>
-          <textarea id="modal-corrective" placeholder="What was done to fix this, and to stop it happening again…" style="width:100%; min-height:80px; margin-top:6px; font-family:inherit; font-size:13.5px; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--surface-2); color:var(--ink); resize:vertical"></textarea>
+          <textarea id="modal-corrective" placeholder="Generate a management report above to draft this automatically…" style="width:100%; min-height:80px; margin-top:6px; font-family:inherit; font-size:13.5px; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--surface-2); color:var(--ink); resize:vertical"></textarea>
         </div>
         <div class="btn primary" id="modal-save-corrective" style="margin-top:4px" data-i18n="modal.savecorrective">Save &amp; mark investigated</div>
       </div>
@@ -215,8 +239,12 @@
               <option value="8">Gas cylinder stored on its side — B1 storage</option>
             </select>
           </div>
+          <button type="button" class="ai-generate-btn" id="sign-generate-btn" style="width:100%; justify-content:center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
+            <span id="sign-generate-label">Generate sign with AI</span>
+          </button>
           <div>
-            <label data-i18n="form.lang">Languages on this sign</label>
+            <label data-i18n="form.lang">Languages on this sign <span style="text-transform:none; font-weight:600; color:var(--ink-soft)">— or adjust after generating</span></label>
             <div class="lang-row" id="label-lang-row">
               <div class="chip ko on" data-lang="ko">한국어</div>
               <div class="chip on" data-lang="vi">Tiếng Việt</div>
@@ -255,6 +283,35 @@
         </div>
       </div>
     </section>
+
+    <section class="view" id="view-training">
+      <div class="label-layout">
+        <div class="form">
+          <div>
+            <label>Report</label>
+            <select id="training-report-select">
+              <option value="0">Broken guardrail — 4F, east stair</option>
+              <option value="1">Exposed wiring — B1 storage</option>
+              <option value="2">Blocked fire exit — 2F corridor</option>
+              <option value="3">Loose scaffold plank — Roof, north</option>
+              <option value="4">Heat exposure, no shade — Yard, zone C</option>
+              <option value="5">Trip hazard, uncovered conduit — B2 corridor</option>
+              <option value="6">Frayed extension cord — 3F, unit 12</option>
+              <option value="7">Ladder missing footing pads — Yard, zone A</option>
+              <option value="8">Gas cylinder stored on its side — B1 storage</option>
+            </select>
+          </div>
+          <p style="font-size:12.5px; color:var(--ink-soft); line-height:1.5; margin:0">Turns a worker's hazard report into a training card for the same crew — the photo, the translated caption, and a quick-check question, in every language your workers speak.</p>
+          <button type="button" class="ai-generate-btn" id="training-generate-btn" style="width:100%; justify-content:center">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
+            <span id="training-generate-label">Generate training material</span>
+          </button>
+        </div>
+        <div id="training-result">
+          <div class="empty-hint">Pick a report and generate to preview the training card.</div>
+        </div>
+      </div>
+    </section>
   </main>
 </div>
 
@@ -262,7 +319,7 @@
   (function () {
     var STRINGS = {
       "en": {
-        "nav.reports": "Reports", "nav.labels": "Warning labels",
+        "nav.reports": "Reports", "nav.labels": "Warning labels", "nav.training": "Training materials",
         "stat.open": "Open reports, this month", "stat.high": "High severity",
         "stat.resolved48": "Resolved within 48h", "stat.training": "New hires, safety training on file",
         "panel.recent": "Recent reports", "action.export": "Export",
@@ -272,7 +329,7 @@
         "modal.workerlang": "Worker's language", "modal.corrective": "Corrective action", "modal.savecorrective": "Save & mark investigated"
       },
       "ko": {
-        "nav.reports": "신고", "nav.labels": "경고 라벨",
+        "nav.reports": "신고", "nav.labels": "경고 라벨", "nav.training": "교육 자료",
         "stat.open": "이번 달 미해결 신고", "stat.high": "고위험",
         "stat.resolved48": "48시간 내 해결", "stat.training": "안전교육 이수한 신규 채용자",
         "panel.recent": "최근 신고", "action.export": "내보내기",
@@ -292,7 +349,7 @@
       });
       var activeTab = document.querySelector('.nav-item.on');
       if (activeTab) {
-        document.getElementById('page-title').textContent = window.dashT(lang, activeTab.getAttribute('data-tab') === 'reports' ? 'nav.reports' : 'nav.labels');
+        document.getElementById('page-title').textContent = window.dashT(lang, ({reports:'nav.reports', labels:'nav.labels', training:'nav.training'})[activeTab.getAttribute('data-tab')]);
       }
       window.dashLang = lang;
     }
@@ -313,7 +370,7 @@
       var tab = item.getAttribute('data-tab');
       document.querySelectorAll('.view').forEach(function (v) { v.classList.remove('on'); });
       document.getElementById('view-' + tab).classList.add('on');
-      document.getElementById('page-title').textContent = window.dashT(window.dashLang || 'en', tab === 'reports' ? 'nav.reports' : 'nav.labels');
+      document.getElementById('page-title').textContent = window.dashT(window.dashLang || 'en', ({reports:'nav.reports', labels:'nav.labels', training:'nav.training'})[tab]);
     });
   });
   (function () {
@@ -337,6 +394,7 @@
       { cat: "Fire", sev: "High", kr: "화재 위험 — 눕혀 보관된 가스통", krLoc: "지하 1층 자재창고", date: "2026-09-17", lang: "vi",
         native: { vi: ["Nguy hiểm cháy nổ — bình gas để nằm", "Kho chứa đồ, tầng hầm B1"], uz: ["Portlash xavfi — gaz balloni yon yotibdi", "B1 ombor"], zh: ["爆炸风险 — 气瓶横放", "B1地下储藏室"], en: ["Fire hazard — gas cylinder on its side", "B1 storage"] } }
     ];
+    window.MGMT_REPORTS = REPORTS;
 
     var reportSelect = document.getElementById('label-report-select');
     var langRow = document.getElementById('label-lang-row');
@@ -367,13 +425,6 @@
       krLocEl.textContent = r.krLoc;
       var langs = selectedLangs();
       linesEl.innerHTML = '';
-      if (!langs.length) {
-        var p = document.createElement('p');
-        p.style.color = 'var(--muted, #8C8983)';
-        p.style.fontStyle = 'italic';
-        p.textContent = 'Korean only — add a language above';
-        linesEl.appendChild(p);
-      }
       langs.forEach(function (l) {
         var n = r.native[l];
         var p1 = document.createElement('p');
@@ -419,6 +470,33 @@
     setPictogram(REPORTS[0].cat);
     userPickedPic = false;
 
+    var signGenerateBtn = document.getElementById('sign-generate-btn');
+    var signGenerateLabel = document.getElementById('sign-generate-label');
+    var signPreviewEl = document.querySelector('.sign-preview');
+    signGenerateBtn.addEventListener('click', function () {
+      if (signGenerateBtn.disabled) return;
+      signGenerateBtn.disabled = true;
+      signGenerateLabel.innerHTML = 'Generating<span class="ai-loading-dots"></span>';
+      setTimeout(function () {
+        var r = REPORTS[Number(reportSelect.value)];
+        langRow.querySelectorAll('.chip').forEach(function (c) {
+          var lang = c.getAttribute('data-lang');
+          c.classList.toggle('on', lang === 'ko' || lang === r.lang);
+        });
+        userPickedPic = false;
+        setPictogram(r.cat);
+        render();
+        signPreviewEl.classList.remove('ai-reveal');
+        void signPreviewEl.offsetWidth;
+        signPreviewEl.classList.add('ai-reveal');
+        signGenerateLabel.textContent = 'Generated ✓';
+        setTimeout(function () {
+          signGenerateLabel.textContent = 'Generate sign with AI';
+          signGenerateBtn.disabled = false;
+        }, 1200);
+      }, 900);
+    });
+
     qtyInput.addEventListener('input', function () {
       var n = Math.max(1, Math.min(20, Number(qtyInput.value) || 1));
       orderBtn.textContent = 'Order ' + n + ' printed label' + (n === 1 ? '' : 's');
@@ -436,6 +514,49 @@
     });
 
     render();
+  })();
+  (function () {
+    var QUIZ_BY_CATEGORY = {
+      Fall: { q: "What should you do if you see a broken guardrail or loose plank?", correct: "Report it with a photo and stay clear of the area.", wrong: "Fix it yourself if it looks simple." },
+      Electrical: { q: "What should you do if you see exposed or frayed wiring?", correct: "Report it immediately and avoid contact with water nearby.", wrong: "Tape it up and keep working." },
+      Fire: { q: "What should you do if you see a blocked exit or an unsecured gas cylinder?", correct: "Clear it or report it right away — every exit must stay open.", wrong: "Leave it for the next shift to handle." },
+      Heat: { q: "What should you do if a rest area has no shade in direct sun?", correct: "Report it and take breaks in the shade you have.", wrong: "Skip breaks to finish faster." }
+    };
+    var LANG_LABEL = { vi: 'Vietnamese', uz: 'Uzbek', zh: 'Chinese', en: 'English' };
+    var reportSelect2 = document.getElementById('training-report-select');
+    var genBtn = document.getElementById('training-generate-btn');
+    var genLabel = document.getElementById('training-generate-label');
+    var resultEl = document.getElementById('training-result');
+
+    genBtn.addEventListener('click', function () {
+      if (genBtn.disabled) return;
+      genBtn.disabled = true;
+      genLabel.innerHTML = 'Generating<span class="ai-loading-dots"></span>';
+      setTimeout(function () {
+        var r = window.MGMT_REPORTS[Number(reportSelect2.value)];
+        var quiz = QUIZ_BY_CATEGORY[r.cat] || QUIZ_BY_CATEGORY.Fall;
+        var chips = Object.keys(LANG_LABEL).map(function (l) {
+          return '<span>' + LANG_LABEL[l] + '</span>';
+        }).join('');
+        resultEl.innerHTML =
+          '<div class="training-card ai-reveal">' +
+            '<div class="ai-badge" style="margin-bottom:0">' +
+              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>' +
+              'Generated from a worker report' +
+            '</div>' +
+            '<h4>' + r.native.en[0] + '</h4>' +
+            '<p style="margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5">From ' + r.krLoc + ' (' + r.kr + '), shared as a short lesson for the rest of the crew — same hazard, same site.</p>' +
+            '<div class="training-langs">' + chips + '</div>' +
+            '<div class="training-quiz">' +
+              '<div class="q">Quick check: ' + quiz.q + '</div>' +
+              '<div class="opt correct">' + quiz.correct + '</div>' +
+              '<div class="opt">' + quiz.wrong + '</div>' +
+            '</div>' +
+          '</div>';
+        genLabel.textContent = 'Regenerate';
+        genBtn.disabled = false;
+      }, 1000);
+    });
   })();
   (function () {
     var modal = document.getElementById('report-modal');
@@ -469,6 +590,13 @@
         pattern: "3rd storage-area report this quarter (with the exposed-wiring report above) — B1 storage may need a broader safety walk-through rather than one-off fixes.",
         draft: "Secured the cylinder upright in a rack and added two additional rack points to B1 storage. Recommending a full storage-area safety walk-through given this is the third report from the same area this quarter." }
     ];
+    var modalGenerateBtn = document.getElementById('modal-generate-btn');
+    var modalGenerateLabel = document.getElementById('modal-generate-label');
+    var modalAiEmpty = document.getElementById('modal-ai-empty');
+    var modalAiContent = document.getElementById('modal-ai-content');
+    var modalAiPanel = document.getElementById('modal-ai-panel');
+    var currentReportIdx = 0;
+
     document.querySelectorAll('#reports-table tr.row-click').forEach(function (row, idx) {
       row.addEventListener('click', function () {
         var cells = row.querySelectorAll('td');
@@ -478,12 +606,32 @@
         document.getElementById('modal-location').textContent = cells[3].textContent;
         document.getElementById('modal-status').textContent = cells[4].textContent;
         document.getElementById('modal-lang').textContent = row.getAttribute('data-lang');
-        var a = AI_ANALYSIS[idx] || AI_ANALYSIS[0];
+        currentReportIdx = idx;
+        modalAiContent.style.display = 'none';
+        modalAiEmpty.style.display = '';
+        document.getElementById('modal-corrective').value = '';
+        modalGenerateLabel.textContent = 'Generate management report';
+        modalGenerateBtn.disabled = false;
+        modal.classList.add('on');
+      });
+    });
+    modalGenerateBtn.addEventListener('click', function () {
+      if (modalGenerateBtn.disabled) return;
+      modalGenerateBtn.disabled = true;
+      modalGenerateLabel.innerHTML = 'Generating<span class="ai-loading-dots"></span>';
+      setTimeout(function () {
+        var a = AI_ANALYSIS[currentReportIdx] || AI_ANALYSIS[0];
         document.getElementById('ai-rootcause').textContent = a.rootCause;
         document.getElementById('ai-pattern').textContent = a.pattern;
         document.getElementById('modal-corrective').value = a.draft;
-        modal.classList.add('on');
-      });
+        modalAiEmpty.style.display = 'none';
+        modalAiContent.style.display = '';
+        modalAiContent.classList.remove('ai-reveal');
+        void modalAiContent.offsetWidth;
+        modalAiContent.classList.add('ai-reveal');
+        modalGenerateLabel.textContent = 'Regenerate';
+        modalGenerateBtn.disabled = false;
+      }, 1000);
     });
     closeBtn.addEventListener('click', function () { modal.classList.remove('on'); });
     modal.addEventListener('click', function (e) { if (e.target === modal) { modal.classList.remove('on'); } });
@@ -542,6 +690,8 @@
 <script>
   (function () {
     var btn = document.getElementById('export-pdf-btn');
+    var inlineExportLink = document.getElementById('inline-export-link');
+    if (inlineExportLink) { inlineExportLink.addEventListener('click', function () { btn.click(); }); }
     var navWrap = document.getElementById('proto-nav');
     var defaultLabel = btn.textContent;
     var busy = false;

@@ -74,6 +74,21 @@ into **Slide decks** and **Prototypes**.
       MUST/SHOULD/CAN obligations tagged to a system capability, meant to
       seed future use-case/requirements work. See `docs/GOVERNANCE.md`.
       — https://claude.ai/artifact/VZEtVvrA6tYLZsiB2baQ81
+- [x] Pitch prep — a hackathon-jury simulation: likely praise, the
+      toughest questions, and answers to rehearse.
+      — https://claude.ai/artifact/AG1MU26YztcmnjRirYJGKu
+
+### Sample reports
+
+Two generated PDF reports, matching the deck's "one report, four outputs"
+diagram, linked from the demo index's **Reports** group (open in the
+browser's native PDF viewer). Source HTML + PDF kept in `reports/`.
+
+- Site Safety Report — one worker's hazard report, structured for a site
+  supervisor.
+- Compliance Report — aggregate compliance data for government & legal
+  review (no individual report content, per the governance model's access
+  rules).
 
 All artifacts are **private** until shared from each page's Share menu.
 

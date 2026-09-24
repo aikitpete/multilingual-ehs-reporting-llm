@@ -1,6 +1,24 @@
 # Status
 
-2026-09-25 (updated) — All artifacts were rebranded off the original
+2026-09-25 (latest) — Added explicit "Generate with AI" buttons (Warning
+Labels, the report modal's management-report analysis, and a new Training
+Materials tab) instead of content that just appeared reactively — each
+shows a brief simulated "Generating…" delay before revealing output, to
+make the AI-generation step visible rather than implicit. Generated two
+sample PDF reports (Site Safety Report, Compliance Report) via headless
+Chrome, uploaded as assets on the demo index, and added a **Reports** nav
+group linking to them (open in the browser's native PDF viewer). Fixed a
+governance gap this surfaced: the Site Safety Report PDF named the
+worker's language in a section heading — removed, since only the Safety &
+Health Manager (via the Management dashboard's click-to-reveal modal) is
+supposed to see that, never a general-purpose report. Fixed a real
+dark-mode bug (the warning sign's pictogram icon was invisible — it
+inherited the page's dark-mode text color instead of a fixed dark color
+appropriate for the sign's always-white background) and wired the
+previously-dead inline "Export" links on both dashboards to the existing
+working PDF-export button. See `docs/DECISIONS.md` for the full detail.
+
+2026-09-25 (earlier) — All artifacts were rebranded off the original
 navy/gold palette (Peter: it "screamed corporate/IBM, not construction")
 to a construction-coded one: neutral graphite/steel darks and safety
 orange, after an interim warm-charcoal attempt was rejected as "looking

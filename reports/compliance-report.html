@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Compliance Report</title>
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Apple SD Gothic Neo', 'Malgun Gothic', 'IBM Plex Sans', Arial, sans-serif; color: #242424; }
+  .page { width: 210mm; min-height: 297mm; padding: 16mm 18mm; }
+  header { display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid #242424; padding-bottom: 10mm; margin-bottom: 10mm; }
+  .brand { display: flex; align-items: center; gap: 8px; }
+  .brand .sq { width: 12px; height: 12px; background: #FFC629; border-radius: 3px; }
+  .brand span { font-weight: 800; font-size: 20px; }
+  .doctype { text-align: right; font-size: 11px; color: #625F5A; letter-spacing: 1px; text-transform: uppercase; }
+  .doctype b { display: block; font-size: 15px; color: #242424; letter-spacing: 0; margin-top: 2px; }
+  h1 { font-size: 26px; margin: 0 0 4px; }
+  .sub { color: #625F5A; font-size: 13px; margin: 0 0 8mm; }
+  .tag { display: inline-block; background: #E8F0E0; color: #3D7A34; font-weight: 800; font-size: 11px; letter-spacing: 0.5px; padding: 5px 12px; border-radius: 999px; text-transform: uppercase; margin-bottom: 8mm; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8mm; margin-bottom: 8mm; }
+  .stat { border: 1px solid #E3E0D8; border-radius: 6px; padding: 6mm; }
+  .stat .n { font-size: 24px; font-weight: 800; }
+  .stat .l { font-size: 10.5px; color: #8C8983; margin-top: 1mm; }
+  .section-title { font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: #C97A1F; margin: 8mm 0 3mm; }
+  .bars { display: flex; align-items: flex-end; gap: 8mm; height: 40mm; margin-bottom: 3mm; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2mm; height: 100%; justify-content: flex-end; }
+  .bar { width: 100%; border-radius: 3px 3px 0 0; }
+  .bar-col .l { font-size: 10.5px; color: #625F5A; }
+  .note { font-size: 11.5px; color: #625F5A; margin: 0 0 6mm; }
+  .lang-list { display: flex; flex-direction: column; gap: 3mm; margin-bottom: 6mm; }
+  .lang-row { display: flex; align-items: center; gap: 4mm; }
+  .lang-row .lbl { width: 30mm; font-size: 12px; color: #625F5A; flex: none; }
+  .lang-track { flex: 1; height: 4mm; border-radius: 999px; background: #E3E0D8; overflow: hidden; }
+  .lang-fill { height: 100%; background: #242424; }
+  .lang-row .pct { width: 14mm; text-align: right; font-size: 12px; font-weight: 700; }
+  .cert-box { border: 1px solid #E3E0D8; border-radius: 6px; padding: 6mm 8mm; margin-top: 4mm; background: #FAF6EE; }
+  .cert-box p { margin: 0; font-size: 11.5px; color: #625F5A; line-height: 1.6; }
+  .sign-line { display: flex; justify-content: space-between; margin-top: 10mm; }
+  .sign-line div { border-top: 1px solid #242424; padding-top: 2mm; font-size: 10.5px; color: #625F5A; width: 60mm; }
+  footer { margin-top: 10mm; padding-top: 5mm; border-top: 1px solid #E3E0D8; display: flex; justify-content: space-between; font-size: 10.5px; color: #8C8983; }
+</style>
+<body>
+  <div class="page">
+    <header>
+      <div class="brand"><div class="sq"></div><span>안전톡 AnjeonTok</span></div>
+      <div class="doctype">Generated report<b>Compliance Report</b></div>
+    </header>
+
+    <span class="tag">Government &amp; legal · Quarterly</span>
+    <h1>Foreign-worker safety compliance</h1>
+    <p class="sub">Aggregated from site-level hazard reports and completed safety-education records · Q3 2026 · 15 sites</p>
+
+    <div class="stats">
+      <div class="stat"><div class="n">15</div><div class="l">Sites reporting</div></div>
+      <div class="stat"><div class="n">1,204</div><div class="l">Hazard reports, this quarter</div></div>
+      <div class="stat"><div class="n">100%</div><div class="l">New hires, training on file</div></div>
+      <div class="stat"><div class="n">31%</div><div class="l">Fewer repeat high-severity reports</div></div>
+    </div>
+
+    <div class="section-title">Hazard reports by category</div>
+    <div class="bars">
+      <div class="bar-col"><div class="bar" style="height:88%; background:#C2402A"></div><span class="l">Falls</span></div>
+      <div class="bar-col"><div class="bar" style="height:58%; background:#C97A1F"></div><span class="l">Fire</span></div>
+      <div class="bar-col"><div class="bar" style="height:46%; background:#242424"></div><span class="l">Heat</span></div>
+      <div class="bar-col"><div class="bar" style="height:34%; background:#3D7A34"></div><span class="l">Electrical</span></div>
+      <div class="bar-col"><div class="bar" style="height:22%; background:#8C8983"></div><span class="l">Other</span></div>
+    </div>
+    <p class="note">Falls remain the leading category, consistent with 2025 national fatality data (MOEL). See knowledge appendix for sourcing.</p>
+
+    <div class="section-title">Basic safety training completion, by language</div>
+    <div class="lang-list">
+      <div class="lang-row"><span class="lbl">Vietnamese</span><div class="lang-track"><div class="lang-fill" style="width:100%"></div></div><span class="pct">100%</span></div>
+      <div class="lang-row"><span class="lbl">Uzbek</span><div class="lang-track"><div class="lang-fill" style="width:100%"></div></div><span class="pct">100%</span></div>
+      <div class="lang-row"><span class="lbl">Chinese</span><div class="lang-track"><div class="lang-fill" style="width:97%"></div></div><span class="pct">97%</span></div>
+      <div class="lang-row"><span class="lbl">Korean</span><div class="lang-track"><div class="lang-fill" style="width:100%"></div></div><span class="pct">100%</span></div>
+    </div>
+
+    <div class="section-title">Certification</div>
+    <div class="cert-box">
+      <p>This report aggregates only site-level compliance metrics — hazard category, severity, location, and training completion status. Worker-identifying details, including the language used to file a report, are not included and are not exportable through this view, consistent with the platform's access-control design (see Governance model).</p>
+    </div>
+
+    <div class="sign-line">
+      <div>Site safety manager, signature &amp; date</div>
+      <div>Company representative, signature &amp; date</div>
+    </div>
+
+    <footer>
+      <span>This is a generated sample report — mockup content, not real compliance data.</span>
+      <span>AnjeonTok · Aggregate, Gyeonggi region</span>
+    </footer>
+  </div>
+</body>
+</html>

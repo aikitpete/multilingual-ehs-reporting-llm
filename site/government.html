@@ -85,7 +85,7 @@
       <h1>Foreign-worker safety compliance</h1>
       <p>Aggregated from site-level hazard reports and completed safety-education records</p>
     </div>
-    <span class="btn-link">Export compliance report</span>
+    <span class="btn-link" id="inline-export-link">Export compliance report</span>
   </div>
 
   <div class="stats">
@@ -182,6 +182,8 @@
 <script>
   (function () {
     var btn = document.getElementById('export-pdf-btn');
+    var inlineExportLink = document.getElementById('inline-export-link');
+    if (inlineExportLink) { inlineExportLink.addEventListener('click', function () { btn.click(); }); }
     var navWrap = document.getElementById('proto-nav');
     var defaultLabel = btn.textContent;
     var busy = false;
