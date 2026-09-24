@@ -6,6 +6,7 @@ import {
   Pressable,
   ScrollView,
   Image,
+  ImageBackground,
   TextInput,
   StyleSheet,
   Modal,
@@ -15,6 +16,8 @@ import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
 import { LANGUAGES, LANGUAGE_CODES, t } from './src/i18n';
 import { SEED_REPORTS, CATEGORIES, CATEGORY_ICON, QUIZ_CATEGORIES } from './src/data/seedReports';
+
+const SAMPLE_PHOTO = require('./assets/hazards/sample.jpg');
 
 const C = {
   bg: '#F2ECE0',
@@ -71,7 +74,7 @@ export default function App() {
   const tr = (key) => t(lang, key);
 
   function startReport() {
-    setDraft({ photoUri: null, sampleColor: null, pin: null, category: null, severity: null, note: '' });
+    setDraft({ photoUri: null, samplePhoto: false, pin: null, category: null, severity: null, note: '' });
     setScreen('report_photo');
   }
 
@@ -80,7 +83,7 @@ export default function App() {
     if (!perm.granted) return pickSample();
     const res = await ImagePicker.launchCameraAsync({ quality: 0.6 });
     if (!res.canceled) {
-      setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, sampleColor: null }));
+      setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, samplePhoto: false }));
       setScreen('report_mark');
     }
   }
@@ -90,13 +93,13 @@ export default function App() {
     if (!perm.granted) return pickSample();
     const res = await ImagePicker.launchImageLibraryAsync({ quality: 0.6 });
     if (!res.canceled) {
-      setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, sampleColor: null }));
+      setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, samplePhoto: false }));
       setScreen('report_mark');
     }
   }
 
   function pickSample() {
-    setDraft((d) => ({ ...d, photoUri: null, sampleColor: '#8C7A5E' }));
+    setDraft((d) => ({ ...d, photoUri: null, samplePhoto: true }));
     setScreen('report_mark');
   }
 
@@ -107,7 +110,8 @@ export default function App() {
       severity: draft.severity,
       note: draft.note,
       photoUri: draft.photoUri,
-      color: draft.sampleColor || '#556270',
+      samplePhoto: draft.samplePhoto,
+      color: '#556270',
       icon: CATEGORY_ICON[draft.category],
     };
     setReports((prev) => [newReport, ...prev]);
@@ -159,7 +163,7 @@ export default function App() {
     return (
       <SafeAreaView style={styles.safeWelcome}>
         <StatusBar style="light" />
-        <WelcomeSequence tr={tr} onFinish={() => setScreen('home')} />
+        <WelcomeSequence lang={lang} onSelectLang={setLang} tr={tr} onFinish={() => setScreen('home')} />
       </SafeAreaView>
     );
   }
@@ -270,17 +274,46 @@ function Header({ tr, onLangPress, onBack, onBackPress }) {
 const WELCOME_SLIDES = ['welcome.s0', 'welcome.s1', 'welcome.s2', 'welcome.s3'];
 const WELCOME_SLIDE_MS = 1600;
 
-function WelcomeSequence({ tr, onFinish }) {
+function WelcomeSequence({ lang, onSelectLang, tr, onFinish }) {
+  const [step, setStep] = React.useState('lang');
   const [index, setIndex] = React.useState(0);
 
   React.useEffect(() => {
+    if (step !== 'slides') return;
     if (index >= WELCOME_SLIDES.length) {
       onFinish();
       return;
     }
     const timer = setTimeout(() => setIndex((i) => i + 1), WELCOME_SLIDE_MS);
     return () => clearTimeout(timer);
-  }, [index]);
+  }, [step, index]);
+
+  function selectLang(code) {
+    onSelectLang(code);
+    setStep('slides');
+  }
+
+  if (step === 'lang') {
+    // Language-neutral by design — we don't know the worker's language yet,
+    // so each option is shown only in its own native name (no instructional
+    // text to read), over a real jobsite photo for a visual, non-verbal cue.
+    return (
+      <ImageBackground source={SAMPLE_PHOTO} style={styles.welcomeLangBg} imageStyle={{ opacity: 0.4 }}>
+        <View style={styles.welcomeLangOverlay}>
+          <Text style={styles.welcomeLangTitle}>안전톡</Text>
+          <View style={styles.welcomeLangGrid}>
+            {LANGUAGE_CODES.map((code) => (
+              <Pressable key={code} style={styles.welcomeLangCard} onPress={() => selectLang(code)}>
+                <Text style={styles.welcomeLangCardLabel}>{LANGUAGES[code]['lang.name']}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+        {/* Presenter-only skip, deliberately invisible so the audience never sees a "Skip" affordance */}
+        <Pressable style={styles.hiddenHotspot} onPress={onFinish} />
+      </ImageBackground>
+    );
+  }
 
   const key = WELCOME_SLIDES[Math.min(index, WELCOME_SLIDES.length - 1)];
   const isBrand = key === 'welcome.s0';
@@ -288,7 +321,6 @@ function WelcomeSequence({ tr, onFinish }) {
   return (
     <View style={styles.welcomeWrap}>
       <Text style={isBrand ? styles.welcomeBrand : styles.welcomeLine}>{tr(key)}</Text>
-      {/* Presenter-only skip, deliberately invisible so the audience never sees a "Skip" affordance */}
       <Pressable style={styles.hiddenHotspot} onPress={onFinish} />
     </View>
   );
@@ -344,10 +376,11 @@ function MarkStep({ tr, draft, onMark, onContinue }) {
       <Text style={styles.stepTitle}>{tr('report.mark.title')}</Text>
       <Text style={styles.stepHint}>{tr('report.mark.hint')}</Text>
       <Pressable
-        style={[styles.markPhoto, { width: size, height: size, backgroundColor: draft.sampleColor || '#333' }]}
+        style={[styles.markPhoto, { width: size, height: size, backgroundColor: '#333' }]}
         onPress={(e) => onMark({ x: e.nativeEvent.locationX, y: e.nativeEvent.locationY })}
       >
         {draft.photoUri && <Image source={{ uri: draft.photoUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />}
+        {draft.samplePhoto && <Image source={SAMPLE_PHOTO} style={StyleSheet.absoluteFill} resizeMode="cover" />}
         {draft.pin && (
           <View style={[styles.pin, { left: draft.pin.x - 16, top: draft.pin.y - 16 }]}>
             <Text style={{ fontSize: 22 }}>📍</Text>
@@ -449,6 +482,8 @@ function TrainingList({ tr, reports, onStart }) {
           <View style={[styles.reportThumb, { backgroundColor: r.color }]}>
             {r.photoUri ? (
               <Image source={{ uri: r.photoUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+            ) : r.samplePhoto ? (
+              <Image source={SAMPLE_PHOTO} style={StyleSheet.absoluteFill} resizeMode="cover" />
             ) : (
               <Text style={{ fontSize: 26 }}>{r.icon}</Text>
             )}
@@ -563,6 +598,12 @@ const styles = StyleSheet.create({
   welcomeWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
   welcomeBrand: { fontSize: 56, fontWeight: '800', color: '#fff' },
   welcomeLine: { fontSize: 24, fontWeight: '700', color: '#fff', textAlign: 'center' },
+  welcomeLangBg: { flex: 1 },
+  welcomeLangOverlay: { flex: 1, backgroundColor: 'rgba(15,15,15,0.6)', alignItems: 'center', justifyContent: 'center', padding: 28, gap: 28 },
+  welcomeLangTitle: { fontSize: 48, fontWeight: '800', color: '#fff' },
+  welcomeLangGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 14 },
+  welcomeLangCard: { backgroundColor: 'rgba(255,255,255,0.94)', borderRadius: 16, paddingVertical: 18, paddingHorizontal: 24, minWidth: 130, alignItems: 'center' },
+  welcomeLangCardLabel: { fontSize: 18, fontWeight: '800', color: C.ink },
   // Zero visual footprint on purpose — a presenter-only control the
   // audience should never notice, per the demo's requirements.
   hiddenHotspot: { position: 'absolute', top: 0, left: 0, width: 64, height: 64, zIndex: 50 },
