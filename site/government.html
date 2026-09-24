@@ -1,0 +1,221 @@
+<title>National Safety Registry</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+KR:wght@500;700;800&display=swap">
+<style>
+  :root {
+    --bg: #F0EEE6; --surface: #FFFFFF; --surface-2: #FBFAF6; --border: #E3E1D8;
+    --ink: #14213D; --ink-soft: #5B6472; --muted: #8A93A6;
+    --accent: #C79A2B; --accent-strong: #14213D;
+    --high: #C94F4F; --high-bg: #FBE6E6; --med: #C79A2B; --med-bg: #FBF1D8; --low: #3E7C5A; --low-bg: #E5F1EA;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0B1120; --surface: #17213B; --surface-2: #121A2E; --border: #2A3654;
+      --ink: #F1F3F8; --ink-soft: #B9C2D6; --muted: #8896B3; --accent: #E8B93C;
+      --high: #E28787; --high-bg: #3A1E1E; --med: #E8B93C; --med-bg: #332A12; --low: #7BC79E; --low-bg: #163326;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0B1120; --surface: #17213B; --surface-2: #121A2E; --border: #2A3654;
+    --ink: #F1F3F8; --ink-soft: #B9C2D6; --muted: #8896B3; --accent: #E8B93C;
+    --high: #E28787; --high-bg: #3A1E1E; --med: #E8B93C; --med-bg: #332A12; --low: #7BC79E; --low-bg: #163326;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', Arial, sans-serif; font-variant-numeric: tabular-nums; }
+  header.top {
+    background: var(--accent-strong); color: #F7F6F2; padding: 22px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .sq { width: 14px; height: 14px; background: var(--accent); border-radius: 4px; }
+  .brand span { font-family: 'Noto Sans KR', 'Rubik', Arial, sans-serif; font-weight: 800; font-size: 18px; }
+  header.top .region { font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.08); padding: 8px 14px; border-radius: 999px; color: #C7CEDB; }
+  main { max-width: 1240px; margin: 0 auto; padding: 32px 40px 60px; display: flex; flex-direction: column; gap: 28px; }
+  .page-title { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; }
+  .page-title h1 { font-family: 'Rubik', Arial, sans-serif; font-size: 28px; font-weight: 800; margin: 0; }
+  .page-title p { margin: 4px 0 0; color: var(--ink-soft); font-size: 14px; }
+  .btn-link { font-size: 13px; font-weight: 700; color: var(--accent-strong); text-decoration: underline; cursor: pointer; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat .n { font-family: 'Rubik', Arial, sans-serif; font-size: 32px; font-weight: 800; }
+  .stat .l { font-size: 13px; color: var(--ink-soft); }
+  .grid-2 { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; align-items: start; }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
+  .panel-head { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .panel-head h2 { font-size: 16px; font-weight: 700; margin: 0; }
+  .panel-body { padding: 22px; }
+  .bars { display: flex; align-items: flex-end; gap: 24px; height: 200px; }
+  .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; height: 100%; justify-content: flex-end; }
+  .bar { width: 100%; border-radius: 8px 8px 0 0; }
+  .bar-col .l { font-size: 12px; color: var(--ink-soft); }
+  .legend { display: flex; gap: 14px; font-size: 12px; color: var(--ink-soft); flex-wrap: wrap; padding: 0 22px 18px; }
+  .legend span { display: flex; align-items: center; gap: 6px; }
+  .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { text-align: left; padding: 12px 22px; color: var(--muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+  td { padding: 13px 22px; border-bottom: 1px solid var(--border); color: var(--ink-soft); }
+  tr:last-child td { border-bottom: none; }
+  td.main { color: var(--ink); font-weight: 600; }
+  .pill { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .pill.ok { background: var(--low-bg); color: var(--low); }
+  .pill.warn { background: var(--med-bg); color: var(--med); }
+  .compliance-list { display: flex; flex-direction: column; gap: 14px; }
+  .c-row { display: flex; align-items: center; gap: 12px; }
+  .c-row .lbl { width: 120px; font-size: 13px; color: var(--ink-soft); flex: none; }
+  .c-track { flex: 1; height: 10px; border-radius: 999px; background: var(--border); overflow: hidden; }
+  .c-fill { height: 100%; background: var(--accent-strong); }
+  .c-row .pct { width: 44px; text-align: right; font-size: 13px; font-weight: 700; }
+  @media (max-width: 860px) {
+    header.top, main { padding-left: 20px; padding-right: 20px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+    table { display: block; overflow-x: auto; }
+  }
+</style>
+
+<header class="top">
+  <div class="brand"><div class="sq"></div><span>안전톡</span></div>
+  <span class="region">Gyeonggi region · 2027 pilot cohort</span>
+</header>
+<main>
+  <div class="page-title">
+    <div>
+      <h1>Foreign-worker safety compliance</h1>
+      <p>Aggregated from site-level hazard reports and completed safety-education records</p>
+    </div>
+    <span class="btn-link">Export compliance report</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><span class="n">15</span><span class="l">Sites reporting</span></div>
+    <div class="stat"><span class="n">1,204</span><span class="l">Hazard reports, this quarter</span></div>
+    <div class="stat"><span class="n">100%</span><span class="l">New foreign hires with training on file</span></div>
+    <div class="stat"><span class="n">31%</span><span class="l">Fewer repeat high-severity reports vs. last quarter</span></div>
+  </div>
+
+  <div class="grid-2">
+    <div class="panel">
+      <div class="panel-head"><h2>Hazard reports by category, this quarter</h2></div>
+      <div class="panel-body">
+        <div class="bars">
+          <div class="bar-col"><div class="bar" style="height:88%; background:#C94F4F"></div><span class="l">Falls</span></div>
+          <div class="bar-col"><div class="bar" style="height:58%; background:#C79A2B"></div><span class="l">Fire</span></div>
+          <div class="bar-col"><div class="bar" style="height:46%; background:#14213D"></div><span class="l">Heat</span></div>
+          <div class="bar-col"><div class="bar" style="height:34%; background:#3E7C5A"></div><span class="l">Electrical</span></div>
+          <div class="bar-col"><div class="bar" style="height:22%; background:#8A93A6"></div><span class="l">Other</span></div>
+        </div>
+      </div>
+      <div class="legend">
+        <span><i style="background:#C94F4F"></i>Falls remain the leading category, consistent with 2025 fatality data</span>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><h2>Training completion by language</h2></div>
+      <div class="panel-body compliance-list">
+        <div class="c-row"><span class="lbl">Vietnamese</span><div class="c-track"><div class="c-fill" style="width:100%"></div></div><span class="pct">100%</span></div>
+        <div class="c-row"><span class="lbl">Uzbek</span><div class="c-track"><div class="c-fill" style="width:97%"></div></div><span class="pct">97%</span></div>
+        <div class="c-row"><span class="lbl">Chinese</span><div class="c-track"><div class="c-fill" style="width:100%"></div></div><span class="pct">100%</span></div>
+        <div class="c-row"><span class="lbl">English</span><div class="c-track"><div class="c-fill" style="width:100%"></div></div><span class="pct">100%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head"><h2>Site-level status</h2></div>
+    <table>
+      <tr><th>Site</th><th>Region</th><th>Foreign crew</th><th>Reports, this quarter</th><th>Training on file</th><th>Status</th></tr>
+      <tr><td class="main">Site 4 · Wonju</td><td>Gangwon</td><td>42</td><td>18</td><td>100%</td><td><span class="pill ok">Compliant</span></td></tr>
+      <tr><td class="main">Site 7 · Suwon</td><td>Gyeonggi</td><td>65</td><td>34</td><td>97%</td><td><span class="pill warn">2 pending</span></td></tr>
+      <tr><td class="main">Site 2 · Incheon</td><td>Incheon</td><td>51</td><td>21</td><td>100%</td><td><span class="pill ok">Compliant</span></td></tr>
+      <tr><td class="main">Site 9 · Cheonan</td><td>Chungnam</td><td>38</td><td>12</td><td>100%</td><td><span class="pill ok">Compliant</span></td></tr>
+      <tr><td class="main">Site 11 · Pyeongtaek</td><td>Gyeonggi</td><td>57</td><td>29</td><td>100%</td><td><span class="pill ok">Compliant</span></td></tr>
+      <tr><td class="main">Site 3 · Cheongju</td><td>Chungbuk</td><td>33</td><td>15</td><td>94%</td><td><span class="pill warn">3 pending</span></td></tr>
+      <tr><td class="main">Site 6 · Ansan</td><td>Gyeonggi</td><td>48</td><td>22</td><td>100%</td><td><span class="pill ok">Compliant</span></td></tr>
+    </table>
+  </div>
+</main>
+
+<style>
+  .proto-nav { position: fixed; right: 18px; bottom: 18px; z-index: 999; font-family: 'IBM Plex Sans', Arial, sans-serif; display: flex; align-items: flex-end; gap: 8px; }
+  .proto-nav-btn { font-size: 12.5px; font-weight: 700; padding: 11px 18px; border-radius: 999px; background: #14213D; color: #F7F6F2; border: none; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.28); }
+  .proto-nav-menu { position: absolute; right: 0; bottom: calc(100% + 10px); background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 8px; display: flex; flex-direction: column; min-width: 220px; box-shadow: 0 16px 36px rgba(0,0,0,0.22); }
+  .proto-nav-menu a { display: block; padding: 9px 12px; border-radius: 9px; font-size: 13px; color: var(--ink); text-decoration: none; }
+  .proto-nav-menu a:hover { background: var(--bg); }
+  .proto-nav-menu .current { padding: 9px 12px; font-size: 13px; color: var(--muted); }
+</style>
+<div class="proto-nav" id="proto-nav">
+  <button class="proto-nav-btn" id="export-pdf-btn" type="button">Export PDF</button>
+  <button class="proto-nav-btn" id="proto-nav-btn" aria-expanded="false" aria-controls="proto-nav-menu">Prototypes</button>
+  <div class="proto-nav-menu" id="proto-nav-menu" hidden>
+    <span class="current">Government dashboard (this page)</span>
+    <a href="https://claude.ai/artifact/GJVQ4zRT6Qfc8XnP3FViQq">Pitch deck</a>
+    <a href="supervisor.html">Supervisor app</a>
+    <a href="worker.html">Worker training app</a>
+    <a href="manager.html">Management dashboard</a>
+    <a href="index.html">All prototypes ↗</a>
+  </div>
+</div>
+<script>
+  (function () {
+    var btn = document.getElementById('proto-nav-btn');
+    var menu = document.getElementById('proto-nav-menu');
+    var wrap = document.getElementById('proto-nav');
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var willOpen = menu.hidden;
+      menu.hidden = !willOpen;
+      btn.setAttribute('aria-expanded', String(willOpen));
+    });
+    document.addEventListener('click', function (e) {
+      if (!wrap.contains(e.target)) { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+    });
+  })();
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  (function () {
+    var btn = document.getElementById('export-pdf-btn');
+    var navWrap = document.getElementById('proto-nav');
+    var defaultLabel = btn.textContent;
+    var busy = false;
+    btn.addEventListener('click', function () {
+      if (busy) return;
+      busy = true;
+      btn.disabled = true;
+      btn.textContent = 'Exporting…';
+      navWrap.style.visibility = 'hidden';
+      html2canvas(document.body, { backgroundColor: null, scale: 2, useCORS: true }).then(function (canvas) {
+        navWrap.style.visibility = '';
+        var jsPDFCtor = window.jspdf && window.jspdf.jsPDF;
+        if (!jsPDFCtor) { throw new Error('pdf-lib-missing'); }
+        var orientation = canvas.width >= canvas.height ? 'l' : 'p';
+        var pdf = new jsPDFCtor({ orientation: orientation, unit: 'px', format: [canvas.width, canvas.height] });
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, canvas.width, canvas.height);
+        var blob = pdf.output('blob');
+        var use = window.claude && window.claude.use;
+        if (!use) { return Promise.reject({ code: 'unavailable' }); }
+        return use('downloads').then(function (downloads) {
+          if (!downloads) { return Promise.reject({ code: 'unavailable' }); }
+          return downloads.save({ filename: 'anjeontok-government-dashboard.pdf', data: blob });
+        });
+      }).then(function () {
+        btn.textContent = 'Saved ✓';
+      }).catch(function (err) {
+        navWrap.style.visibility = '';
+        if (err && err.code === 'declined') {
+          btn.textContent = defaultLabel;
+        } else if (err && err.code === 'unavailable') {
+          btn.textContent = 'PDF unavailable here';
+        } else {
+          btn.textContent = 'Export failed';
+        }
+      }).finally(function () {
+        setTimeout(function () { btn.textContent = defaultLabel; btn.disabled = false; busy = false; }, 2200);
+      });
+    });
+  })();
+</script>

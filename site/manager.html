@@ -1,0 +1,302 @@
+<title>Site Safety Console</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+KR:wght@500;700;800&display=swap">
+<style>
+  :root {
+    --bg: #F0EEE6; --surface: #FFFFFF; --surface-2: #FBFAF6; --border: #E3E1D8;
+    --ink: #14213D; --ink-soft: #5B6472; --muted: #8A93A6;
+    --accent: #C79A2B; --accent-bg: #FBF1D8; --accent-strong: #14213D;
+    --high: #C94F4F; --high-bg: #FBE6E6; --med: #C79A2B; --med-bg: #FBF1D8; --low: #3E7C5A; --low-bg: #E5F1EA;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0B1120; --surface: #17213B; --surface-2: #121A2E; --border: #2A3654;
+      --ink: #F1F3F8; --ink-soft: #B9C2D6; --muted: #8896B3; --accent: #E8B93C; --accent-bg: #2A2312;
+      --high: #E28787; --high-bg: #3A1E1E; --med: #E8B93C; --med-bg: #332A12; --low: #7BC79E; --low-bg: #163326;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0B1120; --surface: #17213B; --surface-2: #121A2E; --border: #2A3654;
+    --ink: #F1F3F8; --ink-soft: #B9C2D6; --muted: #8896B3; --accent: #E8B93C; --accent-bg: #2A2312;
+    --high: #E28787; --high-bg: #3A1E1E; --med: #E8B93C; --med-bg: #332A12; --low: #7BC79E; --low-bg: #163326;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', Arial, sans-serif; font-variant-numeric: tabular-nums; }
+  .app { display: flex; min-height: 100vh; }
+  nav.side {
+    width: 240px; flex: none; background: var(--accent-strong); color: #F7F6F2; padding: 28px 20px;
+    display: flex; flex-direction: column; gap: 28px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .sq { width: 14px; height: 14px; background: var(--accent); border-radius: 4px; }
+  .brand span { font-family: 'Noto Sans KR', 'Rubik', Arial, sans-serif; font-weight: 800; font-size: 18px; }
+  .nav-items { display: flex; flex-direction: column; gap: 4px; }
+  .nav-item { padding: 11px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; color: #C7CEDB; cursor: pointer; }
+  .nav-item.on { background: rgba(232,185,60,0.16); color: #F7F6F2; }
+  .nav-item .k { color: var(--accent); margin-right: 8px; }
+  .side-foot { margin-top: auto; font-size: 12px; color: #8896B3; }
+  main { flex: 1; padding: 32px 40px 60px; max-width: 1240px; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+  .topbar h1 { font-family: 'Rubik', Arial, sans-serif; font-size: 26px; font-weight: 800; margin: 0; }
+  .site-pick { font-size: 13px; font-weight: 600; background: var(--surface); border: 1px solid var(--border); padding: 8px 14px; border-radius: 999px; }
+  .view { display: none; flex-direction: column; gap: 24px; }
+  .view.on { display: flex; }
+  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 6px; }
+  .stat .n { font-family: 'Rubik', Arial, sans-serif; font-size: 32px; font-weight: 800; }
+  .stat .l { font-size: 13px; color: var(--ink-soft); }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
+  .panel-head { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+  .panel-head h2 { font-size: 16px; font-weight: 700; margin: 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { text-align: left; padding: 12px 22px; color: var(--muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+  td { padding: 14px 22px; border-bottom: 1px solid var(--border); color: var(--ink-soft); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  td.main { color: var(--ink); font-weight: 600; }
+  .pill { font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+  .pill.high { background: var(--high-bg); color: var(--high); }
+  .pill.med { background: var(--med-bg); color: var(--med); }
+  .pill.low { background: var(--low-bg); color: var(--low); }
+  .btn-link { font-size: 12.5px; font-weight: 700; color: var(--accent-strong); text-decoration: underline; cursor: pointer; }
+  .label-layout { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px; align-items: start; }
+  .form { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+  .form label { font-size: 12.5px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.4px; }
+  select, input { font-family: inherit; font-size: 14px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--ink); width: 100%; }
+  .lang-row { display: flex; gap: 10px; }
+  .chip { flex: 1; text-align: center; padding: 10px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+  .chip.on { background: var(--accent-strong); color: #F7F6F2; border-color: var(--accent-strong); }
+  .btn { padding: 13px; border-radius: 10px; text-align: center; font-weight: 700; font-size: 14px; }
+  .btn.primary { background: var(--accent-strong); color: #F7F6F2; }
+  .label-preview { background: #FFF7E0; border: 3px solid #14213D; border-radius: 4px; padding: 28px; display: flex; flex-direction: column; gap: 14px; }
+  .label-preview .hazard-tag { align-self: flex-start; background: #C94F4F; color: #fff; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 5px 10px; border-radius: 4px; }
+  .label-preview h3 { font-family: 'Rubik', Arial, sans-serif; font-size: 24px; margin: 0; color: #14213D; }
+  .label-preview .native { font-size: 18px; color: #5B6472; margin: 0; }
+  .label-preview .foot { display: flex; justify-content: space-between; font-size: 11px; color: #8A93A6; border-top: 1px dashed #C7CEDB; padding-top: 10px; }
+  tr.row-click { cursor: pointer; }
+  tr.row-click:hover td { background: var(--surface-2); }
+  .modal-backdrop { position: fixed; inset: 0; background: rgba(20,33,61,0.45); display: none; align-items: center; justify-content: center; z-index: 900; padding: 20px; }
+  .modal-backdrop.on { display: flex; }
+  .modal-card { background: var(--surface); border-radius: 20px; padding: 28px; width: 420px; max-width: 100%; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 24px 60px rgba(0,0,0,0.3); }
+  .modal-card h3 { margin: 0; font-family: 'Rubik', Arial, sans-serif; font-size: 20px; font-weight: 800; }
+  .modal-kv { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-soft); padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .modal-kv b { color: var(--ink); font-weight: 600; }
+  .modal-kv.lang b { color: var(--accent-strong); }
+  .modal-close { align-self: flex-end; font-size: 13px; font-weight: 700; color: var(--ink-soft); cursor: pointer; }
+  @media (max-width: 860px) {
+    .app { flex-direction: column; }
+    nav.side { width: 100%; flex-direction: row; align-items: center; padding: 16px 20px; }
+    .nav-items { flex-direction: row; }
+    .side-foot { display: none; }
+    main { padding: 24px 18px 48px; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .label-layout { grid-template-columns: 1fr; }
+    table { display: block; overflow-x: auto; }
+  }
+</style>
+
+<div class="app">
+  <nav class="side">
+    <div class="brand"><div class="sq"></div><span>안전톡</span></div>
+    <div class="nav-items">
+      <div class="nav-item on" data-tab="reports"><span class="k">◆</span>Reports</div>
+      <div class="nav-item" data-tab="labels"><span class="k">◆</span>Warning labels</div>
+    </div>
+    <p class="side-foot">Site 4 · Wonju<br>3 supervisors online</p>
+  </nav>
+  <main>
+    <div class="topbar">
+      <h1 id="page-title">Reports</h1>
+      <span class="site-pick">Site 4 · Wonju ▾</span>
+    </div>
+
+    <section class="view on" id="view-reports">
+      <div class="stats">
+        <div class="stat"><span class="n">18</span><span class="l">Open reports, this month</span></div>
+        <div class="stat"><span class="n">4</span><span class="l">High severity</span></div>
+        <div class="stat"><span class="n">92%</span><span class="l">Resolved within 48h</span></div>
+        <div class="stat"><span class="n">100%</span><span class="l">New hires, safety training on file</span></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head"><h2>Recent reports</h2><span class="btn-link">Export</span></div>
+        <table id="reports-table">
+          <tr><th>Hazard</th><th>Category</th><th>Severity</th><th>Location</th><th>Status</th></tr>
+          <tr class="row-click" data-lang="Vietnamese"><td class="main">Broken guardrail</td><td>Fall</td><td><span class="pill high">High</span></td><td>4F, east stair</td><td>New</td></tr>
+          <tr class="row-click" data-lang="Uzbek"><td class="main">Exposed wiring</td><td>Electrical</td><td><span class="pill med">Medium</span></td><td>B1 storage</td><td>Assigned</td></tr>
+          <tr class="row-click" data-lang="Chinese"><td class="main">Blocked fire exit</td><td>Fire</td><td><span class="pill low">Low</span></td><td>2F corridor</td><td>Resolved</td></tr>
+          <tr class="row-click" data-lang="English"><td class="main">Loose scaffold plank</td><td>Fall</td><td><span class="pill high">High</span></td><td>Roof, north</td><td>Assigned</td></tr>
+          <tr class="row-click" data-lang="Vietnamese"><td class="main">Heat exposure, no shade</td><td>Heat</td><td><span class="pill med">Medium</span></td><td>Yard, zone C</td><td>Resolved</td></tr>
+          <tr class="row-click" data-lang="Uzbek"><td class="main">Trip hazard, uncovered conduit</td><td>Fall</td><td><span class="pill low">Low</span></td><td>B2 corridor</td><td>New</td></tr>
+          <tr class="row-click" data-lang="Chinese"><td class="main">Frayed extension cord</td><td>Electrical</td><td><span class="pill med">Medium</span></td><td>3F, unit 12</td><td>Assigned</td></tr>
+          <tr class="row-click" data-lang="English"><td class="main">Ladder missing footing pads</td><td>Fall</td><td><span class="pill med">Medium</span></td><td>Yard, zone A</td><td>Resolved</td></tr>
+          <tr class="row-click" data-lang="Vietnamese"><td class="main">Gas cylinder stored on its side</td><td>Fire</td><td><span class="pill high">High</span></td><td>B1 storage</td><td>New</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <div class="modal-backdrop" id="report-modal">
+      <div class="modal-card">
+        <span class="modal-close" id="modal-close">Close</span>
+        <h3 id="modal-title">Broken guardrail</h3>
+        <div class="modal-kv"><span>Category</span><b id="modal-category">Fall</b></div>
+        <div class="modal-kv"><span>Severity</span><b id="modal-severity">High</b></div>
+        <div class="modal-kv"><span>Location</span><b id="modal-location">4F, east stair</b></div>
+        <div class="modal-kv lang"><span>Worker's language</span><b id="modal-lang">Vietnamese</b></div>
+        <div class="modal-kv"><span>Status</span><b id="modal-status">New</b></div>
+      </div>
+    </div>
+
+    <section class="view" id="view-labels">
+      <div class="label-layout">
+        <div class="form">
+          <div>
+            <label>Report</label>
+            <select><option>Broken guardrail — 4F east stairwell</option><option>Exposed wiring — B1 storage</option></select>
+          </div>
+          <div>
+            <label>Worker's native language</label>
+            <div class="lang-row">
+              <div class="chip on">Tiếng Việt</div>
+              <div class="chip">O'zbek</div>
+              <div class="chip">中文</div>
+              <div class="chip">English</div>
+            </div>
+          </div>
+          <div>
+            <label>Size</label>
+            <select><option>A3, laminated</option><option>A4, laminated</option></select>
+          </div>
+          <div class="btn primary">Order 3 printed labels</div>
+        </div>
+        <div class="label-preview">
+          <span class="hazard-tag">Fall hazard · High</span>
+          <h3>추락 위험 — 안전난간 파손<br>4층 동측 계단</h3>
+          <p class="native">Nguy hiểm ngã — lan can hỏng<br>Cầu thang phía Đông, tầng 4</p>
+          <div class="foot"><span>Reported 2026-09-24</span><span>Site 4 · Wonju</span></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  document.querySelectorAll('.nav-item').forEach(function (item) {
+    item.addEventListener('click', function () {
+      document.querySelectorAll('.nav-item').forEach(function (i) { i.classList.remove('on'); });
+      item.classList.add('on');
+      var tab = item.getAttribute('data-tab');
+      document.querySelectorAll('.view').forEach(function (v) { v.classList.remove('on'); });
+      document.getElementById('view-' + tab).classList.add('on');
+      document.getElementById('page-title').textContent = tab === 'reports' ? 'Reports' : 'Warning labels';
+    });
+  });
+  document.querySelectorAll('.chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      chip.parentElement.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
+      chip.classList.add('on');
+    });
+  });
+  (function () {
+    var modal = document.getElementById('report-modal');
+    var closeBtn = document.getElementById('modal-close');
+    document.querySelectorAll('#reports-table tr.row-click').forEach(function (row) {
+      row.addEventListener('click', function () {
+        var cells = row.querySelectorAll('td');
+        document.getElementById('modal-title').textContent = cells[0].textContent;
+        document.getElementById('modal-category').textContent = cells[1].textContent;
+        document.getElementById('modal-severity').textContent = cells[2].textContent.trim();
+        document.getElementById('modal-location').textContent = cells[3].textContent;
+        document.getElementById('modal-status').textContent = cells[4].textContent;
+        document.getElementById('modal-lang').textContent = row.getAttribute('data-lang');
+        modal.classList.add('on');
+      });
+    });
+    closeBtn.addEventListener('click', function () { modal.classList.remove('on'); });
+    modal.addEventListener('click', function (e) { if (e.target === modal) { modal.classList.remove('on'); } });
+  })();
+</script>
+
+<style>
+  .proto-nav { position: fixed; right: 18px; bottom: 18px; z-index: 999; font-family: 'IBM Plex Sans', Arial, sans-serif; display: flex; align-items: flex-end; gap: 8px; }
+  .proto-nav-btn { font-size: 12.5px; font-weight: 700; padding: 11px 18px; border-radius: 999px; background: #14213D; color: #F7F6F2; border: none; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.28); }
+  .proto-nav-menu { position: absolute; right: 0; bottom: calc(100% + 10px); background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 8px; display: flex; flex-direction: column; min-width: 220px; box-shadow: 0 16px 36px rgba(0,0,0,0.22); }
+  .proto-nav-menu a { display: block; padding: 9px 12px; border-radius: 9px; font-size: 13px; color: var(--ink); text-decoration: none; }
+  .proto-nav-menu a:hover { background: var(--bg); }
+  .proto-nav-menu .current { padding: 9px 12px; font-size: 13px; color: var(--muted); }
+</style>
+<div class="proto-nav" id="proto-nav">
+  <button class="proto-nav-btn" id="export-pdf-btn" type="button">Export PDF</button>
+  <button class="proto-nav-btn" id="proto-nav-btn" aria-expanded="false" aria-controls="proto-nav-menu">Prototypes</button>
+  <div class="proto-nav-menu" id="proto-nav-menu" hidden>
+    <span class="current">Management dashboard (this page)</span>
+    <a href="https://claude.ai/artifact/GJVQ4zRT6Qfc8XnP3FViQq">Pitch deck</a>
+    <a href="supervisor.html">Supervisor app</a>
+    <a href="worker.html">Worker training app</a>
+    <a href="government.html">Government dashboard</a>
+    <a href="index.html">All prototypes ↗</a>
+  </div>
+</div>
+<script>
+  (function () {
+    var btn = document.getElementById('proto-nav-btn');
+    var menu = document.getElementById('proto-nav-menu');
+    var wrap = document.getElementById('proto-nav');
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var willOpen = menu.hidden;
+      menu.hidden = !willOpen;
+      btn.setAttribute('aria-expanded', String(willOpen));
+    });
+    document.addEventListener('click', function (e) {
+      if (!wrap.contains(e.target)) { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+    });
+  })();
+</script>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+  (function () {
+    var btn = document.getElementById('export-pdf-btn');
+    var navWrap = document.getElementById('proto-nav');
+    var defaultLabel = btn.textContent;
+    var busy = false;
+    btn.addEventListener('click', function () {
+      if (busy) return;
+      busy = true;
+      btn.disabled = true;
+      btn.textContent = 'Exporting…';
+      navWrap.style.visibility = 'hidden';
+      html2canvas(document.body, { backgroundColor: null, scale: 2, useCORS: true }).then(function (canvas) {
+        navWrap.style.visibility = '';
+        var jsPDFCtor = window.jspdf && window.jspdf.jsPDF;
+        if (!jsPDFCtor) { throw new Error('pdf-lib-missing'); }
+        var orientation = canvas.width >= canvas.height ? 'l' : 'p';
+        var pdf = new jsPDFCtor({ orientation: orientation, unit: 'px', format: [canvas.width, canvas.height] });
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, canvas.width, canvas.height);
+        var blob = pdf.output('blob');
+        var use = window.claude && window.claude.use;
+        if (!use) { return Promise.reject({ code: 'unavailable' }); }
+        return use('downloads').then(function (downloads) {
+          if (!downloads) { return Promise.reject({ code: 'unavailable' }); }
+          return downloads.save({ filename: 'anjeontok-management-dashboard.pdf', data: blob });
+        });
+      }).then(function () {
+        btn.textContent = 'Saved ✓';
+      }).catch(function (err) {
+        navWrap.style.visibility = '';
+        if (err && err.code === 'declined') {
+          btn.textContent = defaultLabel;
+        } else if (err && err.code === 'unavailable') {
+          btn.textContent = 'PDF unavailable here';
+        } else {
+          btn.textContent = 'Export failed';
+        }
+      }).finally(function () {
+        setTimeout(function () { btn.textContent = defaultLabel; btn.disabled = false; busy = false; }, 2200);
+      });
+    });
+  })();
+</script>
