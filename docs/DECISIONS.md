@@ -3,6 +3,30 @@
 Dated, most recent first. Record *why*, not what (the artifacts/git history
 show what).
 
+## 2026-09-25 — Fixed the mockup's page chrome: toggle, phone case, removed the hand
+
+Peter's feedback on the merged supervisor/worker mockup, in order:
+- The "PROTOTYPE" corner ribbon and the hand-holding-the-phone illustration
+  both read as tacky — removed both entirely rather than trying to refine
+  them.
+- The mode toggle ("Reporting"/"Training") was translating into the app's
+  current language, but it's page chrome, not app content — it now always
+  reads in English regardless of the selected language, matching the page
+  banner underneath it.
+- The toggle was floating to the left of the phone instead of centered
+  above it — root cause was a missing `flex-direction: column` on `body`
+  (an oversight from when the toggle was first added — the CSS assumed
+  column layout that was never actually applied), so the toggle and the
+  phone-case were laying out as row siblings instead of stacking. Fixed,
+  and gave the toggle a normal centered gap above the case instead of the
+  earlier "mounted onto the case" negative-margin trick.
+- The rugged case redesigned for realism: removed the bright yellow-ringed
+  circular corner "bumpers" (read as toy-like), added a real rubberized
+  texture (subtle diagonal noise gradient), a two-tone bevel (inset
+  highlight + shadow rings) for a molded-plastic look, and kept only the
+  bottom hazard-stripe tread and a simplified lanyard loop as the
+  case's brand-relevant details.
+
 ## 2026-09-25 — Added a Governance model page; found the actual 2026 law
 
 Peter asked for research into the roles of the key actors in the system and
