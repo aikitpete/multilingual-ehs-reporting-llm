@@ -82,12 +82,19 @@
   tr.row-click:hover td { background: var(--surface-2); }
   .modal-backdrop { position: fixed; inset: 0; background: rgba(20,33,61,0.45); display: none; align-items: center; justify-content: center; z-index: 900; padding: 20px; }
   .modal-backdrop.on { display: flex; }
-  .modal-card { background: var(--surface); border-radius: 20px; padding: 28px; width: 420px; max-width: 100%; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 24px 60px rgba(0,0,0,0.3); }
+  .modal-card { background: var(--surface); border-radius: 20px; padding: 28px; width: 500px; max-width: 100%; max-height: 88vh; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 24px 60px rgba(0,0,0,0.3); }
   .modal-card h3 { margin: 0; font-family: 'Rubik', Arial, sans-serif; font-size: 20px; font-weight: 800; }
   .modal-kv { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-soft); padding: 8px 0; border-bottom: 1px solid var(--border); }
   .modal-kv b { color: var(--ink); font-weight: 600; }
   .modal-kv.lang b { color: var(--accent); }
   .modal-close { align-self: flex-end; font-size: 13px; font-weight: 700; color: var(--ink-soft); cursor: pointer; }
+  .ai-panel { background: linear-gradient(155deg, var(--surface-2), var(--surface)); border: 1px solid var(--accent); border-radius: 12px; padding: 14px 16px; margin-top: 4px; }
+  .ai-panel .ai-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .ai-panel .ai-badge svg { width: 13px; height: 13px; }
+  .ai-row { margin-bottom: 8px; }
+  .ai-row:last-child { margin-bottom: 0; }
+  .ai-row .l { font-size: 10.5px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; }
+  .ai-row .v { font-size: 13px; color: var(--ink); line-height: 1.5; }
   @media (max-width: 860px) {
     .app { flex-direction: column; }
     nav.side { width: 100%; flex-direction: row; align-items: center; padding: 16px 20px; }
@@ -152,9 +159,25 @@
         <div class="modal-kv"><span data-i18n="th.location">Location</span><b id="modal-location">4F, east stair</b></div>
         <div class="modal-kv lang"><span data-i18n="modal.workerlang">Worker's language</span><b id="modal-lang">Vietnamese</b></div>
         <div class="modal-kv"><span data-i18n="th.status">Status</span><b id="modal-status">New</b></div>
-        <div style="margin-top:6px">
-          <label data-i18n="modal.corrective" style="font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.4px">Corrective action</label>
-          <textarea id="modal-corrective" placeholder="What was done to fix this, and to stop it happening again…" style="width:100%; min-height:64px; margin-top:6px; font-family:inherit; font-size:13.5px; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--surface-2); color:var(--ink); resize:vertical"></textarea>
+
+        <div class="ai-panel">
+          <div class="ai-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
+            AI analysis — generated from this report
+          </div>
+          <div class="ai-row">
+            <div class="l">Likely root cause</div>
+            <div class="v" id="ai-rootcause">—</div>
+          </div>
+          <div class="ai-row">
+            <div class="l">Pattern across reports</div>
+            <div class="v" id="ai-pattern">—</div>
+          </div>
+        </div>
+
+        <div style="margin-top:2px">
+          <label data-i18n="modal.corrective" style="font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.4px">Corrective action <span style="color:var(--accent); text-transform:none; font-weight:600">— AI-drafted, edit as needed</span></label>
+          <textarea id="modal-corrective" placeholder="What was done to fix this, and to stop it happening again…" style="width:100%; min-height:80px; margin-top:6px; font-family:inherit; font-size:13.5px; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--surface-2); color:var(--ink); resize:vertical"></textarea>
         </div>
         <div class="btn primary" id="modal-save-corrective" style="margin-top:4px" data-i18n="modal.savecorrective">Save &amp; mark investigated</div>
       </div>
@@ -349,7 +372,36 @@
   (function () {
     var modal = document.getElementById('report-modal');
     var closeBtn = document.getElementById('modal-close');
-    document.querySelectorAll('#reports-table tr.row-click').forEach(function (row) {
+    var AI_ANALYSIS = [
+      { rootCause: "Guardrail bracket sheared at a weld point likely weakened by repeated scaffold-tie loading — not a one-off failure.",
+        pattern: "3rd fall-hazard report tied to this stairwell run in the past 30 days — suggests a structural inspection is overdue, not just a spot repair.",
+        draft: "Replaced failed guardrail section and welded a reinforcement plate at 4F east stairwell. Scheduled a full structural inspection of stairwell guardrail runs on 2F–8F to check for the same weld fatigue. Temporary barrier remains in place until inspection completes." },
+      { rootCause: "Cable insulation abraded against a metal shelf edge — routing, not the cable itself, is the likely fault.",
+        pattern: "2nd electrical report from B1 storage this quarter; both involve cable-to-shelving contact points.",
+        draft: "De-energized and re-routed the affected line through conduit clear of shelving edges. Requested a walk-through of B1 storage cable runs to pre-emptively correct similar contact points before they fail." },
+      { rootCause: "Materials staged temporarily during a delivery and not cleared afterward — a handoff gap, not a one-time mistake.",
+        pattern: "Low severity, but the 4th blocked-exit report site-wide this quarter — worth flagging as a recurring housekeeping gap rather than treating each instance in isolation.",
+        draft: "Cleared the corridor and relocated staged materials to the designated laydown area. Added a delivery-day checklist item requiring the receiving crew to confirm all egress paths are clear before sign-off." },
+      { rootCause: "Plank shifted because its end cleat was never seated on the ledger — an installation-check gap, not material failure.",
+        pattern: "Matches the same failure mode as the 4F guardrail report — two independent high-severity reports this month both trace back to fastening/seating checks skipped at handover.",
+        draft: "Re-seated and cleated the affected plank; added a toe-board on the exposed roof edge. Recommending a scaffold handover checklist that requires a second-person seating check before a platform is released for use." },
+      { rootCause: "No fixed shade structure was installed for this rest area when the yard layout was set up for this phase of work.",
+        pattern: "Seasonal — expect repeat reports through the end of summer if uncorrected.",
+        draft: "Installed a pop-up shade canopy over the water-break table in yard zone C. Added a standing task to relocate the canopy as the work zone shifts each phase." },
+      { rootCause: "Conduit run was left exposed after a service cut-in and never re-covered.",
+        pattern: "Same corridor flagged once before for a different hazard type — worth a full B2 corridor walk-through rather than fixing this in isolation.",
+        draft: "Covered the exposed conduit with a rated cable ramp and marked the run with hazard tape. Requested a full walk-through of B2 corridor for other uncovered service runs." },
+      { rootCause: "Cord was run under a doorway threshold repeatedly, which is the likely abrasion source.",
+        pattern: "First report of this specific type this quarter — isolated, not yet a pattern.",
+        draft: "Replaced the damaged cord and re-routed it away from the doorway threshold using an overhead drop. No further action needed unless similar reports recur in this unit." },
+      { rootCause: "Footing pads were removed for cleaning and not reinstalled before the ladder went back into service.",
+        pattern: "Isolated so far, but ladder-related reports tend to cluster once a crew starts working around a specific piece of equipment — worth a quick spot-check of other ladders on site.",
+        draft: "Reinstalled footing pads and tagged the ladder for a quick pre-use check going forward. Spot-checked two other ladders in the same yard zone; both had pads intact." },
+      { rootCause: "No cylinder rack was available at the point of use, so the cylinder was set down rather than secured.",
+        pattern: "3rd storage-area report this quarter (with the exposed-wiring report above) — B1 storage may need a broader safety walk-through rather than one-off fixes.",
+        draft: "Secured the cylinder upright in a rack and added two additional rack points to B1 storage. Recommending a full storage-area safety walk-through given this is the third report from the same area this quarter." }
+    ];
+    document.querySelectorAll('#reports-table tr.row-click').forEach(function (row, idx) {
       row.addEventListener('click', function () {
         var cells = row.querySelectorAll('td');
         document.getElementById('modal-title').textContent = cells[0].textContent;
@@ -358,6 +410,10 @@
         document.getElementById('modal-location').textContent = cells[3].textContent;
         document.getElementById('modal-status').textContent = cells[4].textContent;
         document.getElementById('modal-lang').textContent = row.getAttribute('data-lang');
+        var a = AI_ANALYSIS[idx] || AI_ANALYSIS[0];
+        document.getElementById('ai-rootcause').textContent = a.rootCause;
+        document.getElementById('ai-pattern').textContent = a.pattern;
+        document.getElementById('modal-corrective').value = a.draft;
         modal.classList.add('on');
       });
     });
