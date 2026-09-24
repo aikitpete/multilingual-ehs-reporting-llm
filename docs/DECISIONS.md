@@ -3,6 +3,29 @@
 Dated, most recent first. Record *why*, not what (the artifacts/git history
 show what).
 
+## 2026-09-24 — Repo stays private; static site added under `site/` for Netlify
+
+Peter asked for "a proper public repo... that deploys to Netlify." When asked
+directly, he chose to **keep the repo private** rather than flip it public —
+Netlify's GitHub App supports deploying from private repos, so this loses
+nothing functionally. He also chose to connect Netlify himself via their
+dashboard (2-minute manual step) rather than have this session install and
+authenticate the Netlify CLI, since that would need his login in the loop
+anyway and shares no credentials either way.
+
+Added `site/` with portable, standalone HTML exports of the HTML deck and
+the four prototypes, cross-links rewired from `claude.ai/artifact/...` URLs
+to relative filenames (`deck.html`, `supervisor.html`, etc.) so the exported
+copies work as one self-contained site independent of the Claude Artifacts
+platform. The **two Slides-artifact decks (Pitch deck, AnjeonTok Launch
+Deck) could not be included** — they render through Claude's own Slides
+runtime (a proprietary app, not plain HTML), so there's no static export
+path for them; the site's index links out to their claude.ai URLs instead.
+`netlify.toml` at the repo root sets `publish = "site"`. This is also the
+**first time this session's HTML source files were actually committed to
+the repo** — until now everything lived only as published Claude Artifacts
+and local scratchpad files, never in git.
+
 ## 2026-09-24 — Three deck artifacts exist; the plain-HTML 4-slide deck is now primary
 
 The pitch deck went through several full rebuilds in one session: a 6-slide
