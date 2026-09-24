@@ -1,0 +1,166 @@
+<meta charset="utf-8">
+<title>AnjeonTok Pitch Prep</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+KR:wght@500;700;800&display=swap">
+<style>
+  :root {
+    --bg: #F2ECE0; --surface: #FFFFFF; --surface-2: #FAF6EE; --border: #E3E0D8;
+    --ink: #242424; --ink-soft: #625F5A; --muted: #8C8983;
+    --accent: #C97A1F; --accent-strong: #242424; --yellow: #FFC629;
+    --must: #C2402A; --must-bg: #FBE3DC; --should: #C97A1F; --should-bg: #FBE8D0; --can: #3D7A34; --can-bg: #E8F0E0;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161616; --surface: #201F1F; --surface-2: #1B1A1A; --border: #3A3A38;
+      --ink: #F5F1E8; --ink-soft: #D6D2C9; --muted: #8C8983; --accent: #FFC629;
+      --must: #E8836A; --must-bg: #33180F; --should: #FFC629; --should-bg: #332A12; --can: #86C46B; --can-bg: #1B2E14;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161616; --surface: #201F1F; --surface-2: #1B1A1A; --border: #3A3A38;
+    --ink: #F5F1E8; --ink-soft: #D6D2C9; --muted: #8C8983; --accent: #FFC629;
+    --must: #E8836A; --must-bg: #33180F; --should: #FFC629; --should-bg: #332A12; --can: #86C46B; --can-bg: #1B2E14;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', Arial, sans-serif; }
+  header.top { background: var(--accent-strong); color: #F7F3EA; padding: 26px 40px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .sq { width: 14px; height: 14px; background: var(--yellow); border-radius: 4px; }
+  .brand span { font-family: 'Noto Sans KR', 'Rubik', Arial, sans-serif; font-weight: 800; font-size: 18px; }
+  header.top p { margin: 6px 0 0; color: #DAD5CB; font-size: 13.5px; }
+  main { max-width: 900px; margin: 0 auto; padding: 36px 24px 90px; }
+  h1.page-title { font-family: 'Rubik', Arial, sans-serif; font-size: 26px; font-weight: 800; margin: 0 0 6px; }
+  .lede { color: var(--ink-soft); font-size: 15px; line-height: 1.55; margin: 0 0 30px; max-width: 680px; }
+  .section-title { font-family: 'Rubik', Arial, sans-serif; font-size: 17px; font-weight: 800; margin: 36px 0 14px; display: flex; align-items: center; gap: 10px; }
+  .section-title .n { background: var(--accent-strong); color: #F7F3EA; width: 26px; height: 26px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+  .praise-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .praise { background: var(--can-bg); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; font-size: 13.5px; line-height: 1.5; }
+  .praise b { display: block; color: var(--ink); margin-bottom: 4px; font-size: 14px; }
+  @media (max-width: 640px) { .praise-grid { grid-template-columns: 1fr; } }
+  .qcard { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; margin-bottom: 14px; }
+  .qcard .cat { display: inline-block; font-size: 10.5px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; background: var(--should-bg); color: var(--should); margin-bottom: 10px; }
+  .qcard .sev-hard .cat { background: var(--must-bg); color: var(--must); }
+  .qcard h3 { font-family: 'Rubik', Arial, sans-serif; font-size: 16.5px; font-weight: 800; margin: 0 0 10px; line-height: 1.35; }
+  .qcard .answer { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; background: var(--surface-2); border-left: 3px solid var(--accent); padding: 10px 14px; border-radius: 6px; }
+  .qcard .answer b { color: var(--ink); }
+  .callout { background: var(--must-bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; margin: 24px 0; }
+  .callout h3 { margin: 0 0 8px; font-family: 'Rubik', Arial, sans-serif; color: var(--must); font-size: 16px; }
+  .callout p { margin: 0 0 8px; font-size: 13.5px; line-height: 1.6; color: var(--ink); }
+  .checklist { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; }
+  .checklist li { font-size: 13.5px; line-height: 1.7; color: var(--ink-soft); }
+  .checklist b { color: var(--ink); }
+</style>
+
+<header class="top">
+  <div class="brand"><div class="sq"></div><span>안전톡</span></div>
+  <p>Pitch prep &middot; jury simulation &middot; prepared 2026-09-25</p>
+</header>
+<main>
+  <h1 class="page-title">What the jury will probably say</h1>
+  <p class="lede">A hackathon-jury simulation for AnjeonTok — the kind of panel judging a HABSIDA-style event: a mix of government/labor-ministry evaluators, a construction-industry rep, and a startup/tech mentor. Written to be genuinely critical, not reassuring — the questions here are the ones most likely to actually get asked, with a suggested answer for each.</p>
+
+  <div class="section-title"><span class="n">1</span> What they'll likely praise</div>
+  <div class="praise-grid">
+    <div class="praise"><b>The legal research is unusually rigorous</b>Citing the exact law (OSH Act amendment, June 18, 2026), the exact penalty (₩3M fine), and being upfront about what's confirmed vs. your own framing is not typical hackathon-team diligence — judges notice this.</div>
+    <div class="praise"><b>The worker-language-hiding decision</b>Hiding a worker's language from their supervisor, justified by real E-9 visa-dependency research, reads as genuine ethical design rather than a bolted-on privacy feature.</div>
+    <div class="praise"><b>"One report, four outputs" is a strong core insight</b>It's the single clearest, most memorable idea in the whole pitch — a judge will likely repeat it back to you.</div>
+    <div class="praise"><b>The governance model</b>Mapping six actors' legal obligations before writing a feature list is the kind of thinking judges associate with teams who'll actually survive a real deployment, not just a demo day.</div>
+  </div>
+
+  <div class="section-title"><span class="n">2</span> The one question you most need a sharp answer for</div>
+  <div class="callout">
+    <h3>"KOSHA already gives away multilingual safety materials for free, in up to 20 languages. Why does a construction company pay for this instead of just using that?"</h3>
+    <p>This is the single most dangerous question because it's <b>true</b> — your own Knowledge page cites it. A weak answer here undermines the whole pitch.</p>
+    <p><b>Suggested answer:</b> KOSHA's materials are static — posters, PDFs, pre-recorded videos. They tell a worker what a hazard looks like in general. AnjeonTok is the missing other direction: a worker <i>reporting</i> a hazard <i>they just found</i>, in their own words, right now, in their own language — and that report becoming a Korean report, a printed label, and a compliance record automatically. KOSHA solves awareness; AnjeonTok solves the reporting gap that awareness alone doesn't close. They're complementary, not competing — AnjeonTok's Learn tab explicitly repackages real incidents into the same kind of training content KOSHA distributes.</p>
+  </div>
+
+  <div class="section-title"><span class="n">3</span> Toughest questions, by category</div>
+
+  <div class="qcard sev-hard">
+    <span class="cat">Feasibility</span>
+    <h3>"This is a hackathon. Where's the actual AI? Every translation, classification, and report here is hand-written mock data."</h3>
+    <div class="answer"><b>Answer:</b> Be honest, don't oversell. "Correct — this is a UX and workflow prototype, not a working ML pipeline. The hard technical problem (accurate speech-to-text and translation for low-resource languages like Uzbek, in noisy construction-site audio) is real and we haven't solved it yet. What we've validated is the workflow and the governance model — who sees what, who's liable for what, what the output needs to look like for a manager and for government. That's the part that doesn't change once the AI is real."</div>
+  </div>
+
+  <div class="qcard">
+    <span class="cat">Business model</span>
+    <h3>"Who actually pays — the general contractor (원청) or the subcontractor (하청)? You haven't decided."</h3>
+    <div class="answer"><b>Answer:</b> "The 원청, because they hold the site-wide budget and authority to fix hazards, and they carry the SAPA liability exposure regardless of who employs the worker who got hurt. Subcontractors wouldn't be the buyer — they're often the ones with the least slack to pay for anything. This also means the sales motion is one deal per site, not per employer, which is simpler to scale."</div>
+  </div>
+
+  <div class="qcard sev-hard">
+    <span class="cat">Ethics / social impact</span>
+    <h3>"A tool the employer buys and controls — does it actually protect a worker who's afraid of losing their visa, or does it just give the employer another compliance checkbox while the worker still doesn't trust it?"</h3>
+    <div class="answer"><b>Answer:</b> This one has no fully satisfying answer yet — acknowledge that. "That tension is real and we don't think a UI decision alone solves it. What we've done is remove the specific piece of information (language) that would let a supervisor identify who filed a report. What we haven't done is validate with an actual migrant-worker advocacy group whether that's enough to earn trust, or whether they'd want something structurally different, like reports routed through a third party instead of the employer. That's the first thing we'd do before a real pilot."</div>
+  </div>
+
+  <div class="qcard">
+    <span class="cat">Legal / liability</span>
+    <h3>"If your AI misclassifies a hazard as low severity and someone gets hurt, who's liable — you, or the company?"</h3>
+    <div class="answer"><b>Answer:</b> "The system never auto-closes or auto-resolves a report without a human decision — severity is worker-proposed and supervisor-confirmed, not machine-decided. AnjeonTok is explicitly not a system of record for legal compliance evidence on its own; it's an input to the human safety-management process the law already requires. That's a deliberate governance boundary, not an oversight."</div>
+  </div>
+
+  <div class="qcard">
+    <span class="cat">Numbers</span>
+    <h3>"You cite ₩5.8B in budget support, but your own Knowledge page admits only ₩3.8B is a real single line item. Isn't that a bit of a stretch?"</h3>
+    <div class="answer"><b>Answer:</b> Don't get defensive — agree with the premise. "Correct, and we'd rather you catch that from us than from a fact-check later. ₩3.8B is a confirmed line item for exactly this kind of AI safety assistant. The other ₩2B is our own bundling of two adjacent foreign-worker safety budget items — real money, real intent, just not one official number. We show that distinction on our own Knowledge page rather than smoothing it over."</div>
+  </div>
+
+  <div class="qcard">
+    <span class="cat">Differentiation</span>
+    <h3>"How is this different from an enterprise EHS (environment/health/safety) platform a big contractor might already use?"</h3>
+    <div class="answer"><b>Answer:</b> "Enterprise EHS platforms are built for the safety manager, in Korean, assuming the reporter already speaks the language of the system. AnjeonTok's entire premise is the opposite: the reporter is the one person in the chain who can't use a Korean-only tool. We're not competing to be the safety manager's dashboard — we're the missing intake layer that feeds one."</div>
+  </div>
+
+  <div class="section-title"><span class="n">4</span> Before you're on stage</div>
+  <div class="checklist">
+    <ul>
+      <li><b>Rehearse the KOSHA question out loud.</b> It's the one that can derail the pitch if you're caught flat-footed — see §2.</li>
+      <li><b>Decide, and say out loud, who the buyer is</b> (원청) before someone asks — don't work it out live on stage.</li>
+      <li><b>Lead with the CEO-liability line, but land it as fact, not scare tactic.</b> State it once, plainly, and move on — dwelling on it reads as manipulative.</li>
+      <li><b>Have one honest sentence ready for "is this real AI or a mockup."</b> Judges respect an honest "not yet, here's what we validated instead" far more than a dodge.</li>
+      <li><b>Don't claim the migrant-worker trust question is solved.</b> Naming it as the next validation step is more credible than pretending the UI decision alone fixes it.</li>
+    </ul>
+  </div>
+</main>
+
+<div class="proto-nav" id="proto-nav">
+  <button class="proto-nav-btn" id="proto-nav-btn" aria-expanded="false" aria-controls="proto-nav-menu">Navigation</button>
+  <div class="proto-nav-menu" id="proto-nav-menu" hidden>
+    <span class="current">Pitch prep (this page)</span>
+    <a href="deck.html">Pitch deck</a>
+    <a href="supervisor.html">Supervisor &amp; worker app</a>
+    <a href="manager.html">Management dashboard</a>
+    <a href="government.html">Government dashboard</a>
+    <a href="knowledge.html">Knowledge &amp; sources</a>
+    <a href="governance.html">Governance model</a>
+    <a href="index.html">All prototypes ↗</a>
+  </div>
+</div>
+
+<style>
+  .proto-nav { position: fixed; right: 18px; bottom: 18px; z-index: 999; font-family: 'IBM Plex Sans', Arial, sans-serif; display: flex; align-items: flex-end; gap: 8px; }
+  .proto-nav-btn { font-size: 12.5px; font-weight: 700; padding: 11px 18px; border-radius: 999px; background: var(--accent-strong); color: #F7F3EA; border: none; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.28); }
+  .proto-nav-menu { position: absolute; right: 0; bottom: calc(100% + 10px); background: var(--accent-strong); color: #F7F3EA; border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 2px; min-width: 220px; box-shadow: 0 20px 44px rgba(0,0,0,0.32); }
+  .proto-nav-menu .current { font-size: 11.5px; font-weight: 700; color: #C7C2B8; padding: 8px 12px 4px; }
+  .proto-nav-menu a { font-size: 13px; font-weight: 600; color: #F7F3EA; text-decoration: none; padding: 9px 12px; border-radius: 8px; }
+  .proto-nav-menu a:hover { background: rgba(255,255,255,0.08); }
+</style>
+<script>
+  (function () {
+    var btn = document.getElementById('proto-nav-btn');
+    var menu = document.getElementById('proto-nav-menu');
+    var wrap = document.getElementById('proto-nav');
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var willOpen = menu.hidden;
+      menu.hidden = !willOpen;
+      btn.setAttribute('aria-expanded', String(willOpen));
+    });
+    document.addEventListener('click', function (e) {
+      if (!wrap.contains(e.target)) { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+    });
+  })();
+</script>
