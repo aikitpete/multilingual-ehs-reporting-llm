@@ -67,6 +67,18 @@
   .c-track { flex: 1; height: 10px; border-radius: 999px; background: var(--border); overflow: hidden; }
   .c-fill { height: 100%; background: var(--accent-strong); }
   .c-row .pct { width: 44px; text-align: right; font-size: 13px; font-weight: 700; }
+  .ai-panel { background: linear-gradient(155deg, var(--surface-2), var(--surface)); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 20px; }
+  .ai-panel .ai-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .ai-panel .ai-badge svg { width: 13px; height: 13px; }
+  .ai-panel p { margin: 0; font-size: 14px; color: var(--ink); line-height: 1.6; }
+  .ai-generate-btn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-strong)); color: #F7F3EA; border: none; padding: 12px 20px; border-radius: 10px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 12px; }
+  .ai-generate-btn svg { width: 15px; height: 15px; flex: none; }
+  .ai-generate-btn[disabled] { opacity: 0.7; cursor: default; }
+  .ai-loading-dots::after { content: ''; animation: ai-dots 1.1s steps(4, end) infinite; }
+  @keyframes ai-dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } 100% { content: ''; } }
+  .ai-reveal { animation: ai-fade-in 0.4s ease both; }
+  @keyframes ai-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .empty-hint { font-size: 13px; color: var(--muted); font-style: italic; }
   @media (max-width: 860px) {
     header.top, main { padding-left: 20px; padding-right: 20px; }
     .stats { grid-template-columns: repeat(2, 1fr); }
@@ -86,6 +98,19 @@
       <p>Aggregated from site-level hazard reports and completed safety-education records</p>
     </div>
     <span class="btn-link" id="inline-export-link">Export compliance report</span>
+  </div>
+
+  <div class="panel ai-panel">
+    <div class="ai-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
+      AI compliance narrative
+    </div>
+    <div id="gov-ai-empty" class="empty-hint">Not generated yet — summarizes this quarter's aggregate compliance picture across all reporting sites.</div>
+    <p id="gov-ai-content" style="display:none"></p>
+    <button type="button" class="ai-generate-btn" id="gov-generate-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
+      <span id="gov-generate-label">Generate report with AI</span>
+    </button>
   </div>
 
   <div class="stats">
@@ -176,6 +201,34 @@
   })();
 </script>
 
+
+<script>
+  (function () {
+    var btn = document.getElementById('gov-generate-btn');
+    var label = document.getElementById('gov-generate-label');
+    var empty = document.getElementById('gov-ai-empty');
+    var content = document.getElementById('gov-ai-content');
+    var defaultLabel = label.textContent;
+    var busy = false;
+    btn.addEventListener('click', function () {
+      if (busy) return;
+      busy = true;
+      btn.disabled = true;
+      label.innerHTML = 'Generating<span class="ai-loading-dots"></span>';
+      setTimeout(function () {
+        content.textContent = 'Fifteen sites reported this quarter, covering 1,204 hazard submissions. Falls remain the leading category, consistent with 2025 fatality data, though repeat high-severity reports fell 31% quarter over quarter. Training completion sits at or above 97% across all four languages on file. Two sites (Suwon, Cheongju) have pending training records and should be prioritized for follow-up before the next audit window.';
+        empty.style.display = 'none';
+        content.style.display = '';
+        content.classList.remove('ai-reveal');
+        void content.offsetWidth;
+        content.classList.add('ai-reveal');
+        label.textContent = defaultLabel;
+        btn.disabled = false;
+        busy = false;
+      }, 1100);
+    });
+  })();
+</script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
