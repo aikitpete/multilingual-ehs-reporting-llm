@@ -3,40 +3,40 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+KR:wght@500;700;800&display=swap">
 <style>
   :root {
-    --bg: #F0EEE6; --surface: #FFFFFF; --surface-2: #FBFAF6; --border: #E3E1D8;
-    --ink: #14213D; --ink-soft: #5B6472; --muted: #8A93A6;
-    --accent: #C79A2B; --accent-strong: #14213D;
-    --high: #C94F4F; --high-bg: #FBE6E6; --med: #C79A2B; --med-bg: #FBF1D8; --low: #3E7C5A; --low-bg: #E5F1EA;
+    --bg: #F2ECE0; --surface: #FFFFFF; --surface-2: #FAF6EE; --border: #E3E0D8;
+    --ink: #242424; --ink-soft: #625F5A; --muted: #8C8983;
+    --accent: #C97A1F; --accent-strong: #242424;
+    --high: #C2402A; --high-bg: #FBE3DC; --med: #C97A1F; --med-bg: #FBE8D0; --low: #3D7A34; --low-bg: #E8F0E0;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #0B1120; --surface: #17213B; --surface-2: #121A2E; --border: #2A3654;
-      --ink: #F1F3F8; --ink-soft: #B9C2D6; --muted: #8896B3; --accent: #E8B93C;
-      --high: #E28787; --high-bg: #3A1E1E; --med: #E8B93C; --med-bg: #332A12; --low: #7BC79E; --low-bg: #163326;
+      --bg: #161616; --surface: #201F1F; --surface-2: #1B1A1A; --border: #3A3A38;
+      --ink: #F5F1E8; --ink-soft: #D6D2C9; --muted: #8C8983; --accent: #FFC629;
+      --high: #E8836A; --high-bg: #33180F; --med: #FFC629; --med-bg: #332A12; --low: #86C46B; --low-bg: #1B2E14;
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #0B1120; --surface: #17213B; --surface-2: #121A2E; --border: #2A3654;
-    --ink: #F1F3F8; --ink-soft: #B9C2D6; --muted: #8896B3; --accent: #E8B93C;
-    --high: #E28787; --high-bg: #3A1E1E; --med: #E8B93C; --med-bg: #332A12; --low: #7BC79E; --low-bg: #163326;
+    --bg: #161616; --surface: #201F1F; --surface-2: #1B1A1A; --border: #3A3A38;
+    --ink: #F5F1E8; --ink-soft: #D6D2C9; --muted: #8C8983; --accent: #FFC629;
+    --high: #E8836A; --high-bg: #33180F; --med: #FFC629; --med-bg: #332A12; --low: #86C46B; --low-bg: #1B2E14;
     color-scheme: dark;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', Arial, sans-serif; font-variant-numeric: tabular-nums; }
   header.top {
-    background: var(--accent-strong); color: #F7F6F2; padding: 22px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+    background: var(--accent-strong); color: #F7F3EA; padding: 22px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
   }
   .brand { display: flex; align-items: center; gap: 10px; }
   .brand .sq { width: 14px; height: 14px; background: var(--accent); border-radius: 4px; }
   .brand span { font-family: 'Noto Sans KR', 'Rubik', Arial, sans-serif; font-weight: 800; font-size: 18px; }
-  header.top .region { font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.08); padding: 8px 14px; border-radius: 999px; color: #C7CEDB; }
+  header.top .region { font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.08); padding: 8px 14px; border-radius: 999px; color: #DAD5CB; }
   main { max-width: 1240px; margin: 0 auto; padding: 32px 40px 60px; display: flex; flex-direction: column; gap: 28px; }
   .page-title { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; }
   .page-title h1 { font-family: 'Rubik', Arial, sans-serif; font-size: 28px; font-weight: 800; margin: 0; }
   .page-title p { margin: 4px 0 0; color: var(--ink-soft); font-size: 14px; }
-  .btn-link { font-size: 13px; font-weight: 700; color: var(--accent-strong); text-decoration: underline; cursor: pointer; }
+  .btn-link { font-size: 13px; font-weight: 700; color: var(--accent); text-decoration: underline; cursor: pointer; }
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
   .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 6px; }
   .stat .n { font-family: 'Rubik', Arial, sans-serif; font-size: 32px; font-weight: 800; }
@@ -100,15 +100,15 @@
       <div class="panel-head"><h2>Hazard reports by category, this quarter</h2></div>
       <div class="panel-body">
         <div class="bars">
-          <div class="bar-col"><div class="bar" style="height:88%; background:#C94F4F"></div><span class="l">Falls</span></div>
-          <div class="bar-col"><div class="bar" style="height:58%; background:#C79A2B"></div><span class="l">Fire</span></div>
-          <div class="bar-col"><div class="bar" style="height:46%; background:#14213D"></div><span class="l">Heat</span></div>
-          <div class="bar-col"><div class="bar" style="height:34%; background:#3E7C5A"></div><span class="l">Electrical</span></div>
-          <div class="bar-col"><div class="bar" style="height:22%; background:#8A93A6"></div><span class="l">Other</span></div>
+          <div class="bar-col"><div class="bar" style="height:88%; background:#C2402A"></div><span class="l">Falls</span></div>
+          <div class="bar-col"><div class="bar" style="height:58%; background:#C97A1F"></div><span class="l">Fire</span></div>
+          <div class="bar-col"><div class="bar" style="height:46%; background:#242424"></div><span class="l">Heat</span></div>
+          <div class="bar-col"><div class="bar" style="height:34%; background:#3D7A34"></div><span class="l">Electrical</span></div>
+          <div class="bar-col"><div class="bar" style="height:22%; background:#8C8983"></div><span class="l">Other</span></div>
         </div>
       </div>
       <div class="legend">
-        <span><i style="background:#C94F4F"></i>Falls remain the leading category, consistent with 2025 fatality data</span>
+        <span><i style="background:#C2402A"></i>Falls remain the leading category, consistent with 2025 fatality data</span>
       </div>
     </div>
     <div class="panel">
@@ -139,7 +139,7 @@
 
 <style>
   .proto-nav { position: fixed; right: 18px; bottom: 74px; z-index: 999; font-family: 'IBM Plex Sans', Arial, sans-serif; display: flex; align-items: flex-end; gap: 8px; }
-  .proto-nav-btn { font-size: 12.5px; font-weight: 700; padding: 11px 18px; border-radius: 999px; background: #14213D; color: #F7F6F2; border: none; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.28); }
+  .proto-nav-btn { font-size: 12.5px; font-weight: 700; padding: 11px 18px; border-radius: 999px; background: #242424; color: #F7F3EA; border: none; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.28); }
   .proto-nav-menu { position: absolute; right: 0; bottom: calc(100% + 10px); background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 8px; display: flex; flex-direction: column; min-width: 220px; box-shadow: 0 16px 36px rgba(0,0,0,0.22); }
   .proto-nav-menu a { display: block; padding: 9px 12px; border-radius: 9px; font-size: 13px; color: var(--ink); text-decoration: none; }
   .proto-nav-menu a:hover { background: var(--bg); }

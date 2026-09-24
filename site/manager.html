@@ -3,41 +3,44 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+KR:wght@500;700;800&display=swap">
 <style>
   :root {
-    --bg: #F0EEE6; --surface: #FFFFFF; --surface-2: #FBFAF6; --border: #E3E1D8;
-    --ink: #14213D; --ink-soft: #5B6472; --muted: #8A93A6;
-    --accent: #C79A2B; --accent-bg: #FBF1D8; --accent-strong: #14213D;
-    --high: #C94F4F; --high-bg: #FBE6E6; --med: #C79A2B; --med-bg: #FBF1D8; --low: #3E7C5A; --low-bg: #E5F1EA;
+    --bg: #F2ECE0; --surface: #FFFFFF; --surface-2: #FAF6EE; --border: #E3E0D8;
+    --ink: #242424; --ink-soft: #625F5A; --muted: #8C8983;
+    --accent: #C97A1F; --accent-bg: #FBE8D0; --accent-strong: #242424;
+    --high: #C2402A; --high-bg: #FBE3DC; --med: #C97A1F; --med-bg: #FBE8D0; --low: #3D7A34; --low-bg: #E8F0E0;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #0B1120; --surface: #17213B; --surface-2: #121A2E; --border: #2A3654;
-      --ink: #F1F3F8; --ink-soft: #B9C2D6; --muted: #8896B3; --accent: #E8B93C; --accent-bg: #2A2312;
-      --high: #E28787; --high-bg: #3A1E1E; --med: #E8B93C; --med-bg: #332A12; --low: #7BC79E; --low-bg: #163326;
+      --bg: #161616; --surface: #201F1F; --surface-2: #1B1A1A; --border: #3A3A38;
+      --ink: #F5F1E8; --ink-soft: #D6D2C9; --muted: #8C8983; --accent: #FFC629; --accent-bg: #33240F;
+      --high: #E8836A; --high-bg: #33180F; --med: #FFC629; --med-bg: #332A12; --low: #86C46B; --low-bg: #1B2E14;
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #0B1120; --surface: #17213B; --surface-2: #121A2E; --border: #2A3654;
-    --ink: #F1F3F8; --ink-soft: #B9C2D6; --muted: #8896B3; --accent: #E8B93C; --accent-bg: #2A2312;
-    --high: #E28787; --high-bg: #3A1E1E; --med: #E8B93C; --med-bg: #332A12; --low: #7BC79E; --low-bg: #163326;
+    --bg: #161616; --surface: #201F1F; --surface-2: #1B1A1A; --border: #3A3A38;
+    --ink: #F5F1E8; --ink-soft: #D6D2C9; --muted: #8C8983; --accent: #FFC629; --accent-bg: #33240F;
+    --high: #E8836A; --high-bg: #33180F; --med: #FFC629; --med-bg: #332A12; --low: #86C46B; --low-bg: #1B2E14;
     color-scheme: dark;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', Arial, sans-serif; font-variant-numeric: tabular-nums; }
   .app { display: flex; min-height: 100vh; }
   nav.side {
-    width: 240px; flex: none; background: var(--accent-strong); color: #F7F6F2; padding: 28px 20px;
+    width: 240px; flex: none; background: var(--accent-strong); color: #F7F3EA; padding: 28px 20px;
     display: flex; flex-direction: column; gap: 28px;
   }
   .brand { display: flex; align-items: center; gap: 10px; }
   .brand .sq { width: 14px; height: 14px; background: var(--accent); border-radius: 4px; }
   .brand span { font-family: 'Noto Sans KR', 'Rubik', Arial, sans-serif; font-weight: 800; font-size: 18px; }
+  .lang-toggle { display: flex; gap: 4px; background: rgba(255,255,255,0.06); border-radius: 999px; padding: 4px; }
+  .lang-toggle button { flex: 1; border: none; background: transparent; color: #DAD5CB; font-size: 12px; font-weight: 700; padding: 7px 0; border-radius: 999px; cursor: pointer; font-family: inherit; }
+  .lang-toggle button.on { background: var(--accent); color: #242424; }
   .nav-items { display: flex; flex-direction: column; gap: 4px; }
-  .nav-item { padding: 11px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; color: #C7CEDB; cursor: pointer; }
-  .nav-item.on { background: rgba(232,185,60,0.16); color: #F7F6F2; }
+  .nav-item { padding: 11px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; color: #DAD5CB; cursor: pointer; }
+  .nav-item.on { background: rgba(232,185,60,0.16); color: #F7F3EA; }
   .nav-item .k { color: var(--accent); margin-right: 8px; }
-  .side-foot { margin-top: auto; font-size: 12px; color: #8896B3; }
+  .side-foot { margin-top: auto; font-size: 12px; color: #8C8983; }
   main { flex: 1; padding: 32px 40px 60px; max-width: 1240px; }
   .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
   .topbar h1 { font-family: 'Rubik', Arial, sans-serif; font-size: 26px; font-weight: 800; margin: 0; }
@@ -60,21 +63,21 @@
   .pill.high { background: var(--high-bg); color: var(--high); }
   .pill.med { background: var(--med-bg); color: var(--med); }
   .pill.low { background: var(--low-bg); color: var(--low); }
-  .btn-link { font-size: 12.5px; font-weight: 700; color: var(--accent-strong); text-decoration: underline; cursor: pointer; }
+  .btn-link { font-size: 12.5px; font-weight: 700; color: var(--accent); text-decoration: underline; cursor: pointer; }
   .label-layout { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px; align-items: start; }
   .form { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
   .form label { font-size: 12.5px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.4px; }
   select, input { font-family: inherit; font-size: 14px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--ink); width: 100%; }
   .lang-row { display: flex; gap: 10px; }
   .chip { flex: 1; text-align: center; padding: 10px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--ink-soft); }
-  .chip.on { background: var(--accent-strong); color: #F7F6F2; border-color: var(--accent-strong); }
+  .chip.on { background: var(--accent-strong); color: #F7F3EA; border-color: var(--accent-strong); }
   .btn { padding: 13px; border-radius: 10px; text-align: center; font-weight: 700; font-size: 14px; }
-  .btn.primary { background: var(--accent-strong); color: #F7F6F2; }
-  .label-preview { background: #FFF7E0; border: 3px solid #14213D; border-radius: 4px; padding: 28px; display: flex; flex-direction: column; gap: 14px; }
-  .label-preview .hazard-tag { align-self: flex-start; background: #C94F4F; color: #fff; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 5px 10px; border-radius: 4px; }
-  .label-preview h3 { font-family: 'Rubik', Arial, sans-serif; font-size: 24px; margin: 0; color: #14213D; }
-  .label-preview .native { font-size: 18px; color: #5B6472; margin: 0; }
-  .label-preview .foot { display: flex; justify-content: space-between; font-size: 11px; color: #8A93A6; border-top: 1px dashed #C7CEDB; padding-top: 10px; }
+  .btn.primary { background: var(--accent-strong); color: #F7F3EA; }
+  .label-preview { background: #FFF3DC; border: 3px solid #242424; border-radius: 4px; padding: 28px; display: flex; flex-direction: column; gap: 14px; }
+  .label-preview .hazard-tag { align-self: flex-start; background: #C2402A; color: #fff; font-size: 11px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; padding: 5px 10px; border-radius: 4px; }
+  .label-preview h3 { font-family: 'Rubik', Arial, sans-serif; font-size: 24px; margin: 0; color: #242424; }
+  .label-preview .native { font-size: 18px; color: #625F5A; margin: 0; }
+  .label-preview .foot { display: flex; justify-content: space-between; font-size: 11px; color: #8C8983; border-top: 1px dashed #DAD5CB; padding-top: 10px; }
   tr.row-click { cursor: pointer; }
   tr.row-click:hover td { background: var(--surface-2); }
   .modal-backdrop { position: fixed; inset: 0; background: rgba(20,33,61,0.45); display: none; align-items: center; justify-content: center; z-index: 900; padding: 20px; }
@@ -83,7 +86,7 @@
   .modal-card h3 { margin: 0; font-family: 'Rubik', Arial, sans-serif; font-size: 20px; font-weight: 800; }
   .modal-kv { display: flex; justify-content: space-between; font-size: 14px; color: var(--ink-soft); padding: 8px 0; border-bottom: 1px solid var(--border); }
   .modal-kv b { color: var(--ink); font-weight: 600; }
-  .modal-kv.lang b { color: var(--accent-strong); }
+  .modal-kv.lang b { color: var(--accent); }
   .modal-close { align-self: flex-end; font-size: 13px; font-weight: 700; color: var(--ink-soft); cursor: pointer; }
   @media (max-width: 860px) {
     .app { flex-direction: column; }
@@ -100,29 +103,33 @@
 <div class="app">
   <nav class="side">
     <div class="brand"><div class="sq"></div><span>안전톡</span></div>
-    <div class="nav-items">
-      <div class="nav-item on" data-tab="reports"><span class="k">◆</span>Reports</div>
-      <div class="nav-item" data-tab="labels"><span class="k">◆</span>Warning labels</div>
+    <div class="lang-toggle" id="dash-lang-toggle">
+      <button type="button" class="on" data-lang="en">EN</button>
+      <button type="button" data-lang="ko">한국어</button>
     </div>
-    <p class="side-foot">Site 4 · Wonju<br>3 supervisors online</p>
+    <div class="nav-items">
+      <div class="nav-item on" data-tab="reports"><span class="k">◆</span><span data-i18n="nav.reports">Reports</span></div>
+      <div class="nav-item" data-tab="labels"><span class="k">◆</span><span data-i18n="nav.labels">Warning labels</span></div>
+    </div>
+    <p class="side-foot">Site 4 · Wonju<br><span data-i18n="side.online">3 supervisors online</span></p>
   </nav>
   <main>
     <div class="topbar">
-      <h1 id="page-title">Reports</h1>
+      <h1 id="page-title" data-i18n="nav.reports">Reports</h1>
       <span class="site-pick">Site 4 · Wonju ▾</span>
     </div>
 
     <section class="view on" id="view-reports">
       <div class="stats">
-        <div class="stat"><span class="n">18</span><span class="l">Open reports, this month</span></div>
-        <div class="stat"><span class="n">4</span><span class="l">High severity</span></div>
-        <div class="stat"><span class="n">92%</span><span class="l">Resolved within 48h</span></div>
-        <div class="stat"><span class="n">100%</span><span class="l">New hires, safety training on file</span></div>
+        <div class="stat"><span class="n">18</span><span class="l" data-i18n="stat.open">Open reports, this month</span></div>
+        <div class="stat"><span class="n">4</span><span class="l" data-i18n="stat.high">High severity</span></div>
+        <div class="stat"><span class="n">92%</span><span class="l" data-i18n="stat.resolved48">Resolved within 48h</span></div>
+        <div class="stat"><span class="n">100%</span><span class="l" data-i18n="stat.training">New hires, safety training on file</span></div>
       </div>
       <div class="panel">
-        <div class="panel-head"><h2>Recent reports</h2><span class="btn-link">Export</span></div>
+        <div class="panel-head"><h2 data-i18n="panel.recent">Recent reports</h2><span class="btn-link" data-i18n="action.export">Export</span></div>
         <table id="reports-table">
-          <tr><th>Hazard</th><th>Category</th><th>Severity</th><th>Location</th><th>Status</th></tr>
+          <tr><th data-i18n="th.hazard">Hazard</th><th data-i18n="th.category">Category</th><th data-i18n="th.severity">Severity</th><th data-i18n="th.location">Location</th><th data-i18n="th.status">Status</th></tr>
           <tr class="row-click" data-lang="Vietnamese"><td class="main">Broken guardrail</td><td>Fall</td><td><span class="pill high">High</span></td><td>4F, east stair</td><td>New</td></tr>
           <tr class="row-click" data-lang="Uzbek"><td class="main">Exposed wiring</td><td>Electrical</td><td><span class="pill med">Medium</span></td><td>B1 storage</td><td>Assigned</td></tr>
           <tr class="row-click" data-lang="Chinese"><td class="main">Blocked fire exit</td><td>Fire</td><td><span class="pill low">Low</span></td><td>2F corridor</td><td>Resolved</td></tr>
@@ -140,11 +147,16 @@
       <div class="modal-card">
         <span class="modal-close" id="modal-close">Close</span>
         <h3 id="modal-title">Broken guardrail</h3>
-        <div class="modal-kv"><span>Category</span><b id="modal-category">Fall</b></div>
-        <div class="modal-kv"><span>Severity</span><b id="modal-severity">High</b></div>
-        <div class="modal-kv"><span>Location</span><b id="modal-location">4F, east stair</b></div>
-        <div class="modal-kv lang"><span>Worker's language</span><b id="modal-lang">Vietnamese</b></div>
-        <div class="modal-kv"><span>Status</span><b id="modal-status">New</b></div>
+        <div class="modal-kv"><span data-i18n="th.category">Category</span><b id="modal-category">Fall</b></div>
+        <div class="modal-kv"><span data-i18n="th.severity">Severity</span><b id="modal-severity">High</b></div>
+        <div class="modal-kv"><span data-i18n="th.location">Location</span><b id="modal-location">4F, east stair</b></div>
+        <div class="modal-kv lang"><span data-i18n="modal.workerlang">Worker's language</span><b id="modal-lang">Vietnamese</b></div>
+        <div class="modal-kv"><span data-i18n="th.status">Status</span><b id="modal-status">New</b></div>
+        <div style="margin-top:6px">
+          <label data-i18n="modal.corrective" style="font-size:12.5px; font-weight:700; color:var(--ink-soft); text-transform:uppercase; letter-spacing:0.4px">Corrective action</label>
+          <textarea id="modal-corrective" placeholder="What was done to fix this, and to stop it happening again…" style="width:100%; min-height:64px; margin-top:6px; font-family:inherit; font-size:13.5px; padding:10px 12px; border-radius:10px; border:1px solid var(--border); background:var(--surface-2); color:var(--ink); resize:vertical"></textarea>
+        </div>
+        <div class="btn primary" id="modal-save-corrective" style="margin-top:4px" data-i18n="modal.savecorrective">Save &amp; mark investigated</div>
       </div>
     </div>
 
@@ -152,29 +164,43 @@
       <div class="label-layout">
         <div class="form">
           <div>
-            <label>Report</label>
-            <select><option>Broken guardrail — 4F east stairwell</option><option>Exposed wiring — B1 storage</option></select>
+            <label data-i18n="form.report">Report</label>
+            <select id="label-report-select">
+              <option value="0">Broken guardrail — 4F, east stair</option>
+              <option value="1">Exposed wiring — B1 storage</option>
+              <option value="2">Blocked fire exit — 2F corridor</option>
+              <option value="3">Loose scaffold plank — Roof, north</option>
+              <option value="4">Heat exposure, no shade — Yard, zone C</option>
+              <option value="5">Trip hazard, uncovered conduit — B2 corridor</option>
+              <option value="6">Frayed extension cord — 3F, unit 12</option>
+              <option value="7">Ladder missing footing pads — Yard, zone A</option>
+              <option value="8">Gas cylinder stored on its side — B1 storage</option>
+            </select>
           </div>
           <div>
-            <label>Worker's native language</label>
-            <div class="lang-row">
-              <div class="chip on">Tiếng Việt</div>
-              <div class="chip">O'zbek</div>
-              <div class="chip">中文</div>
-              <div class="chip">English</div>
+            <label data-i18n="form.lang">Worker's native language</label>
+            <div class="lang-row" id="label-lang-row">
+              <div class="chip on" data-lang="vi">Tiếng Việt</div>
+              <div class="chip" data-lang="uz">O'zbek</div>
+              <div class="chip" data-lang="zh">中文</div>
+              <div class="chip" data-lang="en">English</div>
             </div>
           </div>
           <div>
-            <label>Size</label>
-            <select><option>A3, laminated</option><option>A4, laminated</option></select>
+            <label data-i18n="form.size">Size</label>
+            <select id="label-size-select"><option>A3, laminated</option><option>A4, laminated</option></select>
           </div>
-          <div class="btn primary">Order 3 printed labels</div>
+          <div>
+            <label data-i18n="form.qty">Quantity</label>
+            <input type="number" id="label-qty" min="1" max="20" value="3" style="width:100%">
+          </div>
+          <div class="btn primary" id="label-order-btn">Order 3 printed labels</div>
         </div>
         <div class="label-preview">
-          <span class="hazard-tag">Fall hazard · High</span>
-          <h3>추락 위험 — 안전난간 파손<br>4층 동측 계단</h3>
-          <p class="native">Nguy hiểm ngã — lan can hỏng<br>Cầu thang phía Đông, tầng 4</p>
-          <div class="foot"><span>Reported 2026-09-24</span><span>Site 4 · Wonju</span></div>
+          <span class="hazard-tag" id="label-tag">Fall hazard · High</span>
+          <h3 id="label-kr">추락 위험 — 안전난간 파손<br>4층 동측 계단</h3>
+          <p class="native" id="label-native">Nguy hiểm ngã — lan can hỏng<br>Cầu thang phía Đông, tầng 4</p>
+          <div class="foot"><span id="label-date">Reported 2026-09-24</span><span>Site 4 · Wonju</span></div>
         </div>
       </div>
     </section>
@@ -182,6 +208,53 @@
 </div>
 
 <script>
+  (function () {
+    var STRINGS = {
+      "en": {
+        "nav.reports": "Reports", "nav.labels": "Warning labels",
+        "stat.open": "Open reports, this month", "stat.high": "High severity",
+        "stat.resolved48": "Resolved within 48h", "stat.training": "New hires, safety training on file",
+        "panel.recent": "Recent reports", "action.export": "Export",
+        "th.hazard": "Hazard", "th.category": "Category", "th.severity": "Severity", "th.location": "Location", "th.status": "Status",
+        "side.online": "3 supervisors online",
+        "form.report": "Report", "form.lang": "Worker's native language", "form.size": "Size", "form.qty": "Quantity",
+        "modal.workerlang": "Worker's language", "modal.corrective": "Corrective action", "modal.savecorrective": "Save & mark investigated"
+      },
+      "ko": {
+        "nav.reports": "신고", "nav.labels": "경고 라벨",
+        "stat.open": "이번 달 미해결 신고", "stat.high": "고위험",
+        "stat.resolved48": "48시간 내 해결", "stat.training": "안전교육 이수한 신규 채용자",
+        "panel.recent": "최근 신고", "action.export": "내보내기",
+        "th.hazard": "위험 요소", "th.category": "분류", "th.severity": "심각도", "th.location": "위치", "th.status": "상태",
+        "side.online": "감독관 3명 접속 중",
+        "form.report": "신고 선택", "form.lang": "근로자 모국어", "form.size": "크기", "form.qty": "수량",
+        "modal.workerlang": "근로자 언어", "modal.corrective": "시정 조치", "modal.savecorrective": "저장 및 조사 완료 표시"
+      }
+    };
+    window.dashT = function (lang, key) {
+      var dict = STRINGS[lang] || STRINGS.en;
+      return (dict && dict[key]) || (STRINGS.en && STRINGS.en[key]) || key;
+    };
+    function applyLang(lang) {
+      document.querySelectorAll('[data-i18n]').forEach(function (el) {
+        el.textContent = window.dashT(lang, el.getAttribute('data-i18n'));
+      });
+      var activeTab = document.querySelector('.nav-item.on');
+      if (activeTab) {
+        document.getElementById('page-title').textContent = window.dashT(lang, activeTab.getAttribute('data-tab') === 'reports' ? 'nav.reports' : 'nav.labels');
+      }
+      window.dashLang = lang;
+    }
+    document.querySelectorAll('#dash-lang-toggle button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('#dash-lang-toggle button').forEach(function (b) { b.classList.remove('on'); });
+        btn.classList.add('on');
+        applyLang(btn.getAttribute('data-lang'));
+      });
+    });
+    window.dashLang = 'en';
+  })();
+
   document.querySelectorAll('.nav-item').forEach(function (item) {
     item.addEventListener('click', function () {
       document.querySelectorAll('.nav-item').forEach(function (i) { i.classList.remove('on'); });
@@ -189,15 +262,90 @@
       var tab = item.getAttribute('data-tab');
       document.querySelectorAll('.view').forEach(function (v) { v.classList.remove('on'); });
       document.getElementById('view-' + tab).classList.add('on');
-      document.getElementById('page-title').textContent = tab === 'reports' ? 'Reports' : 'Warning labels';
+      document.getElementById('page-title').textContent = window.dashT(window.dashLang || 'en', tab === 'reports' ? 'nav.reports' : 'nav.labels');
     });
   });
-  document.querySelectorAll('.chip').forEach(function (chip) {
-    chip.addEventListener('click', function () {
-      chip.parentElement.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
-      chip.classList.add('on');
+  (function () {
+    var REPORTS = [
+      { cat: "Fall", sev: "High", kr: "추락 위험 — 안전난간 파손", krLoc: "4층 동측 계단", date: "2026-09-24", lang: "vi",
+        native: { vi: ["Nguy hiểm ngã — lan can hỏng", "Cầu thang phía Đông, tầng 4"], uz: ["Yiqilish xavfi — panjara buzilgan", "4-qavat sharqiy zinapoya"], zh: ["跌落风险 — 护栏损坏", "4楼东侧楼梯"], en: ["Fall hazard — broken guardrail", "4F east stairwell"] } },
+      { cat: "Electrical", sev: "Medium", kr: "감전 위험 — 피복 벗겨진 전선", krLoc: "지하 1층 자재창고", date: "2026-09-24", lang: "uz",
+        native: { vi: ["Nguy hiểm điện giật — dây điện hở", "Kho chứa đồ, tầng hầm B1"], uz: ["Tok urish xavfi — ochiq sim", "B1 ombor"], zh: ["触电风险 — 电线裸露", "B1地下储藏室"], en: ["Electrical hazard — exposed wiring", "B1 storage"] } },
+      { cat: "Fire", sev: "Low", kr: "화재 위험 — 비상구 앞 적재물", krLoc: "2층 복도", date: "2026-09-23", lang: "zh",
+        native: { vi: ["Nguy hiểm cháy — lối thoát hiểm bị chặn", "Hành lang tầng 2"], uz: ["Yong'in xavfi — chiqish yo'li to'silgan", "2-qavat yo'lagi"], zh: ["火灾风险 — 安全出口受阻", "2楼走廊"], en: ["Fire hazard — blocked exit", "2F corridor"] } },
+      { cat: "Fall", sev: "High", kr: "추락 위험 — 헐거운 비계 발판", krLoc: "옥상, 북측", date: "2026-09-22", lang: "en",
+        native: { vi: ["Nguy hiểm ngã — tấm ván giàn giáo lỏng", "Sân thượng, phía Bắc"], uz: ["Yiqilish xavfi — bo'sh skameyka taxtasi", "Tom, shimol tomon"], zh: ["跌落风险 — 脚手架木板松动", "屋顶，北侧"], en: ["Fall hazard — loose scaffold plank", "Roof, north"] } },
+      { cat: "Heat", sev: "Medium", kr: "온열 위험 — 그늘 없는 휴게 구역", krLoc: "마당, C구역", date: "2026-09-21", lang: "vi",
+        native: { vi: ["Nguy hiểm say nắng — không có bóng râm", "Sân, khu vực C"], uz: ["Issiqlik xavfi — soyabon yo'q", "Hovli, C zonasi"], zh: ["中暑风险 — 无遮荫", "院子，C区"], en: ["Heat hazard — no shade", "Yard, zone C"] } },
+      { cat: "Fall", sev: "Low", kr: "걸림 위험 — 노출된 배관", krLoc: "지하 2층 복도", date: "2026-09-20", lang: "uz",
+        native: { vi: ["Nguy hiểm vấp ngã — ống dẫn hở", "Hành lang tầng hầm B2"], uz: ["Qoqilish xavfi — ochiq quvur", "B2 yer osti yo'lagi"], zh: ["绊倒风险 — 管道外露", "B2地下走廊"], en: ["Trip hazard — uncovered conduit", "B2 corridor"] } },
+      { cat: "Electrical", sev: "Medium", kr: "감전 위험 — 손상된 연장케이블", krLoc: "3층 12호실", date: "2026-09-19", lang: "zh",
+        native: { vi: ["Nguy hiểm điện giật — dây nối sờn", "Phòng 12, tầng 3"], uz: ["Tok urish xavfi — yeyilgan kabel", "3-qavat, 12-xona"], zh: ["触电风险 — 延长线磨损", "3楼12室"], en: ["Electrical hazard — frayed cord", "3F, unit 12"] } },
+      { cat: "Fall", sev: "Medium", kr: "추락 위험 — 미끄럼 방지 없는 사다리", krLoc: "마당, A구역", date: "2026-09-18", lang: "en",
+        native: { vi: ["Nguy hiểm ngã — thang thiếu đế chống trượt", "Sân, khu vực A"], uz: ["Yiqilish xavfi — narvon tagligi yo'q", "Hovli, A zonasi"], zh: ["跌落风险 — 梯子缺防滑垫", "院子，A区"], en: ["Fall hazard — ladder missing footing pads", "Yard, zone A"] } },
+      { cat: "Fire", sev: "High", kr: "화재 위험 — 눕혀 보관된 가스통", krLoc: "지하 1층 자재창고", date: "2026-09-17", lang: "vi",
+        native: { vi: ["Nguy hiểm cháy nổ — bình gas để nằm", "Kho chứa đồ, tầng hầm B1"], uz: ["Portlash xavfi — gaz balloni yon yotibdi", "B1 ombor"], zh: ["爆炸风险 — 气瓶横放", "B1地下储藏室"], en: ["Fire hazard — gas cylinder on its side", "B1 storage"] } }
+    ];
+
+    var reportSelect = document.getElementById('label-report-select');
+    var langRow = document.getElementById('label-lang-row');
+    var qtyInput = document.getElementById('label-qty');
+    var orderBtn = document.getElementById('label-order-btn');
+    var tagEl = document.getElementById('label-tag');
+    var krEl = document.getElementById('label-kr');
+    var nativeEl = document.getElementById('label-native');
+    var dateEl = document.getElementById('label-date');
+    var defaultBtnLabel = null;
+
+    function currentLang() {
+      var on = langRow.querySelector('.chip.on');
+      return on ? on.getAttribute('data-lang') : 'vi';
+    }
+
+    function render() {
+      var r = REPORTS[Number(reportSelect.value)];
+      var lang = currentLang();
+      tagEl.textContent = r.cat + ' hazard · ' + r.sev;
+      krEl.innerHTML = r.kr + '<br>' + r.krLoc;
+      var n = r.native[lang];
+      nativeEl.innerHTML = n[0] + '<br>' + n[1];
+      dateEl.textContent = 'Reported ' + r.date;
+    }
+
+    reportSelect.addEventListener('change', function () {
+      var r = REPORTS[Number(reportSelect.value)];
+      langRow.querySelectorAll('.chip').forEach(function (c) {
+        c.classList.toggle('on', c.getAttribute('data-lang') === r.lang);
+      });
+      render();
     });
-  });
+
+    langRow.querySelectorAll('.chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        langRow.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
+        chip.classList.add('on');
+        render();
+      });
+    });
+
+    qtyInput.addEventListener('input', function () {
+      var n = Math.max(1, Math.min(20, Number(qtyInput.value) || 1));
+      orderBtn.textContent = 'Order ' + n + ' printed label' + (n === 1 ? '' : 's');
+    });
+
+    orderBtn.addEventListener('click', function () {
+      if (orderBtn.getAttribute('data-busy')) return;
+      orderBtn.setAttribute('data-busy', '1');
+      defaultBtnLabel = orderBtn.textContent;
+      orderBtn.textContent = 'Sent to printer ✓';
+      setTimeout(function () {
+        orderBtn.textContent = defaultBtnLabel;
+        orderBtn.removeAttribute('data-busy');
+      }, 1800);
+    });
+
+    render();
+  })();
   (function () {
     var modal = document.getElementById('report-modal');
     var closeBtn = document.getElementById('modal-close');
@@ -215,12 +363,19 @@
     });
     closeBtn.addEventListener('click', function () { modal.classList.remove('on'); });
     modal.addEventListener('click', function (e) { if (e.target === modal) { modal.classList.remove('on'); } });
+    document.getElementById('modal-save-corrective').addEventListener('click', function () {
+      var btn = this;
+      var original = btn.textContent;
+      btn.textContent = 'Saved ✓';
+      document.getElementById('modal-status').textContent = 'Investigated';
+      setTimeout(function () { btn.textContent = original; }, 1500);
+    });
   })();
 </script>
 
 <style>
   .proto-nav { position: fixed; right: 18px; bottom: 74px; z-index: 999; font-family: 'IBM Plex Sans', Arial, sans-serif; display: flex; align-items: flex-end; gap: 8px; }
-  .proto-nav-btn { font-size: 12.5px; font-weight: 700; padding: 11px 18px; border-radius: 999px; background: #14213D; color: #F7F6F2; border: none; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.28); }
+  .proto-nav-btn { font-size: 12.5px; font-weight: 700; padding: 11px 18px; border-radius: 999px; background: #242424; color: #F7F3EA; border: none; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.28); }
   .proto-nav-menu { position: absolute; right: 0; bottom: calc(100% + 10px); background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 8px; display: flex; flex-direction: column; min-width: 220px; box-shadow: 0 16px 36px rgba(0,0,0,0.22); }
   .proto-nav-menu a { display: block; padding: 9px 12px; border-radius: 9px; font-size: 13px; color: var(--ink); text-decoration: none; }
   .proto-nav-menu a:hover { background: var(--bg); }

@@ -3,6 +3,59 @@
 Dated, most recent first. Record *why*, not what (the artifacts/git history
 show what).
 
+## 2026-09-25 — Rebranded off navy/gold; made the Management dashboard functional
+
+Peter said the shared navy-blue + muted-gold palette "screams corporate/IBM,
+not construction." Replaced it everywhere (deck, both mockups, both
+dashboards, Knowledge, Governance, demo index) with a construction-coded
+palette: neutral graphite/steel darks (not navy blue, and — after a second
+round of feedback that the first warm-charcoal attempt "looked like mud" —
+desaturated further toward true steel gray) plus safety orange
+(`#C97A1F` light / `#FFC629` dark) as the accent, keeping hazard-sign red
+and safety green for severity. Applied as a single hex-value substitution
+across all files' shared `:root` tokens, not a rewrite of the token
+structure itself.
+
+Also fixed a real pre-existing bug this surfaced: `--accent-strong` was
+used in a few places as *text* color on a surface (`.btn-link`, the report
+modal's language field, Knowledge page source links) but was never
+redefined for dark mode, so that text went dark-on-dark and disappeared
+for any dark-mode viewer. Fixed by switching those specific text-color
+uses to `--accent` (which already has proper light/dark variants),
+leaving `--accent-strong`'s background-fill uses (sidebar, buttons, active
+chips) alone since those are always paired with fixed light text and were
+never actually broken.
+
+The Management dashboard's Warning Labels tab existed but was static — the
+report dropdown and language chips didn't change the label preview.
+Rebuilt it as a real generator: a 9-report dataset with Korean text and
+Vietnamese/Uzbek/Chinese/English translations, driving a preview that
+regenerates on report or language change, plus a working quantity stepper
+and an order-confirmation toast. Added a "Corrective action" field to the
+report modal (closes a gap flagged in the earlier governance-coverage
+audit: the Safety & Health Manager's SAPA duty to investigate incidents
+and record recurrence-prevention measures had no UI representation).
+
+Added an English/Korean toggle for the Management dashboard's own
+interface chrome (nav, stat labels, table headers, form labels) — separate
+from the warning-label's own target-language selector, which stays
+Vietnamese/Uzbek/Chinese/English since that picks the *worker's* language,
+not the dashboard's. Implemented the same way as the mobile mockup's i18n:
+an inline `STRINGS` JS object (the closest equivalent to "a language json"
+a static Claude Artifact can actually use, since there's no server to
+fetch a real `.json` file from) — chrome text only, not table row data or
+report content, matching the mockup's established scoping.
+
+Also fixed two deck issues from user review: the June 18, 2026 law
+description was corrected to mention BOTH of what it actually mandates
+(foreign-worker safety training AND a general construction-site electronic
+attendance-tracking requirement, not a foreign-worker-specific tracking
+mandate as first drafted) and dropped the inaccurate "new hires" framing;
+and the Solution slide's 4-output diagram had a real CSS bug (the second
+output box used `position: relative` left over from the original 3-output
+version instead of `position: absolute`, which pulled it into normal
+document flow and made it render on top of the first box).
+
 ## 2026-09-25 — Fixed the mockup's page chrome: toggle, phone case, removed the hand
 
 Peter's feedback on the merged supervisor/worker mockup, in order:

@@ -4,18 +4,18 @@
 <style>
   :root {
     color-scheme: dark;
-    --navy: #14213D;
-    --navy-deep: #0B1120;
-    --navy-panel: #1C2B4F;
-    --navy-well: #0F1830;
-    --border: #2A3654;
-    --yellow: #E8B93C;
-    --off: #F7F6F2;
-    --red: #C94F4F;
-    --green: #3E7C5A;
-    --amber: #C79A2B;
-    --muted: #9AA4BC;
-    --soft: #D7DEEC;
+    --navy: #242424;
+    --navy-deep: #161616;
+    --navy-panel: #292928;
+    --navy-well: #161616;
+    --border: #3A3A38;
+    --yellow: #FFC629;
+    --off: #F7F3EA;
+    --red: #C2402A;
+    --green: #3D7A34;
+    --amber: #C97A1F;
+    --muted: #A69F91;
+    --soft: #DED9CE;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; background: var(--navy-deep); color: var(--off); font-family: 'IBM Plex Sans', Arial, sans-serif; }
@@ -50,11 +50,11 @@
   .counter { position: fixed; left: 28px; bottom: 24px; font-family: 'Oswald', Arial, sans-serif; font-size: 16px; color: var(--muted); z-index: 500; letter-spacing: 1px; }
   .progress-bar { position: fixed; left: 0; top: 0; height: 4px; background: var(--yellow); z-index: 500; transition: width 0.2s linear; }
   .proto-nav { position: fixed; right: 20px; bottom: 74px; z-index: 999; font-family: 'IBM Plex Sans', Arial, sans-serif; display: flex; align-items: flex-end; gap: 8px; }
-  .proto-nav-btn { font-size: 13px; font-weight: 700; padding: 12px 20px; border-radius: 999px; background: #14213D; color: #F7F6F2; border: 1px solid #E8B93C; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.35); }
-  .proto-nav-menu { position: absolute; right: 0; bottom: calc(100% + 10px); background: #1C2B4F; border: 1px solid #2A3654; border-radius: 14px; padding: 8px; display: flex; flex-direction: column; min-width: 230px; box-shadow: 0 16px 36px rgba(0,0,0,0.4); }
-  .proto-nav-menu a { display: block; padding: 10px 12px; border-radius: 9px; font-size: 13.5px; color: #F7F6F2; text-decoration: none; }
-  .proto-nav-menu a:hover { background: #0F1830; }
-  .proto-nav-menu .current { padding: 10px 12px; font-size: 13.5px; color: #8A93A6; }
+  .proto-nav-btn { font-size: 13px; font-weight: 700; padding: 12px 20px; border-radius: 999px; background: #242424; color: #F7F3EA; border: 1px solid #FFC629; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.35); }
+  .proto-nav-menu { position: absolute; right: 0; bottom: calc(100% + 10px); background: #292928; border: 1px solid #3A3A38; border-radius: 14px; padding: 8px; display: flex; flex-direction: column; min-width: 230px; box-shadow: 0 16px 36px rgba(0,0,0,0.4); }
+  .proto-nav-menu a { display: block; padding: 10px 12px; border-radius: 9px; font-size: 13.5px; color: #F7F3EA; text-decoration: none; }
+  .proto-nav-menu a:hover { background: #161616; }
+  .proto-nav-menu .current { padding: 10px 12px; font-size: 13.5px; color: #8C8983; }
   @media (max-width: 760px) {
     .slide { padding: 26px 22px; gap: 22px; }
     .row-to-col { flex-direction: column !important; }
@@ -103,7 +103,7 @@
     </div>
     <div style="background:var(--yellow); border-radius:16px; padding:min(2.6vh,22px) min(2.2vw,26px); display:flex; flex-direction:column; justify-content:center; gap:6px">
       <p class="disp" style="font-size:clamp(26px,3vw,40px); font-weight:700; color:var(--navy); line-height:1; margin:0">2 DAYS AGO</p>
-      <p style="font-size:clamp(14px,1.3vw,17px); color:#3B3315; font-weight:600; line-height:1.4; margin:0">Incheon's labor office issued new guidance, enforcing the June 18 law requiring safety training for new foreign hires.</p>
+      <p style="font-size:clamp(14px,1.3vw,17px); color:#3B3315; font-weight:600; line-height:1.4; margin:0">Incheon's labor office issued new guidance under the June 18 law — mandatory safety training for foreign workers, plus legally required electronic attendance tracking on site.</p>
     </div>
     <div style="background:rgba(201,79,79,0.12); border:1px solid rgba(201,79,79,0.35); border-radius:16px; padding:min(2.6vh,22px) min(2.2vw,26px); display:flex; flex-direction:column; justify-content:center; gap:6px">
       <p style="font-size:11px; letter-spacing:2px; font-weight:800; color:var(--red); margin:0">UNDER KOREAN LAW</p>
@@ -147,39 +147,39 @@
     </div>
     <div style="flex:1.35; min-width:360px; position:relative; aspect-ratio:720/440">
       <svg viewBox="0 0 720 440" style="position:absolute; inset:0; width:100%; height:100%">
-        <path d="M70,220 C160,220 160,55 300,55" stroke="#E8B93C" stroke-width="3" fill="none"/>
-        <path d="M70,220 C160,220 160,165 300,165" stroke="#E8B93C" stroke-width="3" fill="none"/>
-        <path d="M70,220 C160,220 160,275 300,275" stroke="#E8B93C" stroke-width="3" fill="none"/>
-        <path d="M70,220 C160,220 160,385 300,385" stroke="#E8B93C" stroke-width="3" fill="none"/>
-        <circle cx="70" cy="220" r="11" fill="#E8B93C"/>
-        <circle cx="300" cy="55" r="6" fill="#E8B93C"/>
-        <circle cx="300" cy="165" r="6" fill="#E8B93C"/>
-        <circle cx="300" cy="275" r="6" fill="#E8B93C"/>
-        <circle cx="300" cy="385" r="6" fill="#E8B93C"/>
+        <path d="M70,220 C160,220 160,55 300,55" stroke="#FFC629" stroke-width="3" fill="none"/>
+        <path d="M70,220 C160,220 160,165 300,165" stroke="#FFC629" stroke-width="3" fill="none"/>
+        <path d="M70,220 C160,220 160,275 300,275" stroke="#FFC629" stroke-width="3" fill="none"/>
+        <path d="M70,220 C160,220 160,385 300,385" stroke="#FFC629" stroke-width="3" fill="none"/>
+        <circle cx="70" cy="220" r="16" fill="#FFC629"/>
+        <circle cx="300" cy="55" r="9" fill="#FFC629"/>
+        <circle cx="300" cy="165" r="9" fill="#FFC629"/>
+        <circle cx="300" cy="275" r="9" fill="#FFC629"/>
+        <circle cx="300" cy="385" r="9" fill="#FFC629"/>
       </svg>
-      <div style="position:absolute; left:0%; top:50%; transform:translateY(-50%); width:13%; text-align:center">
-        <p class="disp" style="font-size:clamp(14px,1.4vw,17px); color:var(--yellow); font-weight:700">AI<br>STRUCTURES</p>
+      <div style="position:absolute; left:-2%; top:50%; transform:translateY(-50%); width:17%; text-align:center; background:var(--navy-deep); border-radius:12px; padding:10px 4px; z-index:2">
+        <p class="disp" style="font-size:clamp(14px,1.4vw,17px); color:var(--yellow); font-weight:700; margin:0">AI<br>STRUCTURES</p>
       </div>
-      <div style="position:absolute; left:41.7%; top:2.5%; width:56%; height:20%; background:var(--navy); border-radius:14px; padding:min(1.5vh,13px) min(1.8vw,18px); display:flex; flex-direction:column; justify-content:center; gap:2px">
-        <p style="font-size:clamp(11px,1.1vw,13px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">SITE SAFETY REPORT · KOREAN</p>
-        <p class="kr" style="font-size:clamp(17px,1.8vw,22px); font-weight:800; line-height:1.15">추락 위험 · 4층 계단</p>
-        <p style="font-size:clamp(12px,1.2vw,14px); color:var(--soft)">Fall hazard · Stairwell, 4F · High</p>
+      <div style="position:absolute; left:41.7%; top:2.5%; width:56%; height:20%; background:var(--navy); border-radius:14px; padding:min(1.7vh,15px) min(2vw,20px); display:flex; flex-direction:column; justify-content:center; gap:3px">
+        <p style="font-size:clamp(12px,1.2vw,14px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">SITE SAFETY REPORT · KOREAN</p>
+        <p class="kr" style="font-size:clamp(18px,2vw,24px); font-weight:800; line-height:1.15">추락 위험 · 4층 계단</p>
+        <p style="font-size:clamp(13px,1.3vw,15px); color:var(--soft)">Fall hazard · Stairwell, 4F · High</p>
       </div>
-      <div class="img-hz-signreal" style="position:relative; left:41.7%; top:27.5%; width:56%; height:20%; border-radius:10px; overflow:hidden; display:flex; align-items:flex-end">
-        <div style="width:100%; background:linear-gradient(0deg, rgba(11,17,32,0.92) 20%, rgba(11,17,32,0) 100%); padding:min(1.2vh,10px) min(1.8vw,18px) min(0.8vh,7px)">
-          <p style="font-size:clamp(10px,1vw,12px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">WARNING SIGNS · MULTIPLE LANGUAGES</p>
-          <p style="font-size:clamp(12px,1.2vw,14px); color:var(--off)">추락 위험 · Nguy cơ té ngã · Fall Hazard</p>
+      <div class="img-hz-signreal" style="position:absolute; left:41.7%; top:27.5%; width:56%; height:20%; border-radius:10px; overflow:hidden; display:flex; align-items:flex-end">
+        <div style="width:100%; background:rgba(11,15,13,0.86); padding:min(1.3vh,11px) min(2vw,20px) min(1vh,9px)">
+          <p style="font-size:clamp(11px,1.1vw,13px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">WARNING SIGNS · MULTIPLE LANGUAGES</p>
+          <p style="font-size:clamp(13px,1.3vw,15px); color:var(--off); font-weight:600">추락 위험 · Nguy cơ té ngã · Fall Hazard</p>
         </div>
       </div>
-      <div style="position:absolute; left:41.7%; top:52.5%; width:56%; height:20%; background:var(--navy); border-radius:14px; padding:min(1.5vh,13px) min(1.8vw,18px); display:flex; flex-direction:column; justify-content:center; gap:2px">
-        <p style="font-size:clamp(11px,1.1vw,13px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">TRAINING MATERIALS · MULTIPLE LANGUAGES</p>
-        <p style="font-size:clamp(15px,1.6vw,19px); color:var(--off); font-weight:700">Điều gì nguy hiểm ở đây?</p>
-        <p style="font-size:clamp(12px,1.2vw,14px); color:var(--muted)">Also generated in Uzbek, Chinese, Korean</p>
+      <div style="position:absolute; left:41.7%; top:52.5%; width:56%; height:20%; background:var(--navy); border-radius:14px; padding:min(1.7vh,15px) min(2vw,20px); display:flex; flex-direction:column; justify-content:center; gap:3px">
+        <p style="font-size:clamp(12px,1.2vw,14px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">TRAINING MATERIALS · MULTIPLE LANGUAGES</p>
+        <p style="font-size:clamp(16px,1.7vw,20px); color:var(--off); font-weight:700">Điều gì nguy hiểm ở đây?</p>
+        <p style="font-size:clamp(13px,1.3vw,15px); color:var(--muted)">Also generated in Uzbek, Chinese, Korean</p>
       </div>
-      <div style="position:absolute; left:41.7%; top:77.5%; width:56%; height:20%; background:var(--navy); border-radius:14px; padding:min(1.5vh,13px) min(1.8vw,18px); display:flex; flex-direction:column; justify-content:center; gap:2px">
-        <p style="font-size:clamp(11px,1.1vw,13px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">COMPLIANCE REPORT · GOVERNMENT</p>
-        <p style="font-size:clamp(15px,1.6vw,19px); color:var(--off); font-weight:700">Site-level compliance metrics</p>
-        <p style="font-size:clamp(12px,1.2vw,14px); color:var(--muted)">Exportable for regulators — and for legal cases</p>
+      <div style="position:absolute; left:41.7%; top:77.5%; width:56%; height:20%; background:var(--navy); border-radius:14px; padding:min(1.7vh,15px) min(2vw,20px); display:flex; flex-direction:column; justify-content:center; gap:3px">
+        <p style="font-size:clamp(12px,1.2vw,14px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">COMPLIANCE REPORT · GOVERNMENT</p>
+        <p style="font-size:clamp(16px,1.7vw,20px); color:var(--off); font-weight:700">Site-level compliance metrics</p>
+        <p style="font-size:clamp(13px,1.3vw,15px); color:var(--muted)">Exportable for regulators — and for legal cases</p>
       </div>
     </div>
   </div>
@@ -200,8 +200,8 @@
       <p style="font-size:clamp(15px,1.5vw,18px); color:var(--green); font-weight:700; margin-top:10px">● WORKING PROTOTYPE</p>
     </div>
     <div style="flex:1; min-width:220px; background:var(--navy); border-radius:16px; padding:min(3vh,26px)">
-      <p style="font-size:clamp(20px,2.2vw,28px); color:var(--off); font-weight:700">Government dashboard</p>
-      <p style="font-size:clamp(15px,1.5vw,18px); color:var(--amber); font-weight:700; margin-top:10px">● PROTOTYPE</p>
+      <p style="font-size:clamp(20px,2.2vw,28px); color:var(--off); font-weight:700">Training app</p>
+      <p style="font-size:clamp(15px,1.5vw,18px); color:var(--green); font-weight:700; margin-top:10px">● WORKING PROTOTYPE</p>
     </div>
   </div>
   <div class="row-to-col reveal d3" style="display:flex; gap:min(2.4vw,20px); flex-wrap:wrap">

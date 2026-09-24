@@ -1,31 +1,54 @@
 # Status
 
-2026-09-25 (updated) — The **plain-HTML 4-slide deck**
-(`https://claude.ai/artifact/GD94Scrk1hUGMjoFTfND9S`) is the only deck; its
-Demo slide now has two examples and names three applicable industries
-(Construction, Manufacturing, Shipbuilding). The supervisor/worker mockup
-(`https://claude.ai/artifact/1BcqqqNseS5SCXSHTjS7Ty`) has a rugged-case
-phone chrome, a hand-holding-the-phone illustration, and full i18n across
-5 languages (Vietnamese default, Uzbek, Chinese, Korean, English) via a
-shared Settings language picker in both modes; hazard reports no longer
-name the reporter's language anywhere in the UI. A new **Knowledge &
-sources** page (`https://claude.ai/artifact/CnfwLoVuvfeqDGvePKhKqJ`) states
-which regulatory/budget claims are independently confirmed vs. Peter's own
-sourced claims — re-verified via web search on 2026-09-25, see
-`docs/RESEARCH.md`. The demo index now has three nav groups (Slide deck,
-Prototypes, Knowledge); the static `site/` export has been re-synced to
-match everything above.
+2026-09-25 (updated) — All artifacts were rebranded off the original
+navy/gold palette (Peter: it "screamed corporate/IBM, not construction")
+to a construction-coded one: neutral graphite/steel darks and safety
+orange, after an interim warm-charcoal attempt was rejected as "looking
+like mud." See `docs/DECISIONS.md` for the exact tokens and a real
+dark-mode contrast bug this surfaced and fixed.
 
-Ran web-search verification on the deck's Korea regulatory stats
-(2026-09-24): the hackathon dates check out; the 286-fatalities figure, the
-Sept 22 announcement, and the exact employer-duty wording could not be
-independently confirmed (a related but different confirmed figure — 605
-total 2025 workplace deaths — turned up instead). Wording was tightened to
-stop overstating the connection between two separate claims; numbers were
-left as-is pending Peter's original source. See `docs/DECISIONS.md`.
+- **The deck** (`https://claude.ai/artifact/GD94Scrk1hUGMjoFTfND9S`) — the
+  only deck. Problem slide's four points sit in an equal 2x2 grid, ending
+  on a measured (not alarmist) statement of executive personal liability
+  under Korea's safety law. The June 18, 2026 law reference now states
+  both of what it actually mandates (foreign-worker safety training *and*
+  a general site-wide electronic attendance-tracking requirement). Demo
+  slide's status row lists Reporting app / Management dashboard / Training
+  app, all "working prototype." Solution slide's 4-output diagram had a
+  real CSS bug (a leftover `position: relative` from the old 3-output
+  version) fixed, plus bigger/legible pills and a fixed label-overlap issue.
+- **Supervisor & worker mockup**
+  (`https://claude.ai/artifact/1BcqqqNseS5SCXSHTjS7Ty`) — full i18n across
+  5 languages (Vietnamese default, Uzbek, Chinese, Korean, English); hazard
+  reports never name the reporter's language in the UI. The tacky hand
+  illustration and "PROTOTYPE" ribbon were removed; the rugged case is
+  simpler and more realistic (no toy-like corner bumpers); three real
+  hazard photos (scaffold plank, water-break area, B2 corridor) replace
+  the last gradient placeholders. The mode toggle stays English regardless
+  of app language and no longer overlaps the phone.
+- **Management dashboard** (`https://claude.ai/artifact/W7QuAyMGnjkjT1CZbXudum`)
+  — Warning Labels is now a real generator (9 reports × 4 languages,
+  regenerates live), with a quantity stepper and order confirmation. Added
+  a "Corrective action" field to the report modal (closes a governance-
+  coverage gap: the Safety & Health Manager's incident-investigation duty
+  had no UI). Added an English/Korean toggle for the dashboard's own
+  interface chrome, backed by an inline translations object.
+- **Knowledge & sources** (`https://claude.ai/artifact/CnfwLoVuvfeqDGvePKhKqJ`)
+  and **Governance model** (`https://claude.ai/artifact/VZEtVvrA6tYLZsiB2baQ81`)
+  — the June 18, 2026 OSH Act amendment is now independently confirmed
+  (previously only the vaguer "Sept 22" framing existed); added cultural/
+  structural context on Korea's 원청/하청 subcontracting chain and E-9 visa
+  dependency. Governance model lives under the same Knowledge nav group as
+  a second item, not a separate group.
+- **Navigation**: the floating "Prototypes" button on every artifact is now
+  "Navigation," always listing the deck first, then the three prototypes,
+  then Knowledge and Governance, then the demo index link.
 
-All artifacts are private; not yet shared with anyone outside this session.
+All artifacts are private (Management dashboard is the one exception,
+shared "anyone with the link"). The static `site/` export has been
+re-synced to match everything above.
 
 See `docs/HANDOFF.md` for gaps, open questions, and what a fresh session
-needs to know. See `docs/DECISIONS.md` for why things are built the way they
-are.
+needs to know. See `docs/DECISIONS.md` for why things are built the way
+they are, and `docs/RESEARCH.md` / `docs/GOVERNANCE.md` for the underlying
+legal/governance research.
