@@ -64,13 +64,28 @@
   .pill.med { background: var(--med-bg); color: var(--med); }
   .pill.low { background: var(--low-bg); color: var(--low); }
   .btn-link { font-size: 12.5px; font-weight: 700; color: var(--accent); text-decoration: underline; cursor: pointer; }
-  .label-layout { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 24px; align-items: start; }
+  .label-layout { display: grid; grid-template-columns: 0.75fr 1.5fr; gap: 28px; align-items: start; }
   .form { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 24px; display: flex; flex-direction: column; gap: 16px; }
   .form label { font-size: 12.5px; font-weight: 700; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.4px; }
   select, input { font-family: inherit; font-size: 14px; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); color: var(--ink); width: 100%; }
-  .lang-row { display: flex; gap: 10px; }
-  .chip { flex: 1; text-align: center; padding: 10px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--ink-soft); }
+  .lang-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip { flex: 1; min-width: 76px; text-align: center; padding: 10px 6px; border-radius: 10px; border: 1px solid var(--border); font-size: 13px; font-weight: 600; color: var(--ink-soft); cursor: pointer; user-select: none; position: relative; }
   .chip.on { background: var(--accent-strong); color: #F7F3EA; border-color: var(--accent-strong); }
+  .chip.ko { border-color: var(--accent); }
+  .chip.ko.on { background: var(--accent); color: #242424; }
+  .pictogram-row { display: flex; gap: 8px; }
+  .pic-btn { flex: 1; padding: 10px 4px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface-2); cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px; font-size: 10.5px; font-weight: 700; color: var(--ink-soft); }
+  .pic-btn svg { width: 22px; height: 22px; }
+  .pic-btn.on { border-color: var(--accent-strong); background: var(--accent-bg); color: var(--ink); }
+  .sign-preview { background: #FFFFFF; border: 8px solid #242424; border-radius: 10px; padding: 48px 40px; display: flex; flex-direction: column; align-items: center; gap: 20px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.25); position: sticky; top: 24px; }
+  .sign-pictogram { width: 140px; height: 140px; border-radius: 50%; border: 8px solid #C2402A; background: #fff; display: flex; align-items: center; justify-content: center; flex: none; }
+  .sign-pictogram svg { width: 86px; height: 86px; }
+  .sign-hazard-tag { align-self: center; background: #C2402A; color: #fff; font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; padding: 7px 16px; border-radius: 4px; }
+  .sign-kr { font-family: 'Rubik', Arial, sans-serif; font-size: 38px; font-weight: 800; margin: 0; color: #C2402A; line-height: 1.2; }
+  .sign-lines { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+  .sign-lines p { margin: 0; font-size: 21px; color: #242424; font-weight: 600; line-height: 1.35; }
+  .sign-loc { font-size: 17px; color: #625F5A; margin: 0; }
+  .sign-foot { display: flex; justify-content: space-between; font-size: 11px; color: #8C8983; border-top: 1px dashed #DAD5CB; padding-top: 10px; width: 100%; }
   .btn { padding: 13px; border-radius: 10px; text-align: center; font-weight: 700; font-size: 14px; }
   .btn.primary { background: var(--accent-strong); color: #F7F3EA; }
   .label-preview { background: #FFF3DC; border: 3px solid #242424; border-radius: 4px; padding: 28px; display: flex; flex-direction: column; gap: 14px; }
@@ -201,12 +216,23 @@
             </select>
           </div>
           <div>
-            <label data-i18n="form.lang">Worker's native language</label>
+            <label data-i18n="form.lang">Languages on this sign</label>
             <div class="lang-row" id="label-lang-row">
+              <div class="chip ko on" data-lang="ko">한국어</div>
               <div class="chip on" data-lang="vi">Tiếng Việt</div>
               <div class="chip" data-lang="uz">O'zbek</div>
               <div class="chip" data-lang="zh">中文</div>
               <div class="chip" data-lang="en">English</div>
+            </div>
+          </div>
+          <div>
+            <label>Pictogram</label>
+            <div class="pictogram-row" id="pictogram-row">
+              <div class="pic-btn" data-pic="Fall"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="16" cy="5" r="2"/><path d="M9 21l2-6 3 2 2 5M6 13l3-4 3 1 2-3"/></svg>Fall</div>
+              <div class="pic-btn" data-pic="Electrical"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z"/></svg>Electrical</div>
+              <div class="pic-btn" data-pic="Fire"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c1 3-3 4-3 8a3 3 0 0 0 6 0c1 1 2 2 2 4a5 5 0 0 1-10 0c0-5 4-6 5-12Z"/></svg>Fire</div>
+              <div class="pic-btn" data-pic="Heat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg>Heat</div>
+              <div class="pic-btn" data-pic="General"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4M12 17h.01"/></svg>General</div>
             </div>
           </div>
           <div>
@@ -219,11 +245,13 @@
           </div>
           <div class="btn primary" id="label-order-btn">Order 3 printed labels</div>
         </div>
-        <div class="label-preview">
-          <span class="hazard-tag" id="label-tag">Fall hazard · High</span>
-          <h3 id="label-kr">추락 위험 — 안전난간 파손<br>4층 동측 계단</h3>
-          <p class="native" id="label-native">Nguy hiểm ngã — lan can hỏng<br>Cầu thang phía Đông, tầng 4</p>
-          <div class="foot"><span id="label-date">Reported 2026-09-24</span><span>Site 4 · Wonju</span></div>
+        <div class="sign-preview">
+          <span class="sign-hazard-tag" id="label-tag">Fall hazard · High</span>
+          <div class="sign-pictogram" id="sign-pictogram-icon"></div>
+          <p class="sign-kr" id="label-kr">추락 위험 — 안전난간 파손</p>
+          <p class="sign-loc" id="label-kr-loc">4층 동측 계단</p>
+          <div class="sign-lines" id="label-native-lines"></div>
+          <div class="sign-foot"><span id="label-date">Reported 2026-09-24</span><span>Site 4 · Wonju</span></div>
         </div>
       </div>
     </section>
@@ -312,44 +340,84 @@
 
     var reportSelect = document.getElementById('label-report-select');
     var langRow = document.getElementById('label-lang-row');
+    var picRow = document.getElementById('pictogram-row');
     var qtyInput = document.getElementById('label-qty');
     var orderBtn = document.getElementById('label-order-btn');
     var tagEl = document.getElementById('label-tag');
     var krEl = document.getElementById('label-kr');
-    var nativeEl = document.getElementById('label-native');
+    var krLocEl = document.getElementById('label-kr-loc');
+    var linesEl = document.getElementById('label-native-lines');
+    var pictogramIcon = document.getElementById('sign-pictogram-icon');
     var dateEl = document.getElementById('label-date');
     var defaultBtnLabel = null;
+    var LANG_ORDER = ['vi', 'uz', 'zh', 'en'];
+    var userPickedPic = false;
 
-    function currentLang() {
-      var on = langRow.querySelector('.chip.on');
-      return on ? on.getAttribute('data-lang') : 'vi';
+    function selectedLangs() {
+      return Array.prototype.slice.call(langRow.querySelectorAll('.chip.on'))
+        .map(function (c) { return c.getAttribute('data-lang'); })
+        .filter(function (l) { return l !== 'ko'; })
+        .sort(function (a, b) { return LANG_ORDER.indexOf(a) - LANG_ORDER.indexOf(b); });
     }
 
     function render() {
       var r = REPORTS[Number(reportSelect.value)];
-      var lang = currentLang();
       tagEl.textContent = r.cat + ' hazard · ' + r.sev;
-      krEl.innerHTML = r.kr + '<br>' + r.krLoc;
-      var n = r.native[lang];
-      nativeEl.innerHTML = n[0] + '<br>' + n[1];
+      krEl.textContent = r.kr;
+      krLocEl.textContent = r.krLoc;
+      var langs = selectedLangs();
+      linesEl.innerHTML = '';
+      if (!langs.length) {
+        var p = document.createElement('p');
+        p.style.color = 'var(--muted, #8C8983)';
+        p.style.fontStyle = 'italic';
+        p.textContent = 'Korean only — add a language above';
+        linesEl.appendChild(p);
+      }
+      langs.forEach(function (l) {
+        var n = r.native[l];
+        var p1 = document.createElement('p');
+        p1.textContent = n[0];
+        linesEl.appendChild(p1);
+      });
       dateEl.textContent = 'Reported ' + r.date;
+      pictogramIcon.innerHTML = picRow.querySelector('.pic-btn.on').firstElementChild.outerHTML;
+    }
+
+    function setPictogram(cat) {
+      picRow.querySelectorAll('.pic-btn').forEach(function (b) {
+        b.classList.toggle('on', b.getAttribute('data-pic') === cat);
+      });
     }
 
     reportSelect.addEventListener('change', function () {
       var r = REPORTS[Number(reportSelect.value)];
       langRow.querySelectorAll('.chip').forEach(function (c) {
-        c.classList.toggle('on', c.getAttribute('data-lang') === r.lang);
+        var lang = c.getAttribute('data-lang');
+        c.classList.toggle('on', lang === 'ko' || lang === r.lang);
       });
+      if (!userPickedPic) setPictogram(r.cat);
       render();
     });
 
     langRow.querySelectorAll('.chip').forEach(function (chip) {
       chip.addEventListener('click', function () {
-        langRow.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
-        chip.classList.add('on');
+        if (chip.getAttribute('data-lang') === 'ko') return;
+        chip.classList.toggle('on');
         render();
       });
     });
+
+    picRow.querySelectorAll('.pic-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        userPickedPic = true;
+        setPictogram(btn.getAttribute('data-pic'));
+        render();
+      });
+    });
+
+    setPictogram(REPORTS[0].cat);
+    userPickedPic = false;
 
     qtyInput.addEventListener('input', function () {
       var n = Math.max(1, Math.min(20, Number(qtyInput.value) || 1));
