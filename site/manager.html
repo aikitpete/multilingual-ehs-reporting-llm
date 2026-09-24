@@ -597,24 +597,76 @@
     var modalAiPanel = document.getElementById('modal-ai-panel');
     var currentReportIdx = 0;
 
-    document.querySelectorAll('#reports-table tr.row-click').forEach(function (row, idx) {
-      row.addEventListener('click', function () {
-        var cells = row.querySelectorAll('td');
-        document.getElementById('modal-title').textContent = cells[0].textContent;
-        document.getElementById('modal-category').textContent = cells[1].textContent;
-        document.getElementById('modal-severity').textContent = cells[2].textContent.trim();
-        document.getElementById('modal-location').textContent = cells[3].textContent;
-        document.getElementById('modal-status').textContent = cells[4].textContent;
-        document.getElementById('modal-lang').textContent = row.getAttribute('data-lang');
-        currentReportIdx = idx;
-        modalAiContent.style.display = 'none';
-        modalAiEmpty.style.display = '';
-        document.getElementById('modal-corrective').value = '';
-        modalGenerateLabel.textContent = 'Generate management report';
-        modalGenerateBtn.disabled = false;
-        modal.classList.add('on');
+    function bindReportRows() {
+      document.querySelectorAll('#reports-table tr.row-click').forEach(function (row, idx) {
+        if (row.dataset.bound) return;
+        row.dataset.bound = '1';
+        row.addEventListener('click', function () {
+          var cells = row.querySelectorAll('td');
+          document.getElementById('modal-title').textContent = cells[0].textContent;
+          document.getElementById('modal-category').textContent = cells[1].textContent;
+          document.getElementById('modal-severity').textContent = cells[2].textContent.trim();
+          document.getElementById('modal-location').textContent = cells[3].textContent;
+          document.getElementById('modal-status').textContent = cells[4].textContent;
+          document.getElementById('modal-lang').textContent = row.getAttribute('data-lang');
+          currentReportIdx = Array.prototype.indexOf.call(document.querySelectorAll('#reports-table tr.row-click'), row);
+          modalAiContent.style.display = 'none';
+          modalAiEmpty.style.display = '';
+          document.getElementById('modal-corrective').value = '';
+          modalGenerateLabel.textContent = 'Generate management report';
+          modalGenerateBtn.disabled = false;
+          modal.classList.add('on');
+        });
       });
-    });
+    }
+    bindReportRows();
+
+    // Poll the same shared server the mobile app posts hazard reports to
+    // (see server/server.js), tunneled via a Cloudflare quick tunnel for
+    // the demo. Update this if the tunnel is restarted — it gets a new
+    // random URL each time (see server/README.md).
+    var MOBILE_SERVER_URL = 'https://gently-roland-begun-programmer.trycloudflare.com';
+    var seenMobileReportIds = {};
+    var reportsTable = document.getElementById('reports-table');
+    var CAT_DISPLAY = { falls: 'Fall', electrical: 'Electrical', fire: 'Fire', heat: 'Heat', chemical: 'Chemical', other: 'Other' };
+    var SEV_PILL_CLASS = { low: 'low', medium: 'med', high: 'high' };
+    var LANG_DISPLAY = { vi: 'Vietnamese', uz: 'Uzbek', zh: 'Chinese', ko: 'Korean', en: 'English' };
+
+    function pollMobileReports() {
+      fetch(MOBILE_SERVER_URL + '/reports').then(function (r) { return r.json(); }).then(function (list) {
+        list.slice().reverse().forEach(function (rep) {
+          if (seenMobileReportIds[rep.id]) return;
+          seenMobileReportIds[rep.id] = true;
+
+          var cat = CAT_DISPLAY[rep.category] || 'Other';
+          var sevClass = SEV_PILL_CLASS[rep.severity] || 'med';
+          var sevLabel = rep.severityLabel || rep.severity;
+          var langName = rep.langLabel || LANG_DISPLAY[rep.lang] || rep.lang;
+          var title = (rep.categoryLabel || cat) + (rep.note ? ' — ' + rep.note : '');
+
+          window.MGMT_REPORTS.unshift({
+            cat: cat, sev: sevLabel, kr: '[모바일 제보] ' + (rep.note || (rep.categoryLabel || cat) + ' 위험'),
+            krLoc: '모바일 앱', date: new Date().toISOString().slice(0, 10), lang: rep.lang,
+            native: { vi: [title, ''], uz: [title, ''], zh: [title, ''], en: [title, ''] },
+          });
+
+          var tr = document.createElement('tr');
+          tr.className = 'row-click';
+          tr.setAttribute('data-lang', langName);
+          tr.innerHTML =
+            '<td class="main">📱 ' + title + '</td>' +
+            '<td>' + cat + '</td>' +
+            '<td><span class="pill ' + sevClass + '">' + sevLabel + '</span></td>' +
+            '<td>' + langName + '</td>' +
+            '<td>New</td>';
+          var refRow = reportsTable.rows[1] || null;
+          (refRow ? refRow.parentNode : reportsTable).insertBefore(tr, refRow);
+          bindReportRows();
+        });
+      }).catch(function () { /* server not reachable — demo still works with seed data */ });
+    }
+    pollMobileReports();
+    setInterval(pollMobileReports, 3000);
     modalGenerateBtn.addEventListener('click', function () {
       if (modalGenerateBtn.disabled) return;
       modalGenerateBtn.disabled = true;
