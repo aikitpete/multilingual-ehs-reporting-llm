@@ -1,0 +1,241 @@
+<meta charset="utf-8">
+<title>AnjeonTok Governance Model</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+KR:wght@500;700;800&display=swap">
+<style>
+  :root {
+    --bg: #F0EEE6; --surface: #FFFFFF; --surface-2: #FBFAF6; --border: #E3E1D8;
+    --ink: #14213D; --ink-soft: #5B6472; --muted: #8A93A6;
+    --accent-strong: #14213D; --yellow: #E8B93C;
+    --must: #C94F4F; --must-bg: #FBE6E6;
+    --should: #C79A2B; --should-bg: #FBF1D8;
+    --can: #3E7C5A; --can-bg: #E5F1EA;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0B1120; --surface: #17213B; --surface-2: #121A2E; --border: #2A3654;
+      --ink: #F1F3F8; --ink-soft: #B9C2D6; --muted: #8896B3; --yellow: #E8B93C;
+      --must: #E28787; --must-bg: #3A1E1E; --should: #E8B93C; --should-bg: #332A12; --can: #7BC79E; --can-bg: #163326;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0B1120; --surface: #17213B; --surface-2: #121A2E; --border: #2A3654;
+    --ink: #F1F3F8; --ink-soft: #B9C2D6; --muted: #8896B3; --yellow: #E8B93C;
+    --must: #E28787; --must-bg: #3A1E1E; --should: #E8B93C; --should-bg: #332A12; --can: #7BC79E; --can-bg: #163326;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', Arial, sans-serif; }
+  header.top { background: var(--accent-strong); color: #F7F6F2; padding: 26px 40px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .sq { width: 14px; height: 14px; background: var(--yellow); border-radius: 4px; }
+  .brand span { font-family: 'Noto Sans KR', 'Rubik', Arial, sans-serif; font-weight: 800; font-size: 18px; }
+  header.top p { margin: 6px 0 0; color: #C7CEDB; font-size: 13.5px; }
+  .layout { display: flex; max-width: 1100px; margin: 0 auto; align-items: flex-start; gap: 32px; padding: 36px 24px 90px; }
+  nav.toc { position: sticky; top: 24px; flex: none; width: 200px; display: flex; flex-direction: column; gap: 4px; }
+  nav.toc a { font-size: 12.5px; font-weight: 600; color: var(--ink-soft); text-decoration: none; padding: 7px 10px; border-radius: 8px; }
+  nav.toc a:hover { background: var(--surface-2); color: var(--ink); }
+  main { flex: 1; min-width: 0; }
+  h1.page-title { font-family: 'Rubik', Arial, sans-serif; font-size: 25px; font-weight: 800; margin: 0 0 6px; }
+  .lede { color: var(--ink-soft); font-size: 14.5px; line-height: 1.55; margin: 0 0 8px; max-width: 640px; }
+  .lede b { color: var(--ink); }
+  .legend { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 34px; }
+  .legend span { font-size: 11px; font-weight: 700; letter-spacing: 0.3px; padding: 6px 12px; border-radius: 999px; }
+  .legend .must { background: var(--must-bg); color: var(--must); }
+  .legend .should { background: var(--should-bg); color: var(--should); }
+  .legend .can { background: var(--can-bg); color: var(--can); }
+  .actor { scroll-margin-top: 20px; margin-bottom: 40px; }
+  .actor-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+  .actor-head h2 { font-family: 'Rubik', Arial, sans-serif; font-size: 19px; font-weight: 800; margin: 0; }
+  .actor-head .kr { font-size: 13px; color: var(--muted); }
+  .actor-desc { font-size: 13px; color: var(--ink-soft); margin: 0 0 14px; line-height: 1.5; }
+  .duty { display: flex; gap: 12px; padding: 12px 0; border-top: 1px solid var(--border); align-items: flex-start; }
+  .duty:first-of-type { border-top: none; }
+  .duty .tag { flex: none; width: 92px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.4px; text-transform: uppercase; padding: 4px 0; text-align: center; border-radius: 999px; height: fit-content; }
+  .duty .tag.must { background: var(--must-bg); color: var(--must); }
+  .duty .tag.mustnot { background: var(--must-bg); color: var(--must); }
+  .duty .tag.should { background: var(--should-bg); color: var(--should); }
+  .duty .tag.shouldnot { background: var(--should-bg); color: var(--should); }
+  .duty .tag.can { background: var(--can-bg); color: var(--can); }
+  .duty .tag.cannot { background: var(--can-bg); color: var(--can); }
+  .duty .body { flex: 1; font-size: 13.5px; line-height: 1.55; color: var(--ink); }
+  .duty .meta { display: block; margin-top: 3px; font-size: 11px; color: var(--muted); }
+  .duty .meta .maps { color: var(--ink-soft); font-weight: 600; }
+  .badge-src { font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 999px; margin-left: 4px; }
+  .badge-src.confirmed { background: var(--can-bg); color: var(--can); }
+  .badge-src.product { background: var(--surface-2); color: var(--ink-soft); border: 1px solid var(--border); }
+  .badge-src.assumption { background: var(--should-bg); color: var(--should); }
+  .capmap { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; margin: 8px 0 36px; }
+  .capmap h2 { font-family: 'Rubik', Arial, sans-serif; font-size: 16px; margin: 0 0 10px; }
+  .capmap ol { margin: 0; padding-left: 20px; font-size: 13px; color: var(--ink-soft); line-height: 1.8; }
+  .capmap ol b { color: var(--ink); }
+  .open-q { background: var(--should-bg); border: 1px solid var(--border); border-radius: 16px; padding: 20px 22px; }
+  .open-q h2 { font-family: 'Rubik', Arial, sans-serif; font-size: 16px; margin: 0 0 10px; color: var(--ink); }
+  .open-q li { font-size: 13px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 8px; }
+  @media (max-width: 820px) { .layout { flex-direction: column; } nav.toc { position: static; width: 100%; flex-direction: row; flex-wrap: wrap; } }
+</style>
+
+<header class="top">
+  <div class="brand"><div class="sq"></div><span>안전톡</span></div>
+  <p>Governance model &middot; actors, roles &amp; obligations &middot; researched 2026-09-25</p>
+</header>
+<div class="layout">
+  <nav class="toc">
+    <a href="#worker">1. Foreign Worker</a>
+    <a href="#supervisor">2. Site Supervisor</a>
+    <a href="#hsemanager">3. Safety &amp; Health Mgr</a>
+    <a href="#owner">4. Business Owner</a>
+    <a href="#government">5. Government</a>
+    <a href="#system">6. AnjeonTok System</a>
+    <a href="#culture">Cultural context</a>
+    <a href="#capmap">Capability map</a>
+    <a href="#open">Open questions</a>
+  </nav>
+  <main>
+    <h1 class="page-title">Who does what, and who's accountable</h1>
+    <p class="lede">Six actors in the AnjeonTok information system, each with obligations written as <b>MUST / MUST NOT / SHOULD / SHOULD NOT / CAN / CANNOT</b> statements. Written specifically so a later session can turn this directly into access-control rules and feature requirements — see the <a href="#capmap" style="color:var(--ink)">capability map</a> at the bottom. Full legal citations in the repo's <code>docs/GOVERNANCE.md</code>.</p>
+    <div class="legend">
+      <span class="must">MUST / MUST NOT — required or forbidden</span>
+      <span class="should">SHOULD / SHOULD NOT — best practice</span>
+      <span class="can">CAN / CANNOT — permitted or not possible</span>
+    </div>
+
+    <section class="actor" id="worker">
+      <div class="actor-head"><h2>1. Foreign Worker</h2><span class="kr">Reporter / Trainee</span></div>
+      <p class="actor-desc">The person on-site who spots a hazard and/or receives safety training.</p>
+      <div class="duty"><span class="tag must">MUST</span><div class="body">Be able to file a hazard report in their own language, without needing Korean.<span class="meta"><span class="maps">→ Report intake</span> <span class="badge-src product">product</span></span></div></div>
+      <div class="duty"><span class="tag mustnot">MUST NOT</span><div class="body">Have their chosen language shown anywhere reports are reviewed by others.<span class="meta"><span class="maps">→ Access control &amp; privacy</span> <span class="badge-src product">product, 2026-09-25</span></span></div></div>
+      <div class="duty"><span class="tag should">SHOULD</span><div class="body">Report a hazard as soon as it's spotted, with a photo and one marked danger area.<span class="meta"><span class="maps">→ Report intake</span> <span class="badge-src product">product</span></span></div></div>
+      <div class="duty"><span class="tag shouldnot">SHOULD NOT</span><div class="body">Be expected to self-classify severity/category with full accuracy — the worker proposes, a supervisor confirms.<span class="meta"><span class="maps">→ Triage &amp; assignment</span> <span class="badge-src product">product</span></span></div></div>
+      <div class="duty"><span class="tag can">CAN</span><div class="body">Choose to speak or type a report; revisit training content and retake quizzes.<span class="meta"><span class="maps">→ Report intake, Training content</span> <span class="badge-src product">product</span></span></div></div>
+      <div class="duty"><span class="tag cannot">CANNOT</span><div class="body">See another worker's individual reports, or edit/delete a report once submitted.<span class="meta"><span class="maps">→ Access control &amp; privacy, Audit trail</span> <span class="badge-src assumption">assumption</span></span></div></div>
+      <div class="duty"><span class="tag must">MUST</span><div class="body">Be protected as a whistleblower — employer barred from retaliation, identity kept confidential — when a hazard report also functions as a report of a legal violation.<span class="meta"><span class="maps">→ Access control &amp; privacy</span> <span class="badge-src confirmed">confirmed — PPIW, 2011</span></span></div></div>
+    </section>
+
+    <section class="actor" id="supervisor">
+      <div class="actor-head"><h2>2. Site Supervisor</h2><span class="kr">first-line reviewer</span></div>
+      <p class="actor-desc">Triages incoming reports for one or more sites. On a small site this may be the same person as the Safety &amp; Health Manager — see Open Questions.</p>
+      <div class="duty"><span class="tag must">MUST</span><div class="body">Log an action (assign, escalate, or resolve) against every High-severity report.<span class="meta"><span class="maps">→ Triage &amp; assignment</span> <span class="badge-src assumption">assumption — no confirmed SLA</span></span></div></div>
+      <div class="duty"><span class="tag should">SHOULD</span><div class="body">Generate bilingual warning labels for physical hazards found, in Korean plus the reporting worker's language.<span class="meta"><span class="maps">→ Label generation</span> <span class="badge-src product">product</span></span></div></div>
+      <div class="duty"><span class="tag shouldnot">SHOULD NOT</span><div class="body">Alter the substance of what a worker reported — only add operational fields (assignee, status, label).<span class="meta"><span class="maps">→ Audit trail</span> <span class="badge-src assumption">assumption</span></span></div></div>
+      <div class="duty"><span class="tag can">CAN</span><div class="body">View a report's category, severity, location, photo, and description.<span class="meta"><span class="maps">→ Report intake</span> <span class="badge-src product">product</span></span></div></div>
+      <div class="duty"><span class="tag cannot">CANNOT</span><div class="body">Access reports from a site they aren't assigned to, or see which language a worker used to file a report — that visibility sits one level up.<span class="meta"><span class="maps">→ Access control &amp; privacy</span> <span class="badge-src product">product, 2026-09-25</span></span></div></div>
+    </section>
+
+    <section class="actor" id="hsemanager">
+      <div class="actor-head"><h2>3. Safety &amp; Health Manager</h2><span class="kr">안전보건관리책임자</span></div>
+      <p class="actor-desc">The person legally designated to run the site's safety-management system day to day — a distinct legal role, separate from the business owner.</p>
+      <div class="duty"><span class="tag must">MUST</span><div class="body">Build and operate the site's safety-management system — the people, budget, and process needed to prevent harm — and investigate incidents with recurrence-prevention measures.<span class="meta"><span class="maps">→ Compliance dashboard</span> <span class="badge-src confirmed">confirmed — SAPA (중대재해처벌법) Art. 4</span></span></div></div>
+      <div class="duty"><span class="tag must">MUST</span><div class="body">Carry out any improvement/corrective order issued by central or local government.<span class="meta"><span class="maps">→ Compliance dashboard</span> <span class="badge-src confirmed">confirmed — SAPA Art. 4</span></span></div></div>
+      <div class="duty"><span class="tag mustnot">MUST NOT</span><div class="body">Allow retaliation against a worker for filing a report — must reverse it if it happens.<span class="meta"><span class="maps">→ Access control &amp; privacy</span> <span class="badge-src confirmed">confirmed — PPIW</span></span></div></div>
+      <div class="duty"><span class="tag should">SHOULD</span><div class="body">Use aggregated hazard-category data to target recurring problems by site.<span class="meta"><span class="maps">→ Compliance dashboard</span> <span class="badge-src product">product</span></span></div></div>
+      <div class="duty"><span class="tag shouldnot">SHOULD NOT</span><div class="body">Use report data to evaluate or penalize the individual worker who filed it.<span class="meta"><span class="maps">→ Access control &amp; privacy</span> <span class="badge-src assumption">assumption</span></span></div></div>
+      <div class="duty"><span class="tag can">CAN</span><div class="body">See a worker's declared language, but only in the specific context of generating a label or follow-up material — click-to-reveal, not shown by default.<span class="meta"><span class="maps">→ Label generation</span> <span class="badge-src product">product</span></span></div></div>
+      <div class="duty"><span class="tag cannot">CANNOT</span><div class="body">Alter historical report records — corrections must be additive, not edits to the original.<span class="meta"><span class="maps">→ Audit trail</span> <span class="badge-src assumption">assumption</span></span></div></div>
+    </section>
+
+    <section class="actor" id="owner">
+      <div class="actor-head"><h2>4. Business Owner</h2><span class="kr">경영책임자등 / CEO</span></div>
+      <p class="actor-desc">Ultimate authority and responsibility for the business. This is who SAPA criminally prosecutes, not just the company. On a real site this usually splits into 원청 (primary contractor, holds site-wide authority and budget) and 하청 (subcontractor, often the foreign worker's actual employer) — see <a href="#culture" style="color:var(--ink)">Cultural &amp; structural context</a>.</p>
+      <div class="duty"><span class="tag must">MUST</span><div class="body">Secure the safety-management system described in §3 — the named legal duty-holder is this role, not the manager who operates it day to day.<span class="meta"><span class="maps">→ Compliance dashboard</span> <span class="badge-src confirmed">confirmed — SAPA Art. 4/9</span></span></div></div>
+      <div class="duty"><span class="tag must">MUST</span><div class="body">Ensure every newly hired foreign worker completes basic occupational safety/health education (기초안전보건교육) — a new duty created by the OSH Act amendment the National Assembly passed June 18, 2026, with fines up to ₩3,000,000 for violation.<span class="meta"><span class="maps">→ Training content</span> <span class="badge-src confirmed">confirmed — see RESEARCH.md §2b</span></span></div></div>
+      <div class="duty"><span class="tag mustnot">MUST NOT</span><div class="body">Treat the existence of a hazard-reporting tool as a substitute for the underlying obligations — logging a report isn't equivalent to fixing the hazard.<span class="meta"><span class="maps">→ Compliance dashboard</span> <span class="badge-src confirmed">confirmed principle — SAPA</span></span></div></div>
+      <div class="duty"><span class="tag should">SHOULD</span><div class="body">Review the government-facing aggregate compliance dashboard periodically, not only after an incident.<span class="meta"><span class="maps">→ Compliance dashboard</span> <span class="badge-src product">product</span></span></div></div>
+      <div class="duty"><span class="tag can">CAN</span><div class="body">Delegate day-to-day operation to the Safety &amp; Health Manager while retaining ultimate legal liability.<span class="meta"><span class="badge-src confirmed">confirmed principle — SAPA</span></span></div></div>
+      <div class="duty"><span class="tag cannot">CANNOT</span><div class="body">Avoid personal criminal liability for a serious accident by pointing to a monitoring tool's existence if the underlying safety obligations weren't actually fulfilled.<span class="meta"><span class="badge-src confirmed">confirmed — SAPA</span></span></div></div>
+    </section>
+
+    <section class="actor" id="government">
+      <div class="actor-head"><h2>5. Government</h2><span class="kr">MOEL / KOSHA / inspectors</span></div>
+      <div class="duty"><span class="tag must">MUST</span><div class="body">Enforce OSH Act and SAPA obligations, including proactive and complaint-driven inspections.<span class="meta"><span class="badge-src confirmed">confirmed — KOSHA mandate</span></span></div></div>
+      <div class="duty"><span class="tag must">MUST</span><div class="body">Keep a whistleblower's identity confidential when a report functions as a public-interest disclosure.<span class="meta"><span class="badge-src confirmed">confirmed — PPIW</span></span></div></div>
+      <div class="duty"><span class="tag can">CAN</span><div class="body">Order corrective/improvement measures and safety-management-system audits; publish multilingual safety material — KOSHA has distributed training content in 10, then 16, languages.<span class="meta"><span class="badge-src confirmed">confirmed</span></span></div></div>
+      <div class="duty"><span class="tag should">SHOULD</span><div class="body">Use aggregated, anonymized compliance signals to target inspections, rather than relying only on employer self-reported paperwork.<span class="meta"><span class="maps">→ Compliance dashboard</span> <span class="badge-src assumption">product's core pitch — not a confirmed practice</span></span></div></div>
+      <div class="duty"><span class="tag shouldnot">SHOULD NOT</span><div class="body">Access individual, worker-identifying report content without a defined legal basis (e.g. an active investigation).<span class="meta"><span class="maps">→ Access control &amp; privacy</span> <span class="badge-src assumption">assumption</span></span></div></div>
+      <div class="duty"><span class="tag cannot">CANNOT</span><div class="body">Compel real-time direct database access to a private company's internal tool without a defined legal or contractual basis.<span class="meta"><span class="maps">→ Access control &amp; privacy</span> <span class="badge-src assumption">proposed boundary, not confirmed or ruled out</span></span></div></div>
+    </section>
+
+    <section class="actor" id="system">
+      <div class="actor-head"><h2>6. AnjeonTok System</h2><span class="kr">the platform / AI itself</span></div>
+      <p class="actor-desc">The system's own obligations, written so they translate directly into engineering requirements.</p>
+      <div class="duty"><span class="tag must">MUST</span><div class="body">Preserve a worker's original report content unedited — translation and labeling are additive layers, never replacements.<span class="meta"><span class="maps">→ Report intake, Audit trail</span></span></div></div>
+      <div class="duty"><span class="tag must">MUST</span><div class="body">Enforce the per-actor visibility rules above (e.g., language hidden from Supervisor, revealed only to the Safety &amp; Health Manager on demand).<span class="meta"><span class="maps">→ Access control &amp; privacy</span></span></div></div>
+      <div class="duty"><span class="tag mustnot">MUST NOT</span><div class="body">Auto-resolve or auto-close a High-severity report without a human decision; fabricate or embellish translated content beyond what the worker actually stated.<span class="meta"><span class="maps">→ Triage &amp; assignment, Report intake</span></span></div></div>
+      <div class="duty"><span class="tag should">SHOULD</span><div class="body">Flag, not silently drop, any report it cannot classify or translate with confidence.<span class="meta"><span class="maps">→ Report intake</span></span></div></div>
+      <div class="duty"><span class="tag shouldnot">SHOULD NOT</span><div class="body">Be treated as the sole system of record for legal compliance evidence.<span class="meta"><span class="maps">→ Compliance dashboard</span></span></div></div>
+      <div class="duty"><span class="tag can">CAN</span><div class="body">Generate multilingual training material derived from resolved reports; aggregate anonymized statistics for the government dashboard.<span class="meta"><span class="maps">→ Training content, Compliance dashboard</span></span></div></div>
+      <div class="duty"><span class="tag cannot">CANNOT</span><div class="body">Determine legal liability or fault for an incident — that stays a human/legal process outside the system.<span class="meta"><span class="maps">→ Compliance dashboard</span></span></div></div>
+    </section>
+
+    <div class="open-q" id="culture" style="margin-bottom:20px">
+      <h2>Cultural &amp; structural context</h2>
+      <p style="font-size:13px; color:var(--ink-soft); line-height:1.6; margin:0 0 10px">Two structural realities shape every obligation above — relevant to any future use-case work, not just the slide copy.</p>
+      <p style="font-size:13px; color:var(--ink-soft); line-height:1.6; margin:0 0 10px"><b style="color:var(--ink)">The 원청→하청 chain diffuses responsibility.</b> Work instructions, safety training, PPE, and hazard-information sharing get blurred across subcontracting layers. High-risk work concentrates on subcontracted (often foreign) workers, while the authority to fix a hazard sits with the primary contractor. Korean subcontracting law is explicitly framed around preventing unfair practices from this "일방적 지배와 복종관계" (one-sided dominance/subordination relationship) — a structural fact, not just a cultural observation.</p>
+      <p style="font-size:13px; color:var(--ink-soft); line-height:1.6; margin:0">
+      <b style="color:var(--ink)">E-9 visa dependency makes reporting personally risky.</b> A migrant worker can generally change employers only a limited number of times, needing the current employer's consent or hard-to-prove evidence of a violation to transfer; leaving without permission makes them undocumented. This is a genuine, not just perceived, disincentive to report anything that could upset an employer holding this much leverage — the concrete reason hiding a worker's language from their supervisor (§1–§2) is closer to a precondition for a usable tool than a privacy nicety.</p>
+    </div>
+
+    <div class="capmap" id="capmap">
+      <h2>System capability map</h2>
+      <p style="font-size:13px; color:var(--ink-soft); margin:-2px 0 12px">Every "→" tag above lands in one of these seven buckets — walk this list feature by feature for a future requirements pass.</p>
+      <ol>
+        <li><b>Report intake</b> — filing, photo-marking, language, description</li>
+        <li><b>Triage &amp; assignment</b> — supervisor review, status, escalation</li>
+        <li><b>Label generation</b> — bilingual warning labels</li>
+        <li><b>Training content</b> — worker-facing learning feed, quizzes</li>
+        <li><b>Compliance dashboard</b> — site/company-level aggregate view</li>
+        <li><b>Access control &amp; privacy</b> — who can see what, including language</li>
+        <li><b>Audit trail</b> — immutability, historical record integrity</li>
+      </ol>
+    </div>
+
+    <div class="open-q" id="open">
+      <h2>Open governance questions</h2>
+      <ul>
+        <li><b>Role collapse on small sites</b> — does Supervisor and Safety &amp; Health Manager collapse into one person under 50 employees? The product currently models Supervisor and the Management dashboard separately; worth confirming which maps to which.</li>
+        <li><b>Report SLA</b> — no confirmed source sets a required response time for a High-severity report; the "must log an action" rule is a reasonable default, not a legal requirement.</li>
+        <li><b>Data retention/deletion</b> — not yet decided: how long report data (including photos) is kept, who can delete it, under what basis.</li>
+        <li><b>Government real-time access</b> — this model proposes aggregated/anonymized-only access absent a specific legal basis. A governance proposal, not a confirmed requirement.</li>
+      </ul>
+    </div>
+  </main>
+</div>
+
+<div class="proto-nav" id="proto-nav">
+  <button class="proto-nav-btn" id="proto-nav-btn" aria-expanded="false" aria-controls="proto-nav-menu">Prototypes</button>
+  <div class="proto-nav-menu" id="proto-nav-menu" hidden>
+    <span class="current">Governance model (this page)</span>
+    <a href="knowledge.html">Knowledge &amp; sources</a>
+    <a href="deck.html">Pitch deck</a>
+    <a href="supervisor.html">Supervisor &amp; worker app</a>
+    <a href="manager.html">Management dashboard</a>
+    <a href="government.html">Government dashboard</a>
+    <a href="index.html">All prototypes ↗</a>
+  </div>
+</div>
+
+<style>
+  .proto-nav { position: fixed; right: 18px; bottom: 18px; z-index: 999; font-family: 'IBM Plex Sans', Arial, sans-serif; display: flex; align-items: flex-end; gap: 8px; }
+  .proto-nav-btn { font-size: 12.5px; font-weight: 700; padding: 11px 18px; border-radius: 999px; background: #14213D; color: #F7F6F2; border: none; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.28); }
+  .proto-nav-menu { position: absolute; right: 0; bottom: calc(100% + 10px); background: #14213D; color: #F7F6F2; border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 2px; min-width: 220px; box-shadow: 0 20px 44px rgba(0,0,0,0.32); }
+  .proto-nav-menu .current { font-size: 11.5px; font-weight: 700; color: #9AA6C2; padding: 8px 12px 4px; }
+  .proto-nav-menu a { font-size: 13px; font-weight: 600; color: #F7F6F2; text-decoration: none; padding: 9px 12px; border-radius: 8px; }
+  .proto-nav-menu a:hover { background: rgba(255,255,255,0.08); }
+</style>
+<script>
+  (function () {
+    var btn = document.getElementById('proto-nav-btn');
+    var menu = document.getElementById('proto-nav-menu');
+    var wrap = document.getElementById('proto-nav');
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var willOpen = menu.hidden;
+      menu.hidden = !willOpen;
+      btn.setAttribute('aria-expanded', String(willOpen));
+    });
+    document.addEventListener('click', function (e) {
+      if (!wrap.contains(e.target)) { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+    });
+  })();
+</script>

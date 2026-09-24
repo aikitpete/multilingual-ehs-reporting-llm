@@ -1,16 +1,20 @@
 # Status
 
-2026-09-24 (updated) — The **plain-HTML 4-slide deck** (Title/Problem/
-Solution/Demo, TV-friendly large type, real animation, multi-page PDF
-export) at `https://claude.ai/artifact/GD94Scrk1hUGMjoFTfND9S` is now the
-only deck — the two earlier Slides-artifact decks have been deleted. The
-supervisor and worker mobile mockups have been merged into one artifact
-(`https://claude.ai/artifact/1BcqqqNseS5SCXSHTjS7Ty`) with a mode toggle
-outside the phone frame and a more realistic phone chrome (notch, side
-buttons). Three prototypes now exist total (the merged mockup, management
-dashboard, government dashboard), all interactive, sharing one design
-system, cross-linked via a floating nav widget. The static `site/` export
-and demo index have been re-synced to match.
+2026-09-25 (updated) — The **plain-HTML 4-slide deck**
+(`https://claude.ai/artifact/GD94Scrk1hUGMjoFTfND9S`) is the only deck; its
+Demo slide now has two examples and names three applicable industries
+(Construction, Manufacturing, Shipbuilding). The supervisor/worker mockup
+(`https://claude.ai/artifact/1BcqqqNseS5SCXSHTjS7Ty`) has a rugged-case
+phone chrome, a hand-holding-the-phone illustration, and full i18n across
+5 languages (Vietnamese default, Uzbek, Chinese, Korean, English) via a
+shared Settings language picker in both modes; hazard reports no longer
+name the reporter's language anywhere in the UI. A new **Knowledge &
+sources** page (`https://claude.ai/artifact/CnfwLoVuvfeqDGvePKhKqJ`) states
+which regulatory/budget claims are independently confirmed vs. Peter's own
+sourced claims — re-verified via web search on 2026-09-25, see
+`docs/RESEARCH.md`. The demo index now has three nav groups (Slide deck,
+Prototypes, Knowledge); the static `site/` export has been re-synced to
+match everything above.
 
 Ran web-search verification on the deck's Korea regulatory stats
 (2026-09-24): the hackathon dates check out; the 286-fatalities figure, the

@@ -3,6 +3,82 @@
 Dated, most recent first. Record *why*, not what (the artifacts/git history
 show what).
 
+## 2026-09-25 — Added a Governance model page; found the actual 2026 law
+
+Peter asked for research into the roles of the key actors in the system and
+a governance model (MUST/SHOULD/CAN per actor), reusable later for
+use-case/requirements work, plus research into how Korean construction
+companies actually operate culturally, with focus on this year's
+amendment. Two findings changed earlier docs materially:
+
+1. **The real 2026 legal amendment is now confirmed with a date.** Korea's
+   National Assembly passed an OSH Act amendment on **June 18, 2026**
+   creating a new employer duty — foreign workers must complete basic
+   safety/health education — plus a companion electronic-card-terminal
+   requirement at construction sites. This upgrades the deck's employer-
+   duty claim from "Peter's own sourced claim" to independently confirmed
+   (the Sept 22, 2026 date specifically is still unconfirmed — kept
+   separate). See `docs/RESEARCH.md` §2b.
+2. **Structural/cultural context** — Korea's multi-layer 원청/하청
+   (primary contractor / subcontractor) structure diffuses safety
+   responsibility, and E-9 visa dependency (limited employer transfers,
+   employer consent needed) creates a real disincentive for a foreign
+   worker to report anything that could upset their employer. This isn't
+   just background color — it's the concrete justification for the
+   2026-09-25 decision to hide a worker's language from their supervisor:
+   for this population, minimizing what identifies a specific worker is
+   close to a precondition for a usable tool, not an optional privacy
+   nicety. See `docs/RESEARCH.md` §6 and `docs/GOVERNANCE.md`.
+
+Published a new **Governance model** artifact (six actors — Foreign
+Worker, Site Supervisor, Safety & Health Manager, Business Owner,
+Government, and the AnjeonTok System itself — each with MUST/MUST NOT/
+SHOULD/SHOULD NOT/CAN/CANNOT obligations tagged with a "→ system
+capability" so a future session can turn this directly into requirements)
+and added it to the nav's existing Knowledge group as a second item,
+rather than a new nav group, since it's "another page" of the same kind of
+reference material.
+
+## 2026-09-25 — Re-verified the law/budget claims; added a Knowledge page and Korean
+
+Peter asked for detailed research on the law and project assumptions. A new
+web-search pass (see `docs/RESEARCH.md`) found stronger sources than the
+2026-09-24 pass: the ₩3.8B industrial-safety AI budget line and the 286
+construction fatalities (2025) figure are now independently **confirmed**
+against official MOEL sources. The ₩2B "worker-reporting technology" half
+of the deck's combined ₩5.8B figure, and the exact September 22, 2026
+publication date, remain **Peter's own sourced claims** — not strengthened,
+not presented as confirmed, cited as given per the standing rule in
+`PROJECT_CONTEXT.md`.
+
+Added a new **Knowledge** artifact summarizing this research for anyone
+reviewing the pitch, and a third nav group on the demo index ("Knowledge",
+alongside "Slide deck" and "Prototypes") linking to it — a summary page
+was requested explicitly rather than folded into an existing deliverable,
+so it gets its own artifact and its own nav group rather than being
+squeezed into the deck or README.
+
+Peter asked for the mockup's translations to come from "a language json."
+Implemented as an inline `STRINGS` JS object (one entry per language, keyed
+by string id) rather than a separate `.json` file fetched at runtime —
+Claude Artifacts are static, sandboxed pages with no server to fetch a
+sibling file from, so an inline object is the closest equivalent that
+actually works; it's structured identically to how a real JSON file would
+look, just embedded in the page's own script. All report-list language
+labels (e.g. "Vietnamese · 6 min ago") were also removed per Peter's
+request — hazard reports no longer name the reporter's language anywhere
+in the UI.
+
+Also added **Korean** as a full interface language in the merged mockup's
+Settings (Peter asked for this explicitly, since a supervisor is typically
+a Korean speaker) — Vietnamese stays the default per his instruction. Also
+combined slide 4 (Demo)'s single example into two, and added a "beyond
+construction" row naming three applicable industries (Construction,
+Manufacturing, Shipbuilding — the third chosen because Korean shipyards
+share the same foreign-worker-safety-language problem and are a large,
+well-known industry locally, making the generalization credible without
+research to back a specific claim about it).
+
 ## 2026-09-24 — Two Slides decks deleted; supervisor/worker mockups merged into one artifact
 
 Peter asked to remove the two older 7-slide Slides-format decks now that the

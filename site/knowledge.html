@@ -1,0 +1,182 @@
+<meta charset="utf-8">
+<title>AnjeonTok Knowledge &amp; Sources</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+KR:wght@500;700;800&display=swap">
+<style>
+  :root {
+    --bg: #F0EEE6; --surface: #FFFFFF; --surface-2: #FBFAF6; --border: #E3E1D8;
+    --ink: #14213D; --ink-soft: #5B6472; --muted: #8A93A6;
+    --accent: #C79A2B; --accent-strong: #14213D; --yellow: #E8B93C;
+    --ok: #3E7C5A; --ok-bg: #E5F1EA; --warn: #C79A2B; --warn-bg: #FBF1D8;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0B1120; --surface: #17213B; --surface-2: #121A2E; --border: #2A3654;
+      --ink: #F1F3F8; --ink-soft: #B9C2D6; --muted: #8896B3; --accent: #E8B93C;
+      --ok: #7BC79E; --ok-bg: #163326; --warn: #E8B93C; --warn-bg: #332A12;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0B1120; --surface: #17213B; --surface-2: #121A2E; --border: #2A3654;
+    --ink: #F1F3F8; --ink-soft: #B9C2D6; --muted: #8896B3; --accent: #E8B93C;
+    --ok: #7BC79E; --ok-bg: #163326; --warn: #E8B93C; --warn-bg: #332A12;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', Arial, sans-serif; }
+  header.top { background: var(--accent-strong); color: #F7F6F2; padding: 26px 40px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .sq { width: 14px; height: 14px; background: var(--yellow); border-radius: 4px; }
+  .brand span { font-family: 'Noto Sans KR', 'Rubik', Arial, sans-serif; font-weight: 800; font-size: 18px; }
+  header.top p { margin: 6px 0 0; color: #C7CEDB; font-size: 13.5px; }
+  main { max-width: 880px; margin: 0 auto; padding: 36px 24px 80px; }
+  h1.page-title { font-family: 'Rubik', Arial, sans-serif; font-size: 26px; font-weight: 800; margin: 0 0 6px; }
+  .lede { color: var(--ink-soft); font-size: 15px; line-height: 1.5; margin: 0 0 28px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px 24px; margin-bottom: 16px; }
+  .card h2 { font-family: 'Rubik', Arial, sans-serif; font-size: 17px; font-weight: 800; margin: 0 0 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .badge { font-size: 10.5px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+  .badge.ok { background: var(--ok-bg); color: var(--ok); }
+  .badge.warn { background: var(--warn-bg); color: var(--warn); }
+  .card .num { font-family: 'Rubik', Arial, sans-serif; font-weight: 800; color: var(--accent-strong); }
+  .card p { font-size: 14px; color: var(--ink-soft); line-height: 1.6; margin: 10px 0 0; }
+  .sources { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border); display: flex; flex-direction: column; gap: 6px; }
+  .sources a { font-size: 12.5px; color: var(--accent-strong); text-decoration: none; }
+  .sources a:hover { text-decoration: underline; }
+  .section-title { font-family: 'Rubik', Arial, sans-serif; font-size: 15px; font-weight: 800; margin: 32px 0 12px; color: var(--ink); }
+  .assumptions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .assumptions .card { margin-bottom: 0; }
+  @media (max-width: 700px) { .assumptions { grid-template-columns: 1fr; } header.top, main { padding-left: 20px; padding-right: 20px; } }
+  .note { background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; font-size: 13px; color: var(--ink-soft); line-height: 1.6; margin-top: 28px; }
+  .note b { color: var(--ink); }
+</style>
+
+<header class="top">
+  <div class="brand"><div class="sq"></div><span>안전톡</span></div>
+  <p>Knowledge &amp; sources &middot; last verified 2026-09-25</p>
+</header>
+<main>
+  <h1 class="page-title">What's confirmed, and what's Peter's own claim</h1>
+  <p class="lede">Every regulatory and budget figure used in the pitch deck, checked against public sources. Full source-by-source detail lives in the repo's <code>docs/RESEARCH.md</code> — this page is the shareable summary.</p>
+
+  <div class="section-title">The law &amp; funding</div>
+
+  <div class="card">
+    <h2><span class="num">₩3.8B</span> industrial-safety AI assistant <span class="badge ok">Confirmed</span></h2>
+    <p>Part of Korea's 2027 Labor Ministry (MOEL) budget proposal (₩38.9537 trillion total, +3.4% YoY). A specific ₩3.8B ("38억원") line item funds a labor/industrial-safety AI assistant service.</p>
+    <div class="sources">
+      <a href="https://www.moel.go.kr/news/enews/report/enewsView.do?news_seq=19885" target="_blank" rel="noopener">2027년 고용노동부 예산안 38조 9537억원 — MOEL ↗</a>
+      <a href="https://www.outsourcing.co.kr/news/articleView.html?idxno=203715" target="_blank" rel="noopener">예산포커스: AI 일자리·취약노동·산업안전에 집중 — 아웃소싱타임스 ↗</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">₩2B</span> worker-reporting technology &amp; site demos <span class="badge warn">Peter's own framing</span></h2>
+    <p>No single confirmed budget line matches this description exactly. The closest match in the same 2027 MOEL budget is two foreign-worker-specific items: ₩1.2B for basic safety/health education and ₩1.0B for specialized accident-prevention support (₩2.2B combined). The deck's ₩5.8B total (₩3.8B + ₩2B) is Peter's own combination of these two budget pushes, not a single official figure — stated as given, not independently verified line-by-line.</p>
+    <div class="sources">
+      <a href="https://www.asiae.co.kr/en/article/2026090110012174424" target="_blank" rel="noopener">[2027 Budget Proposal] Labor Ministry Allocates 38.9 Trillion Won — The Asia Business Daily ↗</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">286</span> construction fatalities, 2025 <span class="badge ok">Confirmed</span></h2>
+    <p>MOEL's own 2025 industrial-accident statistics (published March 2026): 286 construction-industry deaths (+10, +3.6% YoY) — the construction subset of 605 total industrial fatalities across all sectors that year. Both numbers are consistent, not competing claims.</p>
+    <div class="sources">
+      <a href="https://www.koreatimes.co.kr/southkorea/society/20260331/fatal-industrial-accidents-rose-last-year" target="_blank" rel="noopener">Fatal industrial accidents rose last year — The Korea Times ↗</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span style="color:var(--ink)">June 18, 2026</span> National Assembly passes the OSH Act amendment <span class="badge ok">Confirmed</span></h2>
+    <p>The real citable legal event: Korea's National Assembly passed a 산업안전보건법 (OSH Act) amendment creating a brand-new employer duty — foreign workers must complete basic safety/health education (기초안전보건교육) — plus a companion requirement for electronic card terminals at construction sites to track foreign-worker attendance. Fines up to ₩3,000,000; effective 6 months after promulgation.</p>
+    <p style="margin-top:8px"><b style="color:var(--ink)">The deck's "Sept 22, 2026" framing remains Peter's own claim, not independently confirmed</b> — search found a company-level program (Hyundai E&amp;C's own foreign-worker safety initiative) around that date, but no government publication dated exactly then. The June 18 passage above is the stronger, confirmed reference point.</p>
+    <div class="sources">
+      <a href="https://biz.heraldcorp.com/article/10775850" target="_blank" rel="noopener">외국인 노동자 안전교육 의무화…건설현장 전자카드 설치도 법률로 강화 — 헤럴드경제 ↗</a>
+      <a href="https://www.anjunj.com/news/articleView.html?idxno=42011" target="_blank" rel="noopener">외국인 노동자 기초안전보건교육 의무화…산안법 개정안 본회의 통과 — 안전저널 ↗</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Multilingual safety education, expanding <span class="badge ok">Confirmed direction</span></h2>
+    <p>Multiple independent sources confirm an active push: multilingual safety signage (a joint MOLIT + MOEL program), multilingual videos/posters/leaflets, and the foreign-worker safety-education budget lines above.</p>
+    <div class="sources">
+      <a href="https://edaily.co.kr/News/Read?mediaCodeNo=257&newsId=03175046642328656" target="_blank" rel="noopener">국토부·노동부, 외국인 근로자 안전 위해 다국어 안전표지 보급 ↗</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>The "new employer duty" legal change <span class="badge ok">Confirmed</span></h2>
+    <p>Confirmed by the June 18, 2026 amendment above — this is a genuinely new duty, not a restatement of Korea's pre-existing requirement that employers give foreign workers the same training as Korean workers.</p>
+  </div>
+
+  <div class="card">
+    <h2>Cultural &amp; structural realities <span class="badge warn">Context, not a citation</span></h2>
+    <p>Multi-layer subcontracting (원청 primary contractor → 하청 subcontractor) diffuses safety responsibility — high-risk work concentrates on subcontracted, disproportionately foreign, workers, while the authority to fix a hazard sits with the primary contractor. Separately, E-9 (EPS) visa holders can change employers only a limited number of times and generally need their current employer's consent to transfer — a real, structural disincentive to report anything that might upset that employer. This is why hiding a worker's language from their supervisor (see the Governance model) is closer to a precondition for a usable tool than a privacy nicety, for this population specifically.</p>
+    <div class="sources">
+      <a href="https://www.outsourcing.co.kr/news/articleView.html?idxno=202713" target="_blank" rel="noopener">"위험은 하청에, 권한은 원청에"…조선업 사내하청 안전의 구조적 함정 — 아웃소싱타임스 ↗</a>
+      <a href="https://eastasiaforum.org/2025/10/31/south-koreas-migrant-workers-trapped-in-a-legal-cage/" target="_blank" rel="noopener">South Korea's migrant workers trapped in a legal cage — East Asia Forum ↗</a>
+    </div>
+  </div>
+
+  <div class="section-title">Project assumptions</div>
+  <div class="assumptions">
+    <div class="card">
+      <h2>Target languages</h2>
+      <p>Vietnamese, Uzbek, and Chinese are the original target worker languages. English was added for an English-speaking pitch audience. Korean was added 2026-09-25 as a full interface language (supervisors are typically Korean speakers). <b style="color:var(--ink)">Vietnamese is the default</b> on first open.</p>
+    </div>
+    <div class="card">
+      <h2>The core workflow</h2>
+      <p>Language chosen once, in Settings — never a repeated per-report step. Speak or type the hazard, mark it on a photo, pick category/severity/location, send. AI turns it into a Korean report for managers, with optional printable warning labels, and doubles as training material for other workers.</p>
+    </div>
+    <div class="card">
+      <h2>What's real vs. mocked</h2>
+      <p>All five deliverables are Claude Artifacts — HTML/CSS/JS mockups with real click-through interactivity, not a working backend. No AI classification, translation, or report generation actually runs; the "AI-generated" outputs shown are hand-built to look plausible.</p>
+    </div>
+    <div class="card">
+      <h2>Not a task-force goal</h2>
+      <p>This isn't one of the five F-1-D goals the <code>task-force</code> repo tracks — it's a separate, self-contained pitch project, kept in its own repo (<code>aikitpete/safety-kr</code>).</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>How this page stays honest:</b> a claim only gets the "Confirmed" badge when an independent public source (not Peter's own brief) backs it exactly. Everything else — including numbers still used on the deck — is labeled as Peter's own sourced claim. Nothing here should be strengthened into an implied government endorsement, adoption, or accuracy statistic that isn't independently confirmed above.
+  </div>
+</main>
+
+<div class="proto-nav" id="proto-nav">
+  <button class="proto-nav-btn" id="proto-nav-btn" aria-expanded="false" aria-controls="proto-nav-menu">Prototypes</button>
+  <div class="proto-nav-menu" id="proto-nav-menu" hidden>
+    <span class="current">Knowledge &amp; sources (this page)</span>
+    <a href="deck.html">Pitch deck</a>
+    <a href="supervisor.html">Supervisor &amp; worker app</a>
+    <a href="manager.html">Management dashboard</a>
+    <a href="government.html">Government dashboard</a>
+    <a href="governance.html">Governance model</a>
+    <a href="index.html">All prototypes ↗</a>
+  </div>
+</div>
+
+<style>
+  .proto-nav { position: fixed; right: 18px; bottom: 18px; z-index: 999; font-family: 'IBM Plex Sans', Arial, sans-serif; display: flex; align-items: flex-end; gap: 8px; }
+  .proto-nav-btn { font-size: 12.5px; font-weight: 700; padding: 11px 18px; border-radius: 999px; background: #14213D; color: #F7F6F2; border: none; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.28); }
+  .proto-nav-menu { position: absolute; right: 0; bottom: calc(100% + 10px); background: #14213D; color: #F7F6F2; border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 2px; min-width: 220px; box-shadow: 0 20px 44px rgba(0,0,0,0.32); }
+  .proto-nav-menu .current { font-size: 11.5px; font-weight: 700; color: #9AA6C2; padding: 8px 12px 4px; }
+  .proto-nav-menu a { font-size: 13px; font-weight: 600; color: #F7F6F2; text-decoration: none; padding: 9px 12px; border-radius: 8px; }
+  .proto-nav-menu a:hover { background: rgba(255,255,255,0.08); }
+</style>
+<script>
+  (function () {
+    var btn = document.getElementById('proto-nav-btn');
+    var menu = document.getElementById('proto-nav-menu');
+    var wrap = document.getElementById('proto-nav');
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var willOpen = menu.hidden;
+      menu.hidden = !willOpen;
+      btn.setAttribute('aria-expanded', String(willOpen));
+    });
+    document.addEventListener('click', function (e) {
+      if (!wrap.contains(e.target)) { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+    });
+  })();
+</script>

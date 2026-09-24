@@ -1,10 +1,13 @@
 # Handoff
 
-2026-09-24 (updated) — All five pitch deliverables exist and are populated
-with mock data. The two earlier Slides-format decks have been **deleted**;
-the HTML deck is now the only deck. The supervisor and worker mobile
-mockups have been **merged into one artifact** with a mode toggle outside
-the phone frame. Everything below is what a fresh session needs to keep
+2026-09-25 (updated) — The two earlier Slides-format decks have been
+**deleted**; the HTML deck is now the only deck. The supervisor and worker
+mobile mockups have been **merged into one artifact** with a mode toggle
+outside the phone frame, a rugged-case phone chrome, and a full i18n system
+(5 languages including Korean, Vietnamese default). A new **Knowledge &
+sources** artifact and nav group document which regulatory/budget claims on
+the deck are independently confirmed vs. Peter's own sourced claims — see
+`docs/RESEARCH.md`. Everything below is what a fresh session needs to keep
 going without re-deriving context.
 
 ## The deck: the HTML deck
@@ -25,17 +28,29 @@ their artifact URLs no longer resolve; don't relink them.
 
 ## The demo index (the one link to everything)
 
-**https://claude.ai/artifact/9yQt4JXfhugfVSZFfc59qc** — split into two
-groups: **Slide deck** (just the HTML deck now) and **Prototypes** (the
-three below). Update this page whenever a deck/prototype is added, merged,
-or an existing one's URL changes.
+**https://claude.ai/artifact/9yQt4JXfhugfVSZFfc59qc** — split into three
+groups: **Slide deck** (the HTML deck), **Prototypes** (the three below),
+and **Knowledge** (the sources page). Update this page whenever a deck/
+prototype/knowledge page is added, merged, or an existing one's URL changes.
 
 ## The three prototypes
 
 - Supervisor & worker mobile mockup — one artifact, mode toggle outside the
-  phone frame switches between the two — `https://claude.ai/artifact/1BcqqqNseS5SCXSHTjS7Ty`
+  phone frame switches between the two — `https://claude.ai/artifact/1BcqqqNseS5SCXSHTjS7Ty`.
+  Full i18n: Vietnamese (default), Uzbek, Chinese, Korean, English, driven
+  by a `STRINGS`/`data-i18n` system in the page's own script, not a
+  separate JSON file (Claude Artifacts don't load external files at
+  runtime) — see `docs/DECISIONS.md`.
 - Management dashboard — `https://claude.ai/artifact/W7QuAyMGnjkjT1CZbXudum`
 - Government dashboard — `https://claude.ai/artifact/7U9dGUEWVq3m3EKDeSKbUx`
+
+## Knowledge & sources
+
+**https://claude.ai/artifact/CnfwLoVuvfeqDGvePKhKqJ** — for each
+regulatory/budget claim on the deck, states whether it's independently
+confirmed (with source links) or Peter's own sourced claim. Full detail in
+`docs/RESEARCH.md`; update both together if new research changes a claim's
+status.
 
 All three share one visual system (navy/yellow/off-white/hazard-red, same
 phone-frame chrome — now with a dynamic-island-style notch and side

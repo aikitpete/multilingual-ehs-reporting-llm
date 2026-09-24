@@ -63,6 +63,18 @@ into **Slide decks** and **Prototypes**.
 - [x] Government dashboard — the aggregate data view the ministry needs
       — https://claude.ai/artifact/7U9dGUEWVq3m3EKDeSKbUx
 
+### Knowledge
+
+- [x] Knowledge & sources — which regulatory/budget figures on the deck are
+      independently confirmed vs. Peter's own sourced claims, with links.
+      See `docs/RESEARCH.md` for the full detail.
+      — https://claude.ai/artifact/CnfwLoVuvfeqDGvePKhKqJ
+- [x] Governance model — six actors (worker, supervisor, safety manager,
+      business owner, government, the system itself), each with
+      MUST/SHOULD/CAN obligations tagged to a system capability, meant to
+      seed future use-case/requirements work. See `docs/GOVERNANCE.md`.
+      — https://claude.ai/artifact/VZEtVvrA6tYLZsiB2baQ81
+
 All artifacts are **private** until shared from each page's Share menu.
 
 ## Deploying the static site (`site/`)
