@@ -26,7 +26,7 @@
   .disp { font-family: 'Oswald', Arial, sans-serif; text-transform: uppercase; }
   h1, h2 { margin: 0; font-family: 'Oswald', Arial, sans-serif; text-transform: uppercase; font-weight: 700; }
   p { margin: 0; }
-  .eyebrow { font-size: clamp(16px,1.6vw,22px); font-weight: 700; letter-spacing: 4px; color: var(--yellow); text-transform: uppercase; }
+  .eyebrow { font-size: clamp(18px,1.8vw,27px); font-weight: 700; letter-spacing: 4px; color: var(--yellow); text-transform: uppercase; }
   .spine { position: absolute; left: 0; top: 0; width: 16px; height: 100%; background: repeating-linear-gradient(0deg, var(--yellow) 0px, var(--yellow) 26px, var(--navy) 26px, var(--navy) 52px); z-index: 3; }
   .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
   .in-view .reveal { opacity: 1; transform: translateY(0); }
@@ -42,7 +42,7 @@
   .waveform span { width: 7px; background: var(--yellow); border-radius: 3px; animation: wave 1.1s ease-in-out infinite; }
   @keyframes wave { 0%,100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
   .loop-strip { display: flex; flex-wrap: wrap; background: rgba(15,24,48,0.7); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; align-self: flex-start; }
-  .loop-strip p { font-size: clamp(16px,1.6vw,22px); font-weight: 800; letter-spacing: 1px; padding: 14px 22px; border-right: 1px solid var(--border); }
+  .loop-strip p { font-size: clamp(18px,1.8vw,27px); font-weight: 800; letter-spacing: 1px; padding: 14px 22px; border-right: 1px solid var(--border); }
   .loop-strip p:last-child { border-right: none; }
   .nav-dots { position: fixed; right: 24px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 12px; z-index: 500; }
   .nav-dots button { width: 12px; height: 12px; border-radius: 999px; background: rgba(247,246,242,0.3); border: none; cursor: pointer; padding: 0; }
@@ -91,24 +91,24 @@
   <p class="reveal eyebrow" style="padding-left:28px">THE PROBLEM</p>
   <h1 class="reveal d1" style="font-size:clamp(36px,4.6vw,68px); line-height:1.15; max-width:1600px; padding-left:28px">A worker can see the danger.<br>But reporting it means writing in Korean.</h1>
   <div class="reveal d2" style="display:grid; grid-template-columns:1fr 1fr; grid-auto-rows:1fr; gap:min(2vw,18px); margin:min(2vh,16px) 28px 0">
-    <div style="background:rgba(255,255,255,0.05); border-radius:16px; padding:min(2.6vh,22px) min(2.2vw,26px); display:flex; flex-direction:column; justify-content:center; gap:6px">
+    <div style="background:rgba(255,255,255,0.05); border-radius:16px; padding:min(2.6vh,22px) min(2.2vw,26px); display:flex; flex-direction:column; min-width:0; justify-content:center; gap:6px">
       <p style="font-size:11px; letter-spacing:2px; font-weight:800; color:var(--red); margin:0">FATALITIES, 2025</p>
       <p class="disp" style="font-size:clamp(52px,6.6vw,96px); font-weight:700; color:var(--red); line-height:0.9; margin:0">286</p>
-      <p style="font-size:clamp(14px,1.3vw,17px); color:var(--soft); line-height:1.35; margin:0">Construction-site fatal accidents investigated by Korea's Labor Ministry.</p>
+      <p style="font-size:clamp(16px,1.5vw,22px); color:var(--soft); line-height:1.35; margin:0">Construction-site fatal accidents investigated by Korea's Labor Ministry.</p>
     </div>
-    <div style="background:rgba(255,255,255,0.05); border-radius:16px; padding:min(2.6vh,22px) min(2.2vw,26px); display:flex; flex-direction:column; justify-content:center; gap:6px">
+    <div style="background:rgba(255,255,255,0.05); border-radius:16px; padding:min(2.6vh,22px) min(2.2vw,26px); display:flex; flex-direction:column; min-width:0; justify-content:center; gap:6px">
       <p style="font-size:11px; letter-spacing:2px; font-weight:800; color:var(--yellow); margin:0">2027 BUDGET</p>
       <p class="disp" style="font-size:clamp(44px,5.6vw,80px); font-weight:700; color:var(--yellow); line-height:0.9; margin:0">&#8361;5.8B</p>
-      <p style="font-size:clamp(14px,1.3vw,17px); color:var(--soft); line-height:1.35; margin:0">Set aside for industrial-safety AI and worker-reporting technology.</p>
+      <p style="font-size:clamp(16px,1.5vw,22px); color:var(--soft); line-height:1.35; margin:0">Set aside for industrial-safety AI and worker-reporting technology.</p>
     </div>
-    <div style="background:var(--yellow); border-radius:16px; padding:min(2.6vh,22px) min(2.2vw,26px); display:flex; flex-direction:column; justify-content:center; gap:6px">
+    <div style="background:var(--yellow); border-radius:16px; padding:min(2.6vh,22px) min(2.2vw,26px); display:flex; flex-direction:column; min-width:0; justify-content:center; gap:6px">
       <p class="disp" style="font-size:clamp(26px,3vw,40px); font-weight:700; color:var(--navy); line-height:1; margin:0">2 DAYS AGO</p>
-      <p style="font-size:clamp(14px,1.3vw,17px); color:#3B3315; font-weight:600; line-height:1.4; margin:0">Korea's Incheon labor office issued new guidance under the June 18 law — passed because language barriers put foreign workers at higher risk. It expands multilingual safety materials, mandates training for every new hire, and requires site-wide electronic attendance tracking.</p>
+      <p style="font-size:clamp(16px,1.5vw,22px); color:#3B3315; font-weight:600; line-height:1.4; margin:0">Korea's Incheon labor office issued new guidance under the June 18 law — passed because language barriers put foreign workers at higher risk. It expands multilingual safety materials, mandates training for every new hire, and requires site-wide electronic attendance tracking.</p>
     </div>
-    <div style="background:rgba(201,79,79,0.12); border:1px solid rgba(201,79,79,0.35); border-radius:16px; padding:min(2.6vh,22px) min(2.2vw,26px); display:flex; flex-direction:column; justify-content:center; gap:6px">
+    <div style="background:rgba(201,79,79,0.12); border:1px solid rgba(201,79,79,0.35); border-radius:16px; padding:min(2.6vh,22px) min(2.2vw,26px); display:flex; flex-direction:column; min-width:0; justify-content:center; gap:6px">
       <p style="font-size:11px; letter-spacing:2px; font-weight:800; color:var(--red); margin:0">UNDER KOREAN LAW</p>
       <p style="font-size:clamp(19px,2.1vw,26px); font-weight:700; color:var(--off); line-height:1.25; margin:0">Executives can face personal criminal liability</p>
-      <p style="font-size:clamp(14px,1.3vw,17px); color:var(--soft); line-height:1.35; margin:0">not just the company — for safety failures that go unaddressed.</p>
+      <p style="font-size:clamp(16px,1.5vw,22px); color:var(--soft); line-height:1.35; margin:0">not just the company — for safety failures that go unaddressed.</p>
     </div>
   </div>
   <div class="row-to-col reveal d4" style="display:flex; gap:min(3vw,28px); margin-left:28px">
@@ -116,13 +116,13 @@
       <div style="width:min(12vw,100px); height:min(8vw,68px); flex:none; border-radius:10px; overflow:hidden">
         <div class="img-hz-wiring" style="width:100%; height:100%"></div>
       </div>
-      <p style="font-size:clamp(16px,1.7vw,21px); color:var(--soft); font-style:italic">A worker spots frayed wiring by a puddle. No Korean word comes to mind. He says nothing.</p>
+      <p style="font-size:clamp(18px,1.9vw,26px); color:var(--soft); font-style:italic">A worker spots frayed wiring by a puddle. No Korean word comes to mind. He says nothing.</p>
     </div>
     <div style="flex:1; display:flex; align-items:center; gap:min(2vw,16px)">
       <div style="width:min(12vw,100px); height:min(8vw,68px); flex:none; border-radius:10px; overflow:hidden">
         <div class="img-hz-heat" style="width:100%; height:100%"></div>
       </div>
-      <p style="font-size:clamp(16px,1.7vw,21px); color:var(--soft); font-style:italic">Midday, open rooftop, no shade. There's no easy way to flag it either.</p>
+      <p style="font-size:clamp(18px,1.9vw,26px); color:var(--soft); font-style:italic">Midday, open rooftop, no shade. There's no easy way to flag it either.</p>
     </div>
   </div>
 </section>
@@ -134,11 +134,11 @@
   <h1 class="reveal d1" style="font-size:clamp(34px,4.4vw,60px); padding-left:28px">Any language in.<br>One Korean report out.</h1>
   <div class="row-to-col reveal d2" style="display:flex; gap:min(2vw,20px); align-items:center; padding-left:28px; flex:1; min-height:0">
     <div style="flex:0.7; min-width:220px; background:rgba(15,24,48,0.75); border:1px solid var(--border); border-radius:20px; padding:min(2.6vh,26px) min(2.6vw,28px); display:flex; flex-direction:column; gap:14px">
-      <p style="font-size:clamp(14px,1.4vw,18px); color:var(--yellow); font-weight:800; letter-spacing:1px">WORKER SAYS OR TYPES · VIETNAMESE</p>
+      <p style="font-size:clamp(16px,1.7vw,23px); color:var(--yellow); font-weight:800; letter-spacing:1px">WORKER SAYS OR TYPES · VIETNAMESE</p>
       <div class="waveform"><span style="height:35%; animation-delay:0s"></span><span style="height:90%; animation-delay:0.1s"></span><span style="height:55%; animation-delay:0.2s"></span><span style="height:100%; animation-delay:0.3s"></span><span style="height:45%; animation-delay:0.4s"></span><span style="height:70%; animation-delay:0.5s"></span></div>
       <div>
         <p style="font-size:clamp(19px,2.1vw,26px); font-style:italic; line-height:1.3">"Ở đây có một khoảng trống. Có người có thể bị ngã."</p>
-        <p style="font-size:clamp(14px,1.4vw,17px); color:var(--muted); margin-top:6px">"There is an opening here. Someone could fall."</p>
+        <p style="font-size:clamp(16px,1.6vw,22px); color:var(--muted); margin-top:6px">"There is an opening here. Someone could fall."</p>
       </div>
       <div style="position:relative; height:min(16vh,140px); border-radius:14px; overflow:hidden">
         <div class="img-hz-guardrail" style="width:100%; height:100%"></div>
@@ -167,32 +167,32 @@
         <div style="width:100%; aspect-ratio:1; background:var(--yellow); border-radius:999px; display:flex; align-items:center; justify-content:center; box-shadow:0 14px 32px rgba(0,0,0,0.4)">
           <svg width="62%" height="62%" viewBox="0 0 24 24" fill="none"><rect x="7" y="7" width="10" height="10" rx="2" stroke="var(--navy-deep)" stroke-width="2"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.5 4.5l2 2M17.5 17.5l2 2M19.5 4.5l-2 2M6.5 17.5l-2 2" stroke="var(--navy-deep)" stroke-width="2" stroke-linecap="round"/></svg>
         </div>
-        <p class="disp" style="font-size:clamp(13px,1.4vw,16px); color:var(--yellow); font-weight:800; margin:0; line-height:1.2">AI generates<br>the outputs</p>
+        <p class="disp" style="font-size:clamp(15px,1.6vw,20px); color:var(--yellow); font-weight:800; margin:0; line-height:1.2">AI generates<br>the outputs</p>
       </div>
       <div class="img-hz-guardrail" style="position:absolute; left:41.7%; top:0.8%; width:56%; height:24%; border-radius:14px; overflow:hidden; display:flex; align-items:flex-end">
         <div style="width:100%; background:linear-gradient(0deg, rgba(11,15,13,0.92) 45%, rgba(11,15,13,0.15) 100%); padding:min(1.9vh,17px) min(2.2vw,22px) min(1.2vh,11px)">
-          <p style="font-size:clamp(13px,1.3vw,15px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">SITE SAFETY REPORT · KOREAN</p>
+          <p style="font-size:clamp(15px,1.5vw,19px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">SITE SAFETY REPORT · KOREAN</p>
           <p class="kr" style="font-size:clamp(19px,2.1vw,26px); font-weight:800; line-height:1.15">추락 위험 · 4층 계단</p>
-          <p style="font-size:clamp(14px,1.4vw,16px); color:var(--soft)">Fall hazard · Stairwell, 4F · High</p>
+          <p style="font-size:clamp(16px,1.6vw,21px); color:var(--soft)">Fall hazard · Stairwell, 4F · High</p>
         </div>
       </div>
       <div class="img-hz-signreal" style="position:absolute; left:41.7%; top:25.6%; width:56%; height:24%; border-radius:14px; overflow:hidden; display:flex; align-items:flex-end">
         <div style="width:100%; background:rgba(11,15,13,0.86); padding:min(1.5vh,13px) min(2.2vw,22px) min(1.2vh,11px)">
-          <p style="font-size:clamp(12px,1.2vw,14px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">WARNING SIGNS · MULTIPLE LANGUAGES</p>
-          <p style="font-size:clamp(14px,1.4vw,16px); color:var(--off); font-weight:600">추락 위험 · Nguy cơ té ngã · Fall Hazard</p>
+          <p style="font-size:clamp(14px,1.4vw,18px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">WARNING SIGNS · MULTIPLE LANGUAGES</p>
+          <p style="font-size:clamp(16px,1.6vw,21px); color:var(--off); font-weight:600">추락 위험 · Nguy cơ té ngã · Fall Hazard</p>
         </div>
       </div>
       <div class="img-hz-heat" style="position:absolute; left:41.7%; top:50.4%; width:56%; height:24%; border-radius:14px; overflow:hidden; display:flex; align-items:flex-end">
         <div style="width:100%; background:linear-gradient(0deg, rgba(11,15,13,0.92) 45%, rgba(11,15,13,0.15) 100%); padding:min(1.9vh,17px) min(2.2vw,22px) min(1.2vh,11px)">
-          <p style="font-size:clamp(13px,1.3vw,15px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">TRAINING MATERIALS · MULTIPLE LANGUAGES</p>
-          <p style="font-size:clamp(17px,1.8vw,22px); color:var(--off); font-weight:700">Điều gì nguy hiểm ở đây?</p>
-          <p style="font-size:clamp(14px,1.4vw,16px); color:var(--muted)">Also generated in Uzbek, Chinese, Korean</p>
+          <p style="font-size:clamp(15px,1.5vw,19px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">TRAINING MATERIALS · MULTIPLE LANGUAGES</p>
+          <p style="font-size:clamp(19px,2vw,27px); color:var(--off); font-weight:700">Điều gì nguy hiểm ở đây?</p>
+          <p style="font-size:clamp(16px,1.6vw,21px); color:var(--muted)">Also generated in Uzbek, Chinese, Korean</p>
         </div>
       </div>
       <div style="position:absolute; left:41.7%; top:75.2%; width:56%; height:24%; border-radius:14px; overflow:hidden; padding:min(1.9vh,17px) min(2.2vw,22px); display:flex; flex-direction:column; justify-content:center; gap:4px; background-color:var(--navy); background-image:linear-gradient(rgba(255,198,41,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255,198,41,0.08) 1px, transparent 1px); background-size:18px 18px">
-        <p style="font-size:clamp(13px,1.3vw,15px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">COMPLIANCE REPORT · GOVERNMENT &amp; LEGAL</p>
-        <p style="font-size:clamp(17px,1.8vw,22px); color:var(--off); font-weight:700">Site-level compliance metrics</p>
-        <p style="font-size:clamp(14px,1.4vw,16px); color:var(--muted)">Exportable for regulators — and for legal cases</p>
+        <p style="font-size:clamp(15px,1.5vw,19px); color:var(--yellow); font-weight:800; letter-spacing:0.5px">COMPLIANCE REPORT · GOVERNMENT &amp; LEGAL</p>
+        <p style="font-size:clamp(19px,2vw,27px); color:var(--off); font-weight:700">Site-level compliance metrics</p>
+        <p style="font-size:clamp(16px,1.6vw,21px); color:var(--muted)">Exportable for regulators — and for legal cases</p>
       </div>
     </div>
   </div>
@@ -206,18 +206,18 @@
   <div class="row-to-col reveal d2" style="display:flex; gap:min(3vw,24px); flex-wrap:wrap">
     <div style="flex:1; min-width:220px; background:var(--navy); border-radius:16px; padding:min(3vh,26px)">
       <p style="font-size:clamp(20px,2.2vw,28px); color:var(--off); font-weight:700">Reporting app</p>
-      <p style="font-size:clamp(14px,1.4vw,16px); color:var(--muted); margin-top:8px; line-height:1.4">Speak or type a hazard, in any language, right where it happens.</p>
-      <p style="font-size:clamp(15px,1.5vw,18px); color:var(--green); font-weight:700; margin-top:10px">● WORKING PROTOTYPE</p>
+      <p style="font-size:clamp(16px,1.6vw,21px); color:var(--muted); margin-top:8px; line-height:1.4">Speak or type a hazard, in any language, right where it happens.</p>
+      <p style="font-size:clamp(17px,1.7vw,23px); color:var(--green); font-weight:700; margin-top:10px">● WORKING PROTOTYPE</p>
     </div>
     <div style="flex:1; min-width:220px; background:var(--navy); border-radius:16px; padding:min(3vh,26px)">
       <p style="font-size:clamp(20px,2.2vw,28px); color:var(--off); font-weight:700">Management dashboard</p>
-      <p style="font-size:clamp(14px,1.4vw,16px); color:var(--muted); margin-top:8px; line-height:1.4">Triage reports, print warning labels, and act on AI-drafted corrective actions.</p>
-      <p style="font-size:clamp(15px,1.5vw,18px); color:var(--green); font-weight:700; margin-top:10px">● WORKING PROTOTYPE</p>
+      <p style="font-size:clamp(16px,1.6vw,21px); color:var(--muted); margin-top:8px; line-height:1.4">Triage reports, print warning labels, and act on AI-drafted corrective actions.</p>
+      <p style="font-size:clamp(17px,1.7vw,23px); color:var(--green); font-weight:700; margin-top:10px">● WORKING PROTOTYPE</p>
     </div>
     <div style="flex:1; min-width:220px; background:var(--navy); border-radius:16px; padding:min(3vh,26px)">
       <p style="font-size:clamp(20px,2.2vw,28px); color:var(--off); font-weight:700">Training app</p>
-      <p style="font-size:clamp(14px,1.4vw,16px); color:var(--muted); margin-top:8px; line-height:1.4">Enhanced by real hazard photos, pooled from across the industry.</p>
-      <p style="font-size:clamp(15px,1.5vw,18px); color:var(--green); font-weight:700; margin-top:10px">● WORKING PROTOTYPE</p>
+      <p style="font-size:clamp(16px,1.6vw,21px); color:var(--muted); margin-top:8px; line-height:1.4">Enhanced by real hazard photos, pooled from across the industry.</p>
+      <p style="font-size:clamp(17px,1.7vw,23px); color:var(--green); font-weight:700; margin-top:10px">● WORKING PROTOTYPE</p>
     </div>
   </div>
   <div class="row-to-col reveal d3" style="display:flex; gap:min(2.4vw,20px); flex-wrap:wrap">
@@ -227,7 +227,7 @@
       </div>
       <div style="display:flex; flex-direction:column; gap:5px">
         <p style="font-size:11px; letter-spacing:2px; color:var(--yellow); font-weight:800">EXAMPLE</p>
-        <p style="font-size:clamp(15px,1.6vw,19px); color:var(--off); line-height:1.3">Materials stacked in front of a fire exit — photographed, marked, and flagged before the shift ends.</p>
+        <p style="font-size:clamp(17px,1.8vw,24px); color:var(--off); line-height:1.3">Materials stacked in front of a fire exit — photographed, marked, and flagged before the shift ends.</p>
       </div>
     </div>
     <div style="flex:1; min-width:260px; background:var(--navy); border-radius:16px; padding:min(2.6vh,22px) min(2.4vw,24px); display:flex; gap:min(2vw,16px); align-items:center">
@@ -236,16 +236,16 @@
       </div>
       <div style="display:flex; flex-direction:column; gap:5px">
         <p style="font-size:11px; letter-spacing:2px; color:var(--yellow); font-weight:800">EXAMPLE</p>
-        <p style="font-size:clamp(15px,1.6vw,19px); color:var(--off); line-height:1.3">Midday heat exposure on an open rooftop — reported the moment it's spotted, in the worker's own language.</p>
+        <p style="font-size:clamp(17px,1.8vw,24px); color:var(--off); line-height:1.3">Midday heat exposure on an open rooftop — reported the moment it's spotted, in the worker's own language.</p>
       </div>
     </div>
   </div>
   <div class="reveal d4" style="display:flex; flex-wrap:wrap; align-items:center; gap:min(2vw,16px)">
     <p style="font-size:12px; letter-spacing:2px; color:#5B4F1E; font-weight:800; margin:0">BEYOND CONSTRUCTION</p>
     <div style="display:flex; flex-wrap:wrap; gap:10px">
-      <span style="background:var(--navy); color:var(--off); font-weight:700; font-size:clamp(13px,1.3vw,16px); padding:8px 16px; border-radius:999px">Manufacturing</span>
-      <span style="background:var(--navy); color:var(--off); font-weight:700; font-size:clamp(13px,1.3vw,16px); padding:8px 16px; border-radius:999px">Shipbuilding</span>
-      <span style="background:var(--navy); color:var(--off); font-weight:700; font-size:clamp(13px,1.3vw,16px); padding:8px 16px; border-radius:999px">Warehousing &amp; Logistics</span>
+      <span style="background:var(--navy); color:var(--off); font-weight:700; font-size:clamp(15px,1.5vw,20px); padding:8px 16px; border-radius:999px">Manufacturing</span>
+      <span style="background:var(--navy); color:var(--off); font-weight:700; font-size:clamp(15px,1.5vw,20px); padding:8px 16px; border-radius:999px">Shipbuilding</span>
+      <span style="background:var(--navy); color:var(--off); font-weight:700; font-size:clamp(15px,1.5vw,20px); padding:8px 16px; border-radius:999px">Warehousing &amp; Logistics</span>
     </div>
   </div>
   <p class="disp reveal d4" style="font-size:clamp(20px,2.4vw,30px); text-align:center; margin-top:4px">That's 안전톡. Thank you.</p>
