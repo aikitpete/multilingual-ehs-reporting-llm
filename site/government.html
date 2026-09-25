@@ -71,6 +71,10 @@
   .ai-panel .ai-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
   .ai-panel .ai-badge svg { width: 13px; height: 13px; }
   .ai-panel p { margin: 0; font-size: 14px; color: var(--ink); line-height: 1.6; }
+  .ai-panel h4 { margin: 14px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+  .ai-panel h4:first-child { margin-top: 0; }
+  .ai-panel ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
+  .ai-panel li { font-size: 13.5px; color: var(--ink); line-height: 1.5; }
   .ai-generate-btn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-strong)); color: #F7F3EA; border: none; padding: 12px 20px; border-radius: 10px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 12px; }
   .ai-generate-btn svg { width: 15px; height: 15px; flex: none; }
   .ai-generate-btn[disabled] { opacity: 0.7; cursor: default; }
@@ -105,7 +109,7 @@
       AI compliance narrative
     </div>
     <div id="gov-ai-empty" class="empty-hint">Not generated yet — summarizes this quarter's aggregate compliance picture across all reporting sites.</div>
-    <p id="gov-ai-content" style="display:none"></p>
+    <div id="gov-ai-content" style="display:none"></div>
     <button type="button" class="ai-generate-btn" id="gov-generate-btn">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
       <span id="gov-generate-label">Generate report with AI</span>
@@ -235,7 +239,20 @@
       btn.disabled = true;
       label.innerHTML = 'Generating<span class="ai-loading-dots"></span>';
       setTimeout(function () {
-        content.textContent = 'Fifteen sites reported this quarter, covering 1,204 hazard submissions. Falls remain the leading category, consistent with 2025 fatality data, though repeat high-severity reports fell 31% quarter over quarter. Training completion sits at or above 97% across all four languages on file. Two sites (Suwon, Cheongju) have pending training records and should be prioritized for follow-up before the next audit window.';
+        content.innerHTML =
+          '<h4>Key findings</h4><ul>' +
+            '<li>Fifteen sites reported this quarter, covering 1,204 hazard submissions in aggregate.</li>' +
+            '<li>Falls remain the leading hazard category, consistent with 2025 national fatality data.</li>' +
+            '<li>Repeat high-severity reports fell 31% quarter over quarter, indicating corrective actions from the prior cycle are taking effect.</li>' +
+            '<li>Training completion sits at or above 97% across all four languages on file.</li>' +
+            '<li>Two sites (Suwon, Cheongju) have pending training records, unresolved as of this reporting period.</li>' +
+          '</ul>' +
+          '<h4>Recommendations</h4><ul>' +
+            '<li>Prioritize a compliance follow-up at Suwon and Cheongju before the next audit window, given their pending training records.</li>' +
+            '<li>Given falls remain the leading category and track national fatality trends, consider requiring a fall-protection audit at sites with elevated-work exposure.</li>' +
+            '<li>Maintain the 97% training-completion threshold as a standing licensing condition, given current performance is already at that bar.</li>' +
+            '<li>Direct operators with repeat high-severity locations to submit a corrective-action log for regulatory review, to sustain this quarter\'s improvement.</li>' +
+          '</ul>';
         empty.style.display = 'none';
         content.style.display = '';
         content.classList.remove('ai-reveal');
