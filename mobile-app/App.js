@@ -416,6 +416,7 @@ function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome, ch
 }
 
 function PhotoStep({ tr, onCamera, onLibrary, onSample }) {
+  const [showSamples, setShowSamples] = React.useState(false);
   return (
     <ScrollView contentContainerStyle={styles.stepWrap}>
       <Text style={styles.stepTitle}>{tr('report.photo.title')}</Text>
@@ -426,15 +427,19 @@ function PhotoStep({ tr, onCamera, onLibrary, onSample }) {
       <PrimaryButton label={tr('report.photo.camera')} onPress={onCamera} />
       <SecondaryButton label={tr('report.photo.library')} onPress={onLibrary} />
 
-      <Text style={[styles.stepHint, { marginTop: 8, marginBottom: -4 }]}>{tr('report.photo.sample')}</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sampleGrid}>
-        {Object.keys(CATEGORY_PHOTO).map((key) => (
-          <Pressable key={key} style={styles.sampleThumbWrap} onPress={() => onSample(key)}>
-            <Image source={CATEGORY_PHOTO[key]} style={styles.sampleThumb} resizeMode="cover" />
-            <Text style={styles.sampleThumbLabel}>{tr(`report.category.${key}`)}</Text>
-          </Pressable>
-        ))}
-      </ScrollView>
+      <Pressable style={styles.sampleToggle} onPress={() => setShowSamples((v) => !v)}>
+        <Text style={styles.sampleToggleLabel}>{tr('report.photo.sample')}</Text>
+      </Pressable>
+      {showSamples && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sampleGrid}>
+          {Object.keys(CATEGORY_PHOTO).map((key) => (
+            <Pressable key={key} style={styles.sampleThumbWrap} onPress={() => onSample(key)}>
+              <Image source={CATEGORY_PHOTO[key]} style={styles.sampleThumb} resizeMode="cover" />
+              <Text style={styles.sampleThumbLabel}>{tr(`report.category.${key}`)}</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      )}
     </ScrollView>
   );
 }
@@ -755,7 +760,9 @@ const styles = StyleSheet.create({
   },
   markPhoto: { borderRadius: 18, alignSelf: 'center', overflow: 'hidden' },
   pin: { position: 'absolute' },
-  sampleGrid: { flexDirection: 'row', gap: 10 },
+  sampleToggle: { alignSelf: 'center', paddingVertical: 10, marginTop: 4 },
+  sampleToggleLabel: { fontSize: 12.5, color: C.muted, textDecorationLine: 'underline' },
+  sampleGrid: { flexDirection: 'row', gap: 10, marginTop: 4 },
   sampleThumbWrap: { width: 92, alignItems: 'center', gap: 4 },
   sampleThumb: { width: 92, height: 92, borderRadius: 12, backgroundColor: '#333' },
   sampleThumbLabel: { fontSize: 11, fontWeight: '700', color: C.inkSoft },
