@@ -3,6 +3,21 @@
 // /reports to display them. In-memory only — restarting the process
 // clears it, which is fine for a live demo.
 const http = require('http');
+const fs = require('fs');
+const path = require('path');
+
+// Falls back to server/.env (one line: ANTHROPIC_API_KEY=sk-...) when the
+// key isn't already in the environment. Every restart this session needed
+// the key re-exported in the exact shell that ran `node server/server.js`
+// -- easy to forget, and each miss silently breaks AI generation. A file
+// on disk survives a restart in any shell. Never committed (see .gitignore).
+if (!process.env.ANTHROPIC_API_KEY) {
+  try {
+    const envContent = fs.readFileSync(path.join(__dirname, '.env'), 'utf8');
+    const match = envContent.match(/^ANTHROPIC_API_KEY=(.+)$/m);
+    if (match) process.env.ANTHROPIC_API_KEY = match[1].trim();
+  } catch (e) { /* no server/.env file -- falls through to the warning below */ }
+}
 
 const PORT = process.env.PORT || 4001;
 const reports = [];
