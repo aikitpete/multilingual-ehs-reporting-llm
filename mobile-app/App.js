@@ -204,10 +204,14 @@ export default function App() {
 
   if (screen === 'welcome') {
     return (
-      <SafeAreaView style={styles.safeWelcome}>
+      // Plain View, not SafeAreaView: the background photo should bleed to
+      // the true screen edges (no color bar showing through the notch/home-
+      // indicator insets). The language grid already has its own top padding
+      // to clear the status bar.
+      <View style={styles.safeWelcome}>
         <StatusBar style="light" />
         <WelcomeSequence lang={lang} onSelectLang={setLang} tr={tr} onFinish={() => setScreen('home')} />
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -331,7 +335,7 @@ function WelcomeSequence({ lang, onSelectLang, tr, onFinish }) {
     // so each option is shown only in its own native name (no instructional
     // text to read), over a real jobsite photo for a visual, non-verbal cue.
     return (
-      <ImageBackground source={WELCOME_BG} style={styles.welcomeLangBg} resizeMode="contain" imageStyle={{ opacity: 0.65 }}>
+      <ImageBackground source={WELCOME_BG} style={styles.welcomeLangBg} resizeMode="cover" imageStyle={{ opacity: 0.65 }}>
         <View style={styles.welcomeLangOverlay}>
           <Text style={styles.welcomeLangTitle}>안전톡</Text>
           <View style={styles.welcomeLangGrid}>
