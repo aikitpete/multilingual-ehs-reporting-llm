@@ -374,12 +374,6 @@
   // Set before any other script below runs — several IIFEs POST to this on
   // load, not just after a user action, so it must exist first.
   window.MOBILE_SERVER_URL = 'https://nursing-networks-payroll-satisfied.trycloudflare.com';
-  document.getElementById('dev-clear-btn').addEventListener('click', function () {
-    if (!confirm('Clear all mobile-submitted demo reports and training materials? This cannot be undone.')) return;
-    fetch(window.MOBILE_SERVER_URL + '/reports', { method: 'DELETE' })
-      .then(function () { location.reload(); })
-      .catch(function () { alert('Could not reach the server.'); });
-  });
   (function () {
     var STRINGS = {
       "en": {
@@ -992,6 +986,12 @@
       if (!wrap.contains(e.target)) { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
     });
   })();
+  document.getElementById('dev-clear-btn').addEventListener('click', function () {
+    if (!confirm('Clear all mobile-submitted demo reports and training materials? This cannot be undone.')) return;
+    fetch(window.MOBILE_SERVER_URL + '/reports', { method: 'DELETE' })
+      .then(function () { location.reload(); })
+      .catch(function () { alert('Could not reach the server.'); });
+  });
 </script>
 
 
