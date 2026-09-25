@@ -23,10 +23,10 @@ const DEMO_SCENARIOS = require('./src/data/demoScenarios');
 // submission still goes through the exact same submitReport() pipeline.
 const DEMO_MODE = true;
 
-// Generic placeholder for the mark-the-spot step, shown before the worker
-// has picked a category — Training list thumbnails use the category-
-// matched photo instead (see CATEGORY_PHOTO).
-const SAMPLE_PHOTO = CATEGORY_PHOTO.falls;
+// Welcome/language-picker screen background: a multilingual crew reading a
+// translated safety report together, to signal what the app actually does
+// (real-time safety talk across languages) rather than a generic hazard photo.
+const WELCOME_BG = require('./assets/welcome-bg.webp');
 
 const C = {
   bg: '#F2ECE0',
@@ -241,6 +241,8 @@ export default function App() {
       {screen === 'report_form' && draft && (
         <ReportForm
           tr={tr}
+          lang={lang}
+          onLangPress={() => setShowLangSheet(true)}
           draft={draft}
           setDraft={setDraft}
           onCamera={pickFromCamera}
@@ -257,7 +259,7 @@ export default function App() {
       )}
 
       {screen === 'training_list' && (
-        <TrainingList tr={tr} reports={[...SEED_REPORTS, ...sharedReports]} syncedMaterials={syncedMaterials} />
+        <TrainingList tr={tr} lang={lang} onLangPress={() => setShowLangSheet(true)} reports={[...SEED_REPORTS, ...sharedReports]} syncedMaterials={syncedMaterials} />
       )}
 
       <LangSheet visible={showLangSheet} tr={tr} lang={lang} onSelect={(code) => { setLang(code); setShowLangSheet(false); }} onClose={() => setShowLangSheet(false)} />
@@ -329,7 +331,7 @@ function WelcomeSequence({ lang, onSelectLang, tr, onFinish }) {
     // so each option is shown only in its own native name (no instructional
     // text to read), over a real jobsite photo for a visual, non-verbal cue.
     return (
-      <ImageBackground source={SAMPLE_PHOTO} style={styles.welcomeLangBg} imageStyle={{ opacity: 0.4 }}>
+      <ImageBackground source={WELCOME_BG} style={styles.welcomeLangBg} imageStyle={{ opacity: 0.65 }}>
         <View style={styles.welcomeLangOverlay}>
           <Text style={styles.welcomeLangTitle}>안전톡</Text>
           <View style={styles.welcomeLangGrid}>
@@ -400,7 +402,7 @@ function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome, ch
 // requested order (description -> photo -> mark -> category -> location
 // -> severity -> AI check) so the form never dumps everything on the
 // worker at once, while still being one screen/one scroll, not a wizard.
-function ReportForm({ tr, draft, setDraft, onCamera, onLibrary, onSample, onDemoData, onGenerateDescription, onSubmit }) {
+function ReportForm({ tr, lang, onLangPress, draft, setDraft, onCamera, onLibrary, onSample, onDemoData, onGenerateDescription, onSubmit }) {
   const [showSamples, setShowSamples] = React.useState(false);
   const markSize = Math.min(Dimensions.get('window').width - 72, 300);
 
@@ -416,6 +418,11 @@ function ReportForm({ tr, draft, setDraft, onCamera, onLibrary, onSample, onDemo
 
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
+      <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+        <Pressable style={styles.langPill} onPress={onLangPress}>
+          <Text style={styles.langPillLabel}>🌐 {LANGUAGES[lang]['lang.name']}</Text>
+        </Pressable>
+      </View>
       <Text style={styles.stepTitle}>{tr('home.report')}</Text>
 
       <Text style={[styles.sectionLabel, { marginTop: 0 }]}>{tr('report.photo.title')}</Text>
@@ -602,7 +609,7 @@ function SubmittedStep({ tr, draft, onDone }) {
 // categories that have it), then every confirmed hazard of that type with
 // a large photo and its marked coordinate, so it's easy to see what and
 // where the hazard is.
-function TrainingList({ tr, reports, syncedMaterials }) {
+function TrainingList({ tr, lang, onLangPress, reports, syncedMaterials }) {
   const [answers, setAnswers] = useState({});
 
   const grouped = {};
@@ -613,6 +620,11 @@ function TrainingList({ tr, reports, syncedMaterials }) {
 
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContent}>
+      <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
+        <Pressable style={styles.langPill} onPress={onLangPress}>
+          <Text style={styles.langPillLabel}>🌐 {LANGUAGES[lang]['lang.name']}</Text>
+        </Pressable>
+      </View>
       <Text style={styles.stepTitle}>{tr('training.list.title')}</Text>
 
       {categoriesPresent.length === 0 && <Text style={styles.stepHint}>{tr('training.list.empty')}</Text>}
