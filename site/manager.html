@@ -1045,18 +1045,32 @@
         var topCat = byCat[0];
         var topLoc = byLoc[0];
 
+        // Cross-referenced insight the charts/lists above don't compute on
+        // their own -- severity concentrated by location, and whether the
+        // leading category traces back to one specific place rather than
+        // being spread evenly (a site-condition signal vs. a training gap).
+        var highRows = rows.filter(function (r) { return r.sev === 'High'; });
+        var highByLoc = tally(highRows, 'loc');
+        var topHighLoc = highByLoc[0];
+        var topCatByLoc = tally(rows.filter(function (r) { return r.cat === topCat.key; }), 'loc');
+        var topCatConcentration = topCatByLoc[0] ? Math.round((topCatByLoc[0].count / topCat.count) * 100) : 0;
+
         var html = '';
-        html += '<h4>Summary</h4><p>' + total + ' reports on record, ' + high + ' at high severity. ' +
-          topCat.key + ' is the leading hazard type (' + topCat.count + ' reports). ' +
-          (repeatLocs.length ? repeatLocs.length + ' location' + (repeatLocs.length > 1 ? 's have' : ' has') + ' repeat reports and should be prioritized.' : 'No location has repeat reports yet.') + '</p>';
+        html += '<h4>Summary</h4><p>' + total + ' reports on record, ' + high + ' at high severity.</p>';
 
-        html += '<h4>By category</h4><ul>' + byCat.map(function (c) {
-          return '<li><b>' + c.key + '</b> — ' + c.count + ' report' + (c.count > 1 ? 's' : '') + '</li>';
-        }).join('') + '</ul>';
+        var insights = [];
+        if (topHighLoc && topHighLoc.count >= 2) {
+          insights.push('<b>' + topHighLoc.key + '</b> accounts for ' + topHighLoc.count + ' of the ' + high + ' high-severity reports — a concentration, not scattered incidents.');
+        }
+        if (topCatByLoc[0] && topCat.count >= 2 && topCatConcentration >= 50) {
+          insights.push(topCatConcentration + '% of ' + topCat.key.toLowerCase() + ' reports trace back to <b>' + topCatByLoc[0].key + '</b>, pointing to a site-specific condition there rather than a workforce-wide gap.');
+        }
+        if (repeatLocs.length) {
+          insights.push(repeatLocs.length + ' location' + (repeatLocs.length > 1 ? 's have' : ' has') + ' repeat reports this quarter and should be prioritized for a walkthrough, not treated as isolated incidents.');
+        }
+        if (!insights.length) insights.push('Hazards are broadly distributed across categories and locations this quarter — no single site or type dominates yet.');
 
-        html += '<h4>By location</h4><ul>' + byLoc.map(function (l) {
-          return '<li><b>' + l.key + '</b> — ' + l.count + ' report' + (l.count > 1 ? 's' : '') + (l.count >= 2 ? ' <span style="color:var(--high); font-weight:700">· repeat</span>' : '') + '</li>';
-        }).join('') + '</ul>';
+        html += '<h4>Key insight</h4><ul>' + insights.map(function (i) { return '<li>' + i + '</li>'; }).join('') + '</ul>';
 
         var recs = [];
         byCat.forEach(function (c) {
