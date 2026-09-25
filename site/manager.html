@@ -128,6 +128,9 @@
   .label-preview .foot { display: flex; justify-content: space-between; font-size: 11px; color: #8C8983; border-top: 1px dashed #DAD5CB; padding-top: 10px; }
   tr.row-click { cursor: pointer; }
   tr.row-click:hover td { background: var(--surface-2); }
+  td.uploaded { font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .row-delete-btn { border: none; background: none; color: var(--muted); font-size: 13px; cursor: pointer; opacity: 0.4; padding: 4px 6px; }
+  .row-delete-btn:hover { opacity: 1; color: var(--high); }
   .modal-backdrop { position: fixed; inset: 0; background: rgba(20,33,61,0.45); display: none; align-items: center; justify-content: center; z-index: 900; padding: 20px; }
   .modal-backdrop.on { display: flex; }
   .modal-card { background: var(--surface); border-radius: 20px; padding: 28px; width: 500px; max-width: 100%; max-height: 88vh; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 24px 60px rgba(0,0,0,0.3); }
@@ -264,16 +267,16 @@
       <div class="panel">
         <div class="panel-head"><h2 data-i18n="panel.recent">Recent reports</h2><span class="btn-link" data-i18n="action.export" id="inline-export-link">Export</span></div>
         <table id="reports-table">
-          <tr><th data-i18n="th.hazard">Hazard</th><th data-i18n="th.category">Category</th><th data-i18n="th.severity">Severity</th><th data-i18n="th.location">Location</th><th data-i18n="th.status">Status</th></tr>
-          <tr class="row-click" data-lang="Vietnamese"><td class="main"><span class="hz-thumb hz-thumb-fall"></span>Broken guardrail</td><td>Fall</td><td><span class="pill high">High</span></td><td>4F, east stair</td><td>New</td></tr>
-          <tr class="row-click" data-lang="Uzbek"><td class="main"><span class="hz-thumb hz-thumb-electrical"></span>Exposed wiring</td><td>Electrical</td><td><span class="pill med">Medium</span></td><td>B1 storage</td><td>Assigned</td></tr>
-          <tr class="row-click" data-lang="Chinese"><td class="main"><span class="hz-thumb hz-thumb-fire"></span>Blocked fire exit</td><td>Fire</td><td><span class="pill low">Low</span></td><td>2F corridor</td><td>Resolved</td></tr>
-          <tr class="row-click" data-lang="English"><td class="main"><span class="hz-thumb hz-thumb-fall"></span>Loose scaffold plank</td><td>Fall</td><td><span class="pill high">High</span></td><td>Roof, north</td><td>Assigned</td></tr>
-          <tr class="row-click" data-lang="Vietnamese"><td class="main"><span class="hz-thumb hz-thumb-heat"></span>Heat exposure, no shade</td><td>Heat</td><td><span class="pill med">Medium</span></td><td>Yard, zone C</td><td>Resolved</td></tr>
-          <tr class="row-click" data-lang="Uzbek"><td class="main"><span class="hz-thumb hz-thumb-fall"></span>Trip hazard, uncovered conduit</td><td>Fall</td><td><span class="pill low">Low</span></td><td>B2 corridor</td><td>New</td></tr>
-          <tr class="row-click" data-lang="Chinese"><td class="main"><span class="hz-thumb hz-thumb-electrical"></span>Frayed extension cord</td><td>Electrical</td><td><span class="pill med">Medium</span></td><td>3F, unit 12</td><td>Assigned</td></tr>
-          <tr class="row-click" data-lang="English"><td class="main"><span class="hz-thumb hz-thumb-fall"></span>Ladder missing footing pads</td><td>Fall</td><td><span class="pill med">Medium</span></td><td>Yard, zone A</td><td>Resolved</td></tr>
-          <tr class="row-click" data-lang="Vietnamese"><td class="main"><span class="hz-thumb hz-thumb-fire"></span>Gas cylinder stored on its side</td><td>Fire</td><td><span class="pill high">High</span></td><td>B1 storage</td><td>New</td></tr>
+          <tr><th data-i18n="th.hazard">Hazard</th><th data-i18n="th.category">Category</th><th data-i18n="th.severity">Severity</th><th data-i18n="th.location">Location</th><th data-i18n="th.status">Status</th><th>Uploaded</th><th></th></tr>
+          <tr class="row-click" data-lang="Vietnamese" data-report-id="seed-0"><td class="main"><span class="hz-thumb hz-thumb-fall"></span>Broken guardrail</td><td>Fall</td><td><span class="pill high">High</span></td><td>4F, east stair</td><td>New</td><td class="uploaded">Sep 24, 2026 · 08:14</td><td><button type="button" class="row-delete-btn" title="Delete this report">✕</button></td></tr>
+          <tr class="row-click" data-lang="Uzbek" data-report-id="seed-1"><td class="main"><span class="hz-thumb hz-thumb-electrical"></span>Exposed wiring</td><td>Electrical</td><td><span class="pill med">Medium</span></td><td>B1 storage</td><td>Assigned</td><td class="uploaded">Sep 24, 2026 · 15:47</td><td><button type="button" class="row-delete-btn" title="Delete this report">✕</button></td></tr>
+          <tr class="row-click" data-lang="Chinese" data-report-id="seed-2"><td class="main"><span class="hz-thumb hz-thumb-fire"></span>Blocked fire exit</td><td>Fire</td><td><span class="pill low">Low</span></td><td>2F corridor</td><td>Resolved</td><td class="uploaded">Sep 23, 2026 · 10:02</td><td><button type="button" class="row-delete-btn" title="Delete this report">✕</button></td></tr>
+          <tr class="row-click" data-lang="English" data-report-id="seed-3"><td class="main"><span class="hz-thumb hz-thumb-fall"></span>Loose scaffold plank</td><td>Fall</td><td><span class="pill high">High</span></td><td>Roof, north</td><td>Assigned</td><td class="uploaded">Sep 22, 2026 · 07:55</td><td><button type="button" class="row-delete-btn" title="Delete this report">✕</button></td></tr>
+          <tr class="row-click" data-lang="Vietnamese" data-report-id="seed-4"><td class="main"><span class="hz-thumb hz-thumb-heat"></span>Heat exposure, no shade</td><td>Heat</td><td><span class="pill med">Medium</span></td><td>Yard, zone C</td><td>Resolved</td><td class="uploaded">Sep 21, 2026 · 13:20</td><td><button type="button" class="row-delete-btn" title="Delete this report">✕</button></td></tr>
+          <tr class="row-click" data-lang="Uzbek" data-report-id="seed-5"><td class="main"><span class="hz-thumb hz-thumb-fall"></span>Trip hazard, uncovered conduit</td><td>Fall</td><td><span class="pill low">Low</span></td><td>B2 corridor</td><td>New</td><td class="uploaded">Sep 20, 2026 · 09:41</td><td><button type="button" class="row-delete-btn" title="Delete this report">✕</button></td></tr>
+          <tr class="row-click" data-lang="Chinese" data-report-id="seed-6"><td class="main"><span class="hz-thumb hz-thumb-electrical"></span>Frayed extension cord</td><td>Electrical</td><td><span class="pill med">Medium</span></td><td>3F, unit 12</td><td>Assigned</td><td class="uploaded">Sep 19, 2026 · 11:08</td><td><button type="button" class="row-delete-btn" title="Delete this report">✕</button></td></tr>
+          <tr class="row-click" data-lang="English" data-report-id="seed-7"><td class="main"><span class="hz-thumb hz-thumb-fall"></span>Ladder missing footing pads</td><td>Fall</td><td><span class="pill med">Medium</span></td><td>Yard, zone A</td><td>Resolved</td><td class="uploaded">Sep 18, 2026 · 15:52</td><td><button type="button" class="row-delete-btn" title="Delete this report">✕</button></td></tr>
+          <tr class="row-click" data-lang="Vietnamese" data-report-id="seed-8"><td class="main"><span class="hz-thumb hz-thumb-fire"></span>Gas cylinder stored on its side</td><td>Fire</td><td><span class="pill high">High</span></td><td>B1 storage</td><td>New</td><td class="uploaded">Sep 17, 2026 · 07:30</td><td><button type="button" class="row-delete-btn" title="Delete this report">✕</button></td></tr>
         </table>
       </div>
       <div class="panel">
@@ -861,7 +864,8 @@
       document.querySelectorAll('#reports-table tr.row-click').forEach(function (row, idx) {
         if (row.dataset.bound) return;
         row.dataset.bound = '1';
-        row.addEventListener('click', function () {
+        row.addEventListener('click', function (e) {
+          if (e.target.closest('.row-delete-btn')) return;
           var cells = row.querySelectorAll('td');
           document.getElementById('modal-title').textContent = cells[0].textContent;
           document.getElementById('modal-category').textContent = cells[1].textContent;
@@ -895,6 +899,31 @@
     var SEV_PILL_CLASS = { low: 'low', medium: 'med', high: 'high' };
     var LANG_DISPLAY = { vi: 'Vietnamese', uz: 'Uzbek', zh: 'Chinese', ko: 'Korean', en: 'English' };
 
+    // Discrete per-row delete. Seed rows (id "seed-N") aren't backed by any
+    // server record -- deleting one just removes it from view. A real
+    // mobile-submitted row (id from the server) also gets deleted server-side
+    // so it disappears for every viewer, not just this tab.
+    reportsTable.addEventListener('click', function (e) {
+      var btn = e.target.closest('.row-delete-btn');
+      if (!btn) return;
+      e.stopPropagation();
+      var row = btn.closest('tr');
+      var id = row.getAttribute('data-report-id');
+      if (!confirm('Delete this hazard report? This cannot be undone.')) return;
+      var remove = function () {
+        row.remove();
+        var idx = window.MGMT_REPORTS.findIndex(function (r) { return r.id === id; });
+        if (idx > -1) window.MGMT_REPORTS.splice(idx, 1);
+        renderLocationBreakdown();
+        renderCharts();
+      };
+      if (id && id.indexOf('seed-') !== 0) {
+        fetch(MOBILE_SERVER_URL + '/reports/' + id, { method: 'DELETE' }).then(remove).catch(remove);
+      } else {
+        remove();
+      }
+    });
+
     function pollMobileReports() {
       fetch(MOBILE_SERVER_URL + '/reports').then(function (r) { return r.json(); }).then(function (list) {
         list.slice().reverse().forEach(function (rep) {
@@ -922,15 +951,21 @@
           });
 
           var thumbCls = 'hz-thumb-' + (rep.category === 'other' ? 'fall' : rep.category);
+          var receivedDate = new Date(rep.receivedAt);
+          var uploaded = receivedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) +
+            ' · ' + receivedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
           var tr = document.createElement('tr');
           tr.className = 'row-click';
           tr.setAttribute('data-lang', langName);
+          tr.setAttribute('data-report-id', rep.id);
           tr.innerHTML =
             '<td class="main"><span class="hz-thumb ' + thumbCls + '"></span>📱 ' + title + '</td>' +
             '<td>' + cat + '</td>' +
             '<td><span class="pill ' + sevClass + '">' + sevLabel + '</span></td>' +
             '<td>' + loc + '</td>' +
-            '<td>New</td>';
+            '<td>New</td>' +
+            '<td class="uploaded">' + uploaded + '</td>' +
+            '<td><button type="button" class="row-delete-btn" title="Delete this report">✕</button></td>';
           var refRow = reportsTable.rows[1] || null;
           (refRow ? refRow.parentNode : reportsTable).insertBefore(tr, refRow);
           bindReportRows();

@@ -215,6 +215,19 @@ const server = http.createServer((req, res) => {
     return send(res, 200, { ok: true });
   }
 
+  // Per-item delete for the dashboard's row-level delete button.
+  if (req.url.indexOf('/reports/') === 0 && req.method === 'DELETE') {
+    const id = req.url.slice('/reports/'.length);
+    const idx = reports.findIndex((r) => r.id === id);
+    if (idx === -1) return send(res, 404, { error: 'not found' });
+    reports.splice(idx, 1);
+    for (let i = trainingMaterials.length - 1; i >= 0; i--) {
+      if (trainingMaterials[i].reportId === id) trainingMaterials.splice(i, 1);
+    }
+    console.log('Report deleted:', id);
+    return send(res, 200, { ok: true });
+  }
+
   if (req.url === '/training-materials' && req.method === 'GET') {
     return send(res, 200, trainingMaterials);
   }
