@@ -68,23 +68,38 @@ async function getAiFeedback({ note, category, severity, location, lang }) {
   }
 }
 
-// Vision call to draft a starting hazard description from a photo, in the
-// worker's own language. Same fail-proof contract as getAiFeedback: never
-// throws, never blocks -- a missing key, error, or timeout just means the
-// worker types their own description from a blank field.
-async function getAiPhotoDescription({ imageBase64, mimeType, lang }) {
+// Vision call to draft a starting hazard description from a real photo, in
+// the worker's own language -- or, when there's no real photo (a sample/demo
+// photo has no bytes to send), a text-only call using just the known
+// category. Same fail-proof contract as getAiFeedback: never throws, never
+// blocks -- a missing key, error, or timeout just means the worker types
+// their own description from a blank field.
+async function getAiPhotoDescription({ imageBase64, mimeType, lang, category }) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey || !imageBase64) {
+  if (!apiKey || (!imageBase64 && !category)) {
     return { ok: true, description: null, fallback: true };
   }
 
-  const prompt = [
-    'You are helping a construction-site worker file a hazard report.',
-    'Look at the photo and write a short, factual, first-person draft description of the hazard shown (what it is, where it is, why it is dangerous).',
-    `Write it in this language: ${lang || 'en'}.`,
-    'Keep it under 30 words, plain language, no preamble, no markdown. If no clear hazard is visible, describe what is in the photo neutrally.',
-    'Reply with ONLY the description text.',
-  ].join('\n');
+  const content = imageBase64
+    ? [
+        { type: 'image', source: { type: 'base64', media_type: mimeType || 'image/jpeg', data: imageBase64 } },
+        { type: 'text', text: [
+            'You are helping a construction-site worker file a hazard report.',
+            'Look at the photo and write a short, factual, first-person draft description of the hazard shown (what it is, where it is, why it is dangerous).',
+            `Write it in this language: ${lang || 'en'}.`,
+            'Keep it under 30 words, plain language, no preamble, no markdown. If no clear hazard is visible, describe what is in the photo neutrally.',
+            'Reply with ONLY the description text.',
+          ].join('\n') },
+      ]
+    : [
+        { type: 'text', text: [
+            'You are helping a construction-site worker file a hazard report using a generic example photo for this hazard category (no real photo was taken).',
+            `Hazard category: ${category}.`,
+            `Write a short, plausible, first-person example description of this kind of hazard, in this language: ${lang || 'en'}.`,
+            'Keep it under 25 words, plain language, no preamble, no markdown.',
+            'Reply with ONLY the description text.',
+          ].join('\n') },
+      ];
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), AI_VISION_TIMEOUT_MS);
@@ -99,13 +114,7 @@ async function getAiPhotoDescription({ imageBase64, mimeType, lang }) {
       body: JSON.stringify({
         model: 'claude-haiku-4-5-20251001',
         max_tokens: 100,
-        messages: [{
-          role: 'user',
-          content: [
-            { type: 'image', source: { type: 'base64', media_type: mimeType || 'image/jpeg', data: imageBase64 } },
-            { type: 'text', text: prompt },
-          ],
-        }],
+        messages: [{ role: 'user', content: content }],
       }),
       signal: controller.signal,
     });

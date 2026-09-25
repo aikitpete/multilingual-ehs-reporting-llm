@@ -123,8 +123,8 @@ export default function App() {
     if (!perm.granted) return pickSample('falls');
     const res = await ImagePicker.launchCameraAsync({ quality: 0.6, base64: true });
     if (!res.canceled) {
-      setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, photoBase64: res.assets[0].base64, samplePhoto: false }));
-      requestAiDescribe(res.assets[0].base64);
+      setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, photoBase64: res.assets[0].base64, samplePhoto: false, sampleCategory: null }));
+      requestAiDescribe({ base64: res.assets[0].base64 });
     }
   }
 
@@ -133,22 +133,25 @@ export default function App() {
     if (!perm.granted) return pickSample('falls');
     const res = await ImagePicker.launchImageLibraryAsync({ quality: 0.6, base64: true });
     if (!res.canceled) {
-      setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, photoBase64: res.assets[0].base64, samplePhoto: false }));
-      requestAiDescribe(res.assets[0].base64);
+      setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, photoBase64: res.assets[0].base64, samplePhoto: false, sampleCategory: null }));
+      requestAiDescribe({ base64: res.assets[0].base64 });
     }
   }
 
   function pickSample(key) {
-    setDraft((d) => ({ ...d, photoUri: null, photoBase64: null, samplePhoto: CATEGORY_PHOTO[key], aiDescribe: null }));
+    setDraft((d) => ({ ...d, photoUri: null, photoBase64: null, samplePhoto: CATEGORY_PHOTO[key], sampleCategory: key, aiDescribe: null }));
+    requestAiDescribe({ category: key });
   }
 
-  // Best-effort, non-blocking: attempts a real vision LLM call (server-side,
-  // see server/server.js /ai-describe-photo) to draft a starting description
-  // in the worker's own language. Always resolves to either a draft or a
-  // blank, editable field within a bounded time — never blocks the form.
-  function requestAiDescribe(base64) {
-    if (!base64) {
-      console.warn('ai-describe-photo: no base64 from picker, skipping');
+  // Best-effort, non-blocking: attempts a real LLM call (server-side, see
+  // server/server.js /ai-describe-photo) to draft a starting description in
+  // the worker's own language -- vision from a real photo, or a text-only
+  // generation from the category when it's a sample/demo photo with no real
+  // bytes to send. Always resolves to either a draft or a blank, editable
+  // field within a bounded time — never blocks the form.
+  function requestAiDescribe({ base64, category }) {
+    if (!base64 && !category) {
+      console.warn('ai-describe-photo: no base64/category available, skipping');
       return;
     }
     setDraft((cur) => ({ ...cur, aiDescribe: { status: 'loading' } }));
@@ -160,7 +163,7 @@ export default function App() {
     fetch(SERVER_URL + '/ai-describe-photo', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ imageBase64: base64, lang }),
+      body: JSON.stringify({ imageBase64: base64 || null, category: category || null, lang }),
       signal: controller.signal,
     })
       .then((r) => r.json())
@@ -244,7 +247,7 @@ export default function App() {
           onLibrary={pickFromLibrary}
           onSample={pickSample}
           onDemoData={() => setShowDemoSheet(true)}
-          onGenerateDescription={() => requestAiDescribe(draft.photoBase64)}
+          onGenerateDescription={() => requestAiDescribe({ base64: draft.photoBase64, category: draft.sampleCategory })}
           onSubmit={submitReport}
         />
       )}
@@ -445,7 +448,7 @@ function ReportForm({ tr, draft, setDraft, onCamera, onLibrary, onSample, onDemo
           <Text style={styles.sectionLabel}>{tr('report.description.title')}</Text>
           <Text style={styles.stepHint}>{tr('report.description.hint')}</Text>
 
-          {!!draft.photoBase64 && (
+          {(!!draft.photoBase64 || !!draft.sampleCategory) && (
             <>
               <Pressable
                 style={[styles.aiGenerateBtn, aiDescribing && styles.aiGenerateBtnBusy]}
