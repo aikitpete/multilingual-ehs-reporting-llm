@@ -919,7 +919,17 @@
         renderCharts();
       };
       if (id && id.indexOf('seed-') !== 0) {
-        fetch(MOBILE_SERVER_URL + '/reports/' + id, { method: 'DELETE' }).then(remove).catch(remove);
+        // fetch() only rejects on a network failure -- it resolves normally
+        // for a 404/500 too, so a naive .then(remove) would remove the row
+        // from view even when the server never actually deleted it, and it
+        // would reappear on the next reload. Only remove locally once the
+        // server confirms the delete.
+        fetch(MOBILE_SERVER_URL + '/reports/' + id, { method: 'DELETE' }).then(function (r) {
+          if (!r.ok) throw new Error('server refused delete: ' + r.status);
+          remove();
+        }).catch(function (err) {
+          alert('Could not delete this report on the server (it will reappear after reload). ' + err.message);
+        });
       } else {
         remove();
       }
