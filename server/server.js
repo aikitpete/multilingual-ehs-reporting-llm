@@ -59,6 +59,59 @@ async function getAiFeedback({ note, category, severity, location, lang }) {
   }
 }
 
+// Vision call to draft a starting hazard description from a photo, in the
+// worker's own language. Same fail-proof contract as getAiFeedback: never
+// throws, never blocks -- a missing key, error, or timeout just means the
+// worker types their own description from a blank field.
+async function getAiPhotoDescription({ imageBase64, mimeType, lang }) {
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey || !imageBase64) {
+    return { ok: true, description: null, fallback: true };
+  }
+
+  const prompt = [
+    'You are helping a construction-site worker file a hazard report.',
+    'Look at the photo and write a short, factual, first-person draft description of the hazard shown (what it is, where it is, why it is dangerous).',
+    `Write it in this language: ${lang || 'en'}.`,
+    'Keep it under 30 words, plain language, no preamble, no markdown. If no clear hazard is visible, describe what is in the photo neutrally.',
+    'Reply with ONLY the description text.',
+  ].join('\n');
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 100,
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'image', source: { type: 'base64', media_type: mimeType || 'image/jpeg', data: imageBase64 } },
+            { type: 'text', text: prompt },
+          ],
+        }],
+      }),
+      signal: controller.signal,
+    });
+    if (!res.ok) return { ok: true, description: null, fallback: true };
+    const data = await res.json();
+    const text = data && data.content && data.content[0] && data.content[0].text;
+    if (!text) return { ok: true, description: null, fallback: true };
+    return { ok: true, description: text.trim(), fallback: false };
+  } catch (e) {
+    return { ok: true, description: null, fallback: true };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function send(res, status, body) {
   res.writeHead(status, {
     'Content-Type': 'application/json',
@@ -106,6 +159,22 @@ const server = http.createServer((req, res) => {
       }
       const feedback = await getAiFeedback(data);
       send(res, 200, feedback);
+    });
+    return;
+  }
+
+  if (req.url === '/ai-describe-photo' && req.method === 'POST') {
+    let body = '';
+    req.on('data', (chunk) => { body += chunk; });
+    req.on('end', async () => {
+      let data;
+      try {
+        data = JSON.parse(body);
+      } catch (e) {
+        return send(res, 400, { error: 'invalid json' });
+      }
+      const described = await getAiPhotoDescription(data);
+      send(res, 200, described);
     });
     return;
   }

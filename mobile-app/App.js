@@ -100,7 +100,7 @@ export default function App() {
   const tr = (key) => t(lang, key);
 
   function startReport() {
-    setDraft({ photoUri: null, samplePhoto: false, pin: null, category: null, location: DEFAULT_LOCATION, severity: null, note: '', aiFeedback: null });
+    setDraft({ photoUri: null, samplePhoto: false, pin: null, category: null, location: DEFAULT_LOCATION, severity: null, note: '', aiDescribe: null });
     setScreen('report_form');
   }
 
@@ -117,7 +117,7 @@ export default function App() {
       location: scenario.location,
       severity: scenario.severity,
       note: scenario.note,
-      aiFeedback: null,
+      aiDescribe: null,
     });
     setScreen('report_form');
   }
@@ -125,51 +125,49 @@ export default function App() {
   async function pickFromCamera() {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
     if (!perm.granted) return pickSample('falls');
-    const res = await ImagePicker.launchCameraAsync({ quality: 0.6 });
+    const res = await ImagePicker.launchCameraAsync({ quality: 0.6, base64: true });
     if (!res.canceled) {
       setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, samplePhoto: false }));
+      requestAiDescribe(res.assets[0].base64);
     }
   }
 
   async function pickFromLibrary() {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (!perm.granted) return pickSample('falls');
-    const res = await ImagePicker.launchImageLibraryAsync({ quality: 0.6 });
+    const res = await ImagePicker.launchImageLibraryAsync({ quality: 0.6, base64: true });
     if (!res.canceled) {
       setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, samplePhoto: false }));
+      requestAiDescribe(res.assets[0].base64);
     }
   }
 
   function pickSample(key) {
-    setDraft((d) => ({ ...d, photoUri: null, samplePhoto: CATEGORY_PHOTO[key] }));
+    setDraft((d) => ({ ...d, photoUri: null, samplePhoto: CATEGORY_PHOTO[key], aiDescribe: null }));
   }
 
-  // Best-effort, non-blocking: attempts a real LLM call (server-side, see
-  // server/server.js getAiFeedback) and always resolves within a bounded
-  // time either way. Never prevents Submit from being pressed.
-  function requestAiFeedback(d) {
-    setDraft((cur) => ({ ...cur, aiFeedback: { status: 'loading' } }));
+  // Best-effort, non-blocking: attempts a real vision LLM call (server-side,
+  // see server/server.js /ai-describe-photo) to draft a starting description
+  // in the worker's own language. Always resolves to either a draft or a
+  // blank, editable field within a bounded time — never blocks the form.
+  function requestAiDescribe(base64) {
+    if (!base64) return;
+    setDraft((cur) => ({ ...cur, aiDescribe: { status: 'loading' } }));
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 6000);
-    fetch(SERVER_URL + '/ai-feedback', {
+    fetch(SERVER_URL + '/ai-describe-photo', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        note: d.note,
-        category: d.category ? tr(`report.category.${d.category}`) : null,
-        severity: d.severity ? tr(`report.severity.${d.severity}`) : null,
-        location: d.location,
-        lang,
-      }),
+      body: JSON.stringify({ imageBase64: base64, lang }),
       signal: controller.signal,
     })
       .then((r) => r.json())
       .then((res) => {
-        const message = res && res.feedback ? res.feedback : tr('report.ai.allgood');
-        setDraft((cur) => ({ ...cur, aiFeedback: { status: 'done', message } }));
+        const description = res && res.description ? res.description : '';
+        setDraft((cur) => ({ ...cur, note: description, aiDescribe: { status: 'done' } }));
       })
       .catch(() => {
-        setDraft((cur) => ({ ...cur, aiFeedback: { status: 'done', message: tr('report.ai.allgood') } }));
+        setDraft((cur) => ({ ...cur, aiDescribe: { status: 'done' } }));
       })
       .finally(() => clearTimeout(timer));
   }
@@ -276,7 +274,6 @@ export default function App() {
           onCamera={pickFromCamera}
           onLibrary={pickFromLibrary}
           onSample={pickSample}
-          onRequestAiFeedback={requestAiFeedback}
           onDemoData={() => setShowDemoSheet(true)}
           onSubmit={submitReport}
         />
@@ -447,72 +444,70 @@ function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome, ch
 // requested order (description -> photo -> mark -> category -> location
 // -> severity -> AI check) so the form never dumps everything on the
 // worker at once, while still being one screen/one scroll, not a wizard.
-function ReportForm({ tr, draft, setDraft, onCamera, onLibrary, onSample, onRequestAiFeedback, onDemoData, onSubmit }) {
+function ReportForm({ tr, draft, setDraft, onCamera, onLibrary, onSample, onDemoData, onSubmit }) {
   const [showSamples, setShowSamples] = React.useState(false);
   const markSize = Math.min(Dimensions.get('window').width - 72, 300);
 
   const hasPhoto = !!(draft.photoUri || draft.samplePhoto);
-  const showPhoto = draft.note.trim().length > 0;
-  const showMark = showPhoto && hasPhoto;
+  const showDescription = hasPhoto;
+  const showMark = showDescription && draft.note.trim().length > 0;
   const showCategory = showMark && !!draft.pin;
   const showLocation = showCategory && !!draft.category;
   const showSeverity = showLocation && !!draft.location;
   const canSubmit = showSeverity && !!draft.severity;
 
-  // Fires once each time severity is (re)selected — not on every keystroke
-  // elsewhere in the form — and never blocks Submit either way.
-  React.useEffect(() => {
-    if (draft.severity) onRequestAiFeedback(draft);
-  }, [draft.severity]);
+  const aiDescribing = draft.aiDescribe && draft.aiDescribe.status === 'loading';
 
   return (
-    <ScrollView contentContainerStyle={styles.stepWrap} keyboardShouldPersistTaps="handled">
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.stepWrap} keyboardShouldPersistTaps="handled">
       <Text style={styles.stepTitle}>{tr('home.report')}</Text>
 
-      <Pressable style={styles.sampleToggle} onPress={onDemoData}>
-        <Text style={styles.sampleToggleLabel}>🛠 Demo data</Text>
+      <Text style={[styles.sectionLabel, { marginTop: 0 }]}>{tr('report.photo.title')}</Text>
+      <Text style={styles.stepHint}>{tr('report.photo.hint')}</Text>
+      {hasPhoto ? (
+        <View style={[styles.markPhoto, { width: markSize, height: markSize, alignSelf: 'center', backgroundColor: '#333' }]}>
+          {draft.photoUri && <Image source={{ uri: draft.photoUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />}
+          {draft.samplePhoto && <Image source={draft.samplePhoto} style={StyleSheet.absoluteFill} resizeMode="cover" />}
+        </View>
+      ) : (
+        <View style={styles.cameraPreview}>
+          <Text style={{ fontSize: 56 }}>📷</Text>
+        </View>
+      )}
+      <PrimaryButton label={hasPhoto ? tr('report.photo.retake') : tr('report.photo.camera')} onPress={onCamera} />
+      <SecondaryButton label={tr('report.photo.library')} onPress={onLibrary} />
+      <Pressable style={styles.sampleToggle} onPress={() => setShowSamples((v) => !v)}>
+        <Text style={styles.sampleToggleLabel}>{tr('report.photo.sample')}</Text>
       </Pressable>
+      {showSamples && (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sampleGrid}>
+          {Object.keys(CATEGORY_PHOTO).map((key) => (
+            <Pressable key={key} style={styles.sampleThumbWrap} onPress={() => onSample(key)}>
+              <Image source={CATEGORY_PHOTO[key]} style={styles.sampleThumb} resizeMode="cover" />
+              <Text style={styles.sampleThumbLabel}>{tr(`report.category.${key}`)}</Text>
+            </Pressable>
+          ))}
+        </ScrollView>
+      )}
 
-      <Text style={[styles.sectionLabel, { marginTop: 0 }]}>{tr('report.description.title')}</Text>
-      <Text style={styles.stepHint}>{tr('report.description.hint')}</Text>
-      <TextInput
-        style={styles.noteInput}
-        placeholder={tr('report.description.placeholder')}
-        placeholderTextColor={C.muted}
-        multiline
-        value={draft.note}
-        onChangeText={(note) => setDraft((d) => ({ ...d, note }))}
-      />
-
-      {showPhoto && (
+      {showDescription && (
         <>
-          <Text style={styles.sectionLabel}>{tr('report.photo.title')}</Text>
-          <Text style={styles.stepHint}>{tr('report.photo.hint')}</Text>
-          {hasPhoto ? (
-            <View style={[styles.markPhoto, { width: markSize, height: markSize, alignSelf: 'center', backgroundColor: '#333' }]}>
-              {draft.photoUri && <Image source={{ uri: draft.photoUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />}
-              {draft.samplePhoto && <Image source={draft.samplePhoto} style={StyleSheet.absoluteFill} resizeMode="cover" />}
-            </View>
-          ) : (
-            <View style={styles.cameraPreview}>
-              <Text style={{ fontSize: 56 }}>📷</Text>
-            </View>
-          )}
-          <PrimaryButton label={hasPhoto ? tr('report.photo.retake') : tr('report.photo.camera')} onPress={onCamera} />
-          <SecondaryButton label={tr('report.photo.library')} onPress={onLibrary} />
-          <Pressable style={styles.sampleToggle} onPress={() => setShowSamples((v) => !v)}>
-            <Text style={styles.sampleToggleLabel}>{tr('report.photo.sample')}</Text>
+          <Text style={styles.sectionLabel}>{tr('report.description.title')}</Text>
+          <Text style={styles.stepHint}>
+            {aiDescribing ? tr('report.ai.checking') + '…' : tr('report.description.hint')}
+          </Text>
+          <TextInput
+            style={styles.noteInput}
+            placeholder={tr('report.description.placeholder')}
+            placeholderTextColor={C.muted}
+            multiline
+            editable={!aiDescribing}
+            value={draft.note}
+            onChangeText={(note) => setDraft((d) => ({ ...d, note }))}
+          />
+          <Pressable style={styles.demoDataBar} onPress={onDemoData}>
+            <Text style={styles.demoDataBarLabel}>Demo data</Text>
           </Pressable>
-          {showSamples && (
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sampleGrid}>
-              {Object.keys(CATEGORY_PHOTO).map((key) => (
-                <Pressable key={key} style={styles.sampleThumbWrap} onPress={() => onSample(key)}>
-                  <Image source={CATEGORY_PHOTO[key]} style={styles.sampleThumb} resizeMode="cover" />
-                  <Text style={styles.sampleThumbLabel}>{tr(`report.category.${key}`)}</Text>
-                </Pressable>
-              ))}
-            </ScrollView>
-          )}
         </>
       )}
 
@@ -594,17 +589,6 @@ function ReportForm({ tr, draft, setDraft, onCamera, onLibrary, onSample, onRequ
             ))}
           </View>
         </>
-      )}
-
-      {!!draft.severity && (
-        <View style={styles.aiBox}>
-          <Text style={styles.sectionLabel}>{tr('report.ai.title')}</Text>
-          {(!draft.aiFeedback || draft.aiFeedback.status === 'loading') ? (
-            <Text style={styles.aiChecking}>{tr('report.ai.checking')}…</Text>
-          ) : (
-            <Text style={styles.aiMessage}>{draft.aiFeedback.message}</Text>
-          )}
-        </View>
       )}
 
       <PrimaryButton label={tr('nav.submit')} onPress={onSubmit} disabled={!canSubmit} />
@@ -836,9 +820,8 @@ const styles = StyleSheet.create({
   stepTitle: { fontSize: 22, fontWeight: '800', color: C.ink },
   stepHint: { fontSize: 14, color: C.inkSoft, marginBottom: 4 },
   sectionLabel: { fontSize: 18, fontWeight: '800', color: C.ink, marginTop: 22 },
-  aiBox: { backgroundColor: C.accentBg, borderRadius: 14, padding: 14, gap: 4 },
-  aiChecking: { fontSize: 13.5, color: C.inkSoft, fontStyle: 'italic' },
-  aiMessage: { fontSize: 14, color: C.ink, fontWeight: '600', lineHeight: 20 },
+  demoDataBar: { alignSelf: 'flex-start', paddingVertical: 10, paddingHorizontal: 8, marginTop: 2, opacity: 0.4 },
+  demoDataBarLabel: { fontSize: 13, color: C.muted },
 
   cameraPreview: {
     height: 220, borderRadius: 18, backgroundColor: '#1c1c1c',
