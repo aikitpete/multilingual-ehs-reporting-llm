@@ -42,8 +42,9 @@
   .nav-item .k { color: var(--accent); margin-right: 8px; }
   .side-foot { margin-top: auto; font-size: 12px; color: #8C8983; }
   main { flex: 1; padding: 32px 40px 60px; max-width: 1240px; }
-  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
+  .topbar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
   .topbar h1 { font-family: 'Rubik', Arial, sans-serif; font-size: 26px; font-weight: 800; margin: 0; }
+  .topbar-sub { margin: 4px 0 0; color: var(--ink-soft); font-size: 14px; max-width: 560px; }
   .site-pick { font-size: 13px; font-weight: 600; background: var(--surface); border: 1px solid var(--border); padding: 8px 14px; border-radius: 999px; }
   .topbar-right { display: flex; align-items: center; gap: 12px; }
   .user-chip { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px 6px 6px; }
@@ -216,7 +217,10 @@
   </nav>
   <main>
     <div class="topbar">
-      <h1 id="page-title" data-i18n="nav.reports">Reports</h1>
+      <div>
+        <h1 id="page-title" data-i18n="heading.reports">Site hazard reporting</h1>
+        <p id="page-subtitle" class="topbar-sub" data-i18n="subheading.reports">Every hazard your crew reports, translated instantly and tracked from first report to resolution.</p>
+      </div>
       <div class="topbar-right">
         <span class="site-pick">Site 4 · Wonju ▾</span>
         <div class="user-chip">
@@ -427,6 +431,10 @@
     var STRINGS = {
       "en": {
         "nav.reports": "Reports", "nav.labels": "Warning labels", "nav.training": "Training materials",
+        "heading.reports": "Site hazard reporting", "heading.labels": "On-site warning labels", "heading.training": "Crew safety training",
+        "subheading.reports": "Every hazard your crew reports, translated instantly and tracked from first report to resolution.",
+        "subheading.labels": "Standard pictogram warning signs, generated in Korean from any worker's report — no design work required.",
+        "subheading.training": "Turns every hazard report into a short lesson the whole crew can learn from, in their own language.",
         "stat.open": "Open reports, this month", "stat.high": "High severity",
         "stat.resolved48": "Resolved within 48h", "stat.training": "New hires, safety training on file",
         "stat.attendance": "Checked in electronically, today",
@@ -438,6 +446,10 @@
       },
       "ko": {
         "nav.reports": "신고", "nav.labels": "경고 라벨", "nav.training": "교육 자료",
+        "heading.reports": "현장 위험 신고", "heading.labels": "현장 경고 라벨", "heading.training": "현장 안전 교육",
+        "subheading.reports": "근로자가 신고한 모든 위험을 즉시 번역하여, 신고부터 해결까지 추적합니다.",
+        "subheading.labels": "근로자의 신고를 바탕으로 표준 픽토그램 경고 표지판을 한국어로 자동 생성합니다 — 디자인 작업이 필요 없습니다.",
+        "subheading.training": "모든 위험 신고를 짧은 교육 자료로 전환하여, 전 근로자가 자신의 언어로 학습할 수 있게 합니다.",
         "stat.open": "이번 달 미해결 신고", "stat.high": "고위험",
         "stat.resolved48": "48시간 내 해결", "stat.training": "안전교육 이수한 신규 채용자",
         "stat.attendance": "오늘 전자 출근 체크 완료",
@@ -453,13 +465,13 @@
       return (dict && dict[key]) || (STRINGS.en && STRINGS.en[key]) || key;
     };
     function applyLang(lang) {
+      // page-title/page-subtitle already carry their own data-i18n
+      // (heading.<tab>/subheading.<tab>), kept current by the tab-click
+      // handler below, so this generic pass covers them too -- no special
+      // case needed here.
       document.querySelectorAll('[data-i18n]').forEach(function (el) {
         el.textContent = window.dashT(lang, el.getAttribute('data-i18n'));
       });
-      var activeTab = document.querySelector('.nav-item.on');
-      if (activeTab) {
-        document.getElementById('page-title').textContent = window.dashT(lang, ({reports:'nav.reports', labels:'nav.labels', training:'nav.training'})[activeTab.getAttribute('data-tab')]);
-      }
       window.dashLang = lang;
     }
     document.querySelectorAll('#dash-lang-toggle button').forEach(function (btn) {
@@ -479,7 +491,14 @@
       var tab = item.getAttribute('data-tab');
       document.querySelectorAll('.view').forEach(function (v) { v.classList.remove('on'); });
       document.getElementById('view-' + tab).classList.add('on');
-      document.getElementById('page-title').textContent = window.dashT(window.dashLang || 'en', ({reports:'nav.reports', labels:'nav.labels', training:'nav.training'})[tab]);
+      var headingKey = ({ reports: 'heading.reports', labels: 'heading.labels', training: 'heading.training' })[tab];
+      var subheadingKey = ({ reports: 'subheading.reports', labels: 'subheading.labels', training: 'subheading.training' })[tab];
+      var titleEl = document.getElementById('page-title');
+      var subtitleEl = document.getElementById('page-subtitle');
+      titleEl.setAttribute('data-i18n', headingKey);
+      titleEl.textContent = window.dashT(window.dashLang || 'en', headingKey);
+      subtitleEl.setAttribute('data-i18n', subheadingKey);
+      subtitleEl.textContent = window.dashT(window.dashLang || 'en', subheadingKey);
     });
   });
   (function () {
