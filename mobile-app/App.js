@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Modal,
   Dimensions,
+  Animated,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
@@ -316,11 +317,17 @@ function Header({ tr, screen, onLangPress, onBack, onBackPress }) {
 }
 
 const WELCOME_SLIDES = ['welcome.s0', 'welcome.s1', 'welcome.s2', 'welcome.s3'];
-const WELCOME_SLIDE_MS = 1600;
+// Cinematic beat per slide: fade in, hold, fade out -- the brand line (s0)
+// gets a slightly longer hold since it's the "title card".
+const WELCOME_FADE_IN_MS = 550;
+const WELCOME_FADE_OUT_MS = 500;
+const WELCOME_HOLD_MS = 1000;
+const WELCOME_BRAND_HOLD_MS = 1400;
 
 function WelcomeSequence({ lang, onSelectLang, tr, onFinish }) {
   const [step, setStep] = React.useState('lang');
   const [index, setIndex] = React.useState(0);
+  const opacity = React.useRef(new Animated.Value(0)).current;
 
   React.useEffect(() => {
     if (step !== 'slides') return;
@@ -328,8 +335,15 @@ function WelcomeSequence({ lang, onSelectLang, tr, onFinish }) {
       onFinish();
       return;
     }
-    const timer = setTimeout(() => setIndex((i) => i + 1), WELCOME_SLIDE_MS);
-    return () => clearTimeout(timer);
+    const hold = WELCOME_SLIDES[index] === 'welcome.s0' ? WELCOME_BRAND_HOLD_MS : WELCOME_HOLD_MS;
+    opacity.setValue(0);
+    const anim = Animated.sequence([
+      Animated.timing(opacity, { toValue: 1, duration: WELCOME_FADE_IN_MS, useNativeDriver: true }),
+      Animated.delay(hold),
+      Animated.timing(opacity, { toValue: 0, duration: WELCOME_FADE_OUT_MS, useNativeDriver: true }),
+    ]);
+    anim.start(({ finished }) => { if (finished) setIndex((i) => i + 1); });
+    return () => anim.stop();
   }, [step, index]);
 
   function selectLang(code) {
@@ -364,7 +378,7 @@ function WelcomeSequence({ lang, onSelectLang, tr, onFinish }) {
 
   return (
     <View style={styles.welcomeWrap}>
-      <Text style={isBrand ? styles.welcomeBrand : styles.welcomeLine}>{tr(key)}</Text>
+      <Animated.Text style={[isBrand ? styles.welcomeBrand : styles.welcomeLine, { opacity }]}>{tr(key)}</Animated.Text>
       <Pressable style={styles.hiddenHotspot} onPress={onFinish} />
     </View>
   );
