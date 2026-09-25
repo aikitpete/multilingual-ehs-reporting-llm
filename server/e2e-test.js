@@ -12,6 +12,8 @@
 const assert = require('assert');
 const { spawn } = require('child_process');
 const path = require('path');
+const DEMO_SCENARIOS = require('../mobile-app/src/data/demoScenarios');
+const EN_STRINGS = require('../mobile-app/src/i18n/en.json');
 
 const PORT = 4099;
 const BASE = `http://localhost:${PORT}`;
@@ -112,6 +114,74 @@ async function run() {
   // 8. Mobile app's own Training screen polls this same endpoint -- confirm
   // it's readable with no auth/extra params, matching App.js's fetch call.
   check('training-materials list is directly usable by the mobile app', Array.isArray(materials));
+
+  // 9. "Demo data" quick-fill (App.js loadDemoScenario): pre-fills the
+  // exact same draft fields a manual entry would set, then goes through
+  // the identical submitReport() -> postReportToServer() call. This
+  // reconstructs that real payload for two of the three presets and
+  // submits them exactly as the app does -- no separate demo backend path.
+  function payloadForScenario(scenario, note) {
+    return {
+      category: scenario.category,
+      categoryLabel: EN_STRINGS[`report.category.${scenario.category}`],
+      severity: scenario.severity,
+      severityLabel: EN_STRINGS[`report.severity.${scenario.severity}`],
+      location: scenario.location,
+      note: note !== undefined ? note : scenario.note,
+      lang: 'en',
+      langLabel: EN_STRINGS['lang.name'],
+    };
+  }
+
+  const fall = DEMO_SCENARIOS.find((s) => s.id === 'fall');
+  const cableWater = DEMO_SCENARIOS.find((s) => s.id === 'cable_water');
+  check('demo fixtures include the fall and cable+water scenarios', !!fall && !!cableWater);
+
+  const fallRes = await fetch(`${BASE}/reports`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payloadForScenario(fall)),
+  });
+  const fallPosted = await fallRes.json();
+  check('demo scenario 1 (fall) submits through the real endpoint', fallRes.status === 201);
+  check('demo scenario 1 keeps the worker description in English, unmodified', fallPosted.note === fall.note);
+  check('demo scenario 1 maps to the existing taxonomy (falls/high/4F east stairwell)',
+    fallPosted.category === 'falls' && fallPosted.severity === 'high' && fallPosted.location === '4F east stairwell');
+
+  const cableRes = await fetch(`${BASE}/reports`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payloadForScenario(cableWater)),
+  });
+  const cablePosted = await cableRes.json();
+  check('demo scenario 2 (cable+water) submits through the real endpoint', cableRes.status === 201);
+  check('demo scenario 2 maps to the existing taxonomy (electrical/high/B2 corridor)',
+    cablePosted.category === 'electrical' && cablePosted.severity === 'high' && cablePosted.location === 'B2 corridor');
+
+  // 10. Both prior test reports plus both demo submissions must now be
+  // present, accumulated (not replaced) -- this is what "manager dashboard
+  // updated exactly once per upload" and "government count accumulates"
+  // actually reduce to at the data layer.
+  const afterDemo = await (await fetch(`${BASE}/reports`)).json();
+  check('all four reports are present after two demo submissions (no drops, no dupes)', afterDemo.length === 4);
+  check('demo scenario ids are each represented exactly once',
+    afterDemo.filter((r) => r.id === fallPosted.id).length === 1 && afterDemo.filter((r) => r.id === cablePosted.id).length === 1);
+
+  // 11. Persistence: a second, independent GET (simulating a dashboard
+  // reload/revisit) must return the same data, not a stale or partial view.
+  const reread = await (await fetch(`${BASE}/reports`)).json();
+  check('re-fetching (simulated reload) returns the same accumulated set', reread.length === afterDemo.length
+    && reread.some((r) => r.id === fallPosted.id) && reread.some((r) => r.id === cablePosted.id));
+
+  // 12. Training material generated for each new report, keyed by its real
+  // report id -- mirrors the dashboard's per-report generation, asserting
+  // structure/presence rather than exact generated prose.
+  for (const posted_ of [fallPosted, cablePosted]) {
+    await fetch(`${BASE}/training-materials`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reportId: posted_.id, titleEn: `${posted_.categoryLabel} hazard`, quiz: { q: 'q', correct: 'a', wrong: 'b' } }),
+    });
+  }
+  const materialsAfterDemo = await (await fetch(`${BASE}/training-materials`)).json();
+  check('training material exists for the fall scenario report', materialsAfterDemo.some((m) => m.reportId === fallPosted.id && m.titleEn.length > 0));
+  check('training material exists for the cable+water scenario report', materialsAfterDemo.some((m) => m.reportId === cablePosted.id && m.titleEn.length > 0));
 
   return steps;
 }

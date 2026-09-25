@@ -16,6 +16,12 @@ import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
 import { LANGUAGES, LANGUAGE_CODES, t } from './src/i18n';
 import { SEED_REPORTS, CATEGORIES, CATEGORY_ICON, CATEGORY_PHOTO, QUIZ_CATEGORIES, LOCATIONS, DEFAULT_LOCATION } from './src/data/seedReports';
+const DEMO_SCENARIOS = require('./src/data/demoScenarios');
+
+// Presenter-only quick-fill for the report form — flip off before handing
+// the app to anyone outside the pitch. It only pre-fills draft state;
+// submission still goes through the exact same submitReport() pipeline.
+const DEMO_MODE = true;
 
 // Generic placeholder for the mark-the-spot step, shown before the worker
 // has picked a category — Training list thumbnails use the category-
@@ -68,6 +74,7 @@ function buildQuiz(lang, category) {
 export default function App() {
   const [lang, setLang] = useState('en');
   const [showLangSheet, setShowLangSheet] = useState(false);
+  const [showDemoSheet, setShowDemoSheet] = useState(false);
   const [screen, setScreen] = useState('welcome');
   const [reports, setReports] = useState(SEED_REPORTS);
   const [checkedIn, setCheckedIn] = useState(false);
@@ -95,6 +102,23 @@ export default function App() {
   function startReport() {
     setDraft({ photoUri: null, samplePhoto: false, pin: null, category: null, location: DEFAULT_LOCATION, severity: null, note: '' });
     setScreen('report_photo');
+  }
+
+  // Demo-only: pre-fills the same draft startReport() would build, using a
+  // preset scenario, and drops the presenter straight at the last input
+  // screen to review before pressing the real Submit button. No part of
+  // this touches postReportToServer / the report pipeline directly.
+  function loadDemoScenario(scenario) {
+    setDraft({
+      photoUri: null,
+      samplePhoto: CATEGORY_PHOTO[scenario.category] || null,
+      pin: { x: 150, y: 150 },
+      category: scenario.category,
+      location: scenario.location,
+      severity: scenario.severity,
+      note: scenario.note,
+    });
+    setScreen('report_severity');
   }
 
   async function pickFromCamera() {
@@ -205,6 +229,7 @@ export default function App() {
           checkedIn={checkedIn}
           onToggleCheckIn={() => setCheckedIn((v) => !v)}
           onMyReports={() => setScreen('my_reports')}
+          onDemoData={() => setShowDemoSheet(true)}
         />
       )}
 
@@ -284,6 +309,13 @@ export default function App() {
       )}
 
       <LangSheet visible={showLangSheet} tr={tr} lang={lang} onSelect={(code) => { setLang(code); setShowLangSheet(false); }} onClose={() => setShowLangSheet(false)} />
+      {DEMO_MODE && (
+        <DemoSheet
+          visible={showDemoSheet}
+          onSelect={(s) => { setShowDemoSheet(false); loadDemoScenario(s); }}
+          onClose={() => setShowDemoSheet(false)}
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -376,7 +408,7 @@ function WelcomeSequence({ lang, onSelectLang, tr, onFinish }) {
   );
 }
 
-function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome, checkedIn, onToggleCheckIn, onMyReports }) {
+function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome, checkedIn, onToggleCheckIn, onMyReports, onDemoData }) {
   return (
     <ScrollView contentContainerStyle={styles.homeWrap}>
       {/* Presenter-only hotspot to replay the welcome sequence on demand — deliberately invisible, not a demo affordance */}
@@ -411,6 +443,12 @@ function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome, ch
       <Pressable style={styles.myReportsLink} onPress={onMyReports}>
         <Text style={styles.myReportsLinkLabel}>{tr('home.myReports')}</Text>
       </Pressable>
+
+      {DEMO_MODE && (
+        <Pressable style={styles.demoDataLink} onPress={onDemoData}>
+          <Text style={styles.demoDataLinkLabel}>🛠 Demo data</Text>
+        </Pressable>
+      )}
     </ScrollView>
   );
 }
@@ -689,6 +727,24 @@ function LangSheet({ visible, tr, lang, onSelect, onClose }) {
   );
 }
 
+function DemoSheet({ visible, onSelect, onClose }) {
+  return (
+    <Modal visible={visible} transparent animationType="slide" onRequestClose={onClose}>
+      <Pressable style={styles.sheetBackdrop} onPress={onClose}>
+        <View style={styles.sheet} onStartShouldSetResponder={() => true}>
+          <Text style={styles.sheetTitle}>Demo data</Text>
+          <Text style={{ fontSize: 12.5, color: C.muted, marginBottom: 6 }}>Fills the form — Submit still sends a real report.</Text>
+          {DEMO_SCENARIOS.map((s) => (
+            <Pressable key={s.id} style={styles.sheetRow} onPress={() => onSelect(s)}>
+              <Text style={styles.sheetRowLabel}>{s.label}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </Pressable>
+    </Modal>
+  );
+}
+
 function PrimaryButton({ label, onPress, disabled }) {
   return (
     <Pressable style={[styles.primaryBtn, disabled && styles.btnDisabled]} onPress={disabled ? undefined : onPress}>
@@ -743,6 +799,8 @@ const styles = StyleSheet.create({
   checkinPillLabelActive: { color: '#fff' },
   myReportsLink: { alignItems: 'center', paddingVertical: 14 },
   myReportsLinkLabel: { fontSize: 14, fontWeight: '700', color: C.inkSoft, textDecorationLine: 'underline' },
+  demoDataLink: { alignItems: 'center', paddingVertical: 6 },
+  demoDataLinkLabel: { fontSize: 11.5, fontWeight: '600', color: C.muted },
   homeTitle: { fontSize: 42, fontWeight: '800', color: C.ink, marginTop: 12 },
   homeSubtitle: { fontSize: 16, color: C.inkSoft, marginBottom: 12 },
   bigCard: { borderRadius: 20, padding: 24, gap: 4 },
