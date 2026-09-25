@@ -28,17 +28,24 @@ const DEMO_MODE = true;
 // (real-time safety talk across languages) rather than a generic hazard photo.
 const WELCOME_BG = require('./assets/welcome-bg.webp');
 
+// Dark theme for a more premium/polished feel. Colors kept semantically
+// aligned with the web dashboards' own dark-mode palette (same high/low
+// hues) so the whole product family reads as one design system.
 const C = {
-  bg: '#F2ECE0',
-  card: '#FFFFFF',
-  ink: '#242424',
-  inkSoft: '#625F5A',
+  bg: '#121212',
+  card: '#1E1E1E',
+  ink: '#F2EFE9',
+  inkSoft: '#B8B3AA',
   muted: '#8C8983',
-  accent: '#C97A1F',
-  accentBg: '#FBE8D0',
-  border: '#E3E0D8',
-  high: '#C2402A',
-  low: '#3D7A34',
+  accent: '#E0973A',
+  accentBg: '#3A2A14',
+  border: '#333333',
+  // A raised, deliberately-dark surface for high-emphasis blocks (the
+  // primary CTA card) -- distinct from `ink`, which is the text color and
+  // must stay light in this theme, not reused as a background.
+  strong: '#2C2C2C',
+  high: '#E8836A',
+  low: '#86C46B',
 };
 
 const SEVERITIES = ['low', 'medium', 'high'];
@@ -217,7 +224,7 @@ export default function App() {
 
   return (
     <SafeAreaView style={styles.safe}>
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
       <Header lang={lang} tr={tr} screen={screen} onLangPress={() => setShowLangSheet(true)} onBack={backFor(screen)} onBackPress={() => setScreen(backFor(screen))} />
 
       {screen === 'home' && (
@@ -383,7 +390,7 @@ function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome, ch
         </Text>
       </Pressable>
 
-      <Pressable style={[styles.bigCard, { backgroundColor: C.ink }]} onPress={onReport}>
+      <Pressable style={[styles.bigCard, { backgroundColor: C.strong }]} onPress={onReport}>
         <Text style={styles.bigCardIcon}>⚠️</Text>
         <Text style={styles.bigCardTitle}>{tr('home.report')}</Text>
         <Text style={styles.bigCardSub}>{tr('home.reportSub')}</Text>
@@ -775,7 +782,7 @@ function SecondaryButton({ label, onPress }) {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: C.bg },
-  safeWelcome: { flex: 1, backgroundColor: C.ink },
+  safeWelcome: { flex: 1, backgroundColor: C.bg },
   welcomeWrap: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
   welcomeBrand: { fontSize: 56, fontWeight: '800', color: '#fff' },
   welcomeLine: { fontSize: 24, fontWeight: '700', color: '#fff', textAlign: 'center' },
@@ -783,11 +790,13 @@ const styles = StyleSheet.create({
   // justify-start (not center): the background photo's faces sit in the
   // lower half, so the title+buttons stack under the status bar/crane area
   // instead of covering people's faces.
-  welcomeLangOverlay: { flex: 1, backgroundColor: 'rgba(15,15,15,0.6)', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 64, paddingHorizontal: 28, gap: 28 },
+  welcomeLangOverlay: { flex: 1, backgroundColor: 'rgba(15,15,15,0.6)', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 140, paddingHorizontal: 28, gap: 28 },
   welcomeLangTitle: { fontSize: 48, fontWeight: '800', color: '#fff' },
   welcomeLangGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 14 },
   welcomeLangCard: { backgroundColor: 'rgba(255,255,255,0.94)', borderRadius: 16, paddingVertical: 18, paddingHorizontal: 24, minWidth: 130, alignItems: 'center' },
-  welcomeLangCardLabel: { fontSize: 18, fontWeight: '800', color: C.ink },
+  // Fixed dark text, not C.ink: this pill stays deliberately light/white as
+  // a photo-overlay control regardless of the app's own dark theme.
+  welcomeLangCardLabel: { fontSize: 18, fontWeight: '800', color: '#242424' },
   // Zero visual footprint on purpose — a presenter-only control the
   // audience should never notice, per the demo's requirements.
   hiddenHotspot: { position: 'absolute', top: 0, left: 0, width: 64, height: 64, zIndex: 50 },
@@ -842,7 +851,7 @@ const styles = StyleSheet.create({
   aiStatusBad: { color: C.high, fontWeight: '600', fontSize: 13 },
 
   cameraPreview: {
-    height: 220, borderRadius: 18, backgroundColor: '#1c1c1c',
+    height: 220, borderRadius: 18, backgroundColor: C.card,
     alignItems: 'center', justifyContent: 'center', marginBottom: 8,
   },
   markPhoto: { borderRadius: 18, alignSelf: 'center', overflow: 'hidden' },
@@ -898,8 +907,8 @@ const styles = StyleSheet.create({
   quizQuestion: { fontSize: 15, fontWeight: '700', color: C.ink },
   optionCard: { borderWidth: 1, borderColor: C.border, backgroundColor: C.card, borderRadius: 14, padding: 16 },
   optionLabel: { fontSize: 15, color: C.ink, fontWeight: '600' },
-  optionCardCorrect: { borderColor: C.low, backgroundColor: '#EAF3E8' },
-  optionCardWrong: { borderColor: C.high, backgroundColor: '#F7E9E6' },
+  optionCardCorrect: { borderColor: C.low, backgroundColor: '#1B2E17' },
+  optionCardWrong: { borderColor: C.high, backgroundColor: '#33180F' },
   quizFeedbackGood: { color: C.low, fontWeight: '700', fontSize: 13.5 },
   quizFeedbackBad: { color: C.high, fontWeight: '700', fontSize: 13.5 },
 
