@@ -101,10 +101,17 @@
   .pic-btn.on { border-color: var(--accent-strong); background: var(--accent-bg); color: var(--ink); }
   .sign-hazard-tag { align-self: center; background: #C2402A; color: #fff; font-size: 13px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase; padding: 7px 16px; border-radius: 4px; }
   .sign-kr { font-family: 'Rubik', Arial, sans-serif; font-size: 38px; font-weight: 800; margin: 0; color: #C2402A; line-height: 1.2; }
+  /* Tag + headline color track the same severity scale as the sign's
+     border, so urgency reads consistently across the whole sign. */
+  .sign-preview.sev-low .sign-hazard-tag { background: #242424; }
+  .sign-preview.sev-medium .sign-hazard-tag { background: #C97A1F; }
+  .sign-preview.sev-high .sign-hazard-tag { background: #C2402A; }
+  .sign-preview.sev-low .sign-kr { color: #242424; }
+  .sign-preview.sev-medium .sign-kr { color: #C97A1F; }
+  .sign-preview.sev-high .sign-kr { color: #C2402A; }
   .sign-lines { display: flex; flex-direction: column; gap: 6px; width: 100%; }
   .sign-lines p { margin: 0; font-size: 21px; color: #242424; font-weight: 600; line-height: 1.35; }
-  .sign-loc { font-size: 17px; color: #625F5A; margin: 0; }
-  .sign-foot { display: flex; justify-content: space-between; font-size: 11px; color: #8C8983; border-top: 1px dashed #DAD5CB; padding-top: 10px; width: 100%; }
+  .sign-foot { display: flex; justify-content: flex-end; font-size: 13px; color: #625F5A; border-top: 1px dashed #DAD5CB; padding-top: 10px; width: 100%; }
   .btn { padding: 13px; border-radius: 10px; text-align: center; font-weight: 700; font-size: 14px; }
   .btn.primary { background: var(--accent-strong); color: #F7F3EA; }
   .label-preview { background: #FFF3DC; border: 3px solid #242424; border-radius: 4px; padding: 28px; display: flex; flex-direction: column; gap: 14px; }
@@ -350,9 +357,8 @@
           <span class="sign-hazard-tag" id="label-tag">Fall hazard</span>
           <div class="sign-pictogram" id="sign-pictogram-icon"></div>
           <p class="sign-kr" id="label-kr">추락 위험 — 안전난간 파손</p>
-          <p class="sign-loc" id="label-kr-loc">4층 동측 계단</p>
           <div class="sign-lines" id="label-native-lines"></div>
-          <div class="sign-foot"><span>Site 4 · Wonju</span></div>
+          <div class="sign-foot"><span id="label-kr-loc">4층 동측 계단</span></div>
         </div>
       </div>
     </section>
