@@ -32,6 +32,22 @@ const DEMO_SCENARIOS = [
     location: 'B1 storage',
     note: 'This large cylinder by the storage entrance is lying down. There are cardboard boxes and wooden boards next to it, and it is not secured. Forklifts keep passing here and one nearly hit it just now. I took a photo to report it.',
   },
+  {
+    id: 'heat',
+    label: 'No shade — Yard, zone C',
+    category: 'heat',
+    severity: 'medium',
+    location: 'Yard, zone C',
+    note: 'It is very hot today and there is no shade where we take our break in yard zone C. Some workers already feel dizzy. I took a photo to show the area.',
+  },
+  {
+    id: 'chemical',
+    label: 'Unlabeled container — 2F corridor',
+    category: 'chemical',
+    severity: 'high',
+    location: '2F corridor',
+    note: 'I found a container in the 2F corridor with no label, some liquid is leaking out of it. I do not know what is inside so I kept my distance and took a photo.',
+  },
 ];
 
 module.exports = DEMO_SCENARIOS;
