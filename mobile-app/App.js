@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   SafeAreaView,
   View,
@@ -71,6 +71,21 @@ export default function App() {
   const [screen, setScreen] = useState('welcome');
   const [reports, setReports] = useState(SEED_REPORTS);
   const [checkedIn, setCheckedIn] = useState(false);
+  const [syncedMaterials, setSyncedMaterials] = useState([]);
+
+  useEffect(() => {
+    if (screen !== 'training_list') return;
+    let cancelled = false;
+    const poll = () => {
+      fetch(SERVER_URL + '/training-materials')
+        .then((r) => r.json())
+        .then((list) => { if (!cancelled) setSyncedMaterials(list); })
+        .catch(() => {});
+    };
+    poll();
+    const id = setInterval(poll, 4000);
+    return () => { cancelled = true; clearInterval(id); };
+  }, [screen]);
   const [draft, setDraft] = useState(null);
   const [activeReport, setActiveReport] = useState(null);
   const [quiz, setQuiz] = useState(null); // { questions, qIndex, correct, textAnswer }
@@ -84,7 +99,7 @@ export default function App() {
 
   async function pickFromCamera() {
     const perm = await ImagePicker.requestCameraPermissionsAsync();
-    if (!perm.granted) return pickSample();
+    if (!perm.granted) return pickSample('falls');
     const res = await ImagePicker.launchCameraAsync({ quality: 0.6 });
     if (!res.canceled) {
       setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, samplePhoto: false }));
@@ -94,7 +109,7 @@ export default function App() {
 
   async function pickFromLibrary() {
     const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!perm.granted) return pickSample();
+    if (!perm.granted) return pickSample('falls');
     const res = await ImagePicker.launchImageLibraryAsync({ quality: 0.6 });
     if (!res.canceled) {
       setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, samplePhoto: false }));
@@ -102,8 +117,8 @@ export default function App() {
     }
   }
 
-  function pickSample() {
-    setDraft((d) => ({ ...d, photoUri: null, samplePhoto: true }));
+  function pickSample(key) {
+    setDraft((d) => ({ ...d, photoUri: null, samplePhoto: CATEGORY_PHOTO[key] }));
     setScreen('report_mark');
   }
 
@@ -247,7 +262,7 @@ export default function App() {
       )}
 
       {screen === 'training_list' && (
-        <TrainingList tr={tr} reports={reports} onStart={startTraining} />
+        <TrainingList tr={tr} reports={reports} onStart={startTraining} syncedMaterials={syncedMaterials} />
       )}
 
       {screen === 'training_nogen' && (
@@ -402,7 +417,7 @@ function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome, ch
 
 function PhotoStep({ tr, onCamera, onLibrary, onSample }) {
   return (
-    <View style={styles.stepWrap}>
+    <ScrollView contentContainerStyle={styles.stepWrap}>
       <Text style={styles.stepTitle}>{tr('report.photo.title')}</Text>
       <Text style={styles.stepHint}>{tr('report.photo.hint')}</Text>
       <View style={styles.cameraPreview}>
@@ -410,8 +425,17 @@ function PhotoStep({ tr, onCamera, onLibrary, onSample }) {
       </View>
       <PrimaryButton label={tr('report.photo.camera')} onPress={onCamera} />
       <SecondaryButton label={tr('report.photo.library')} onPress={onLibrary} />
-      <SecondaryButton label={tr('report.photo.sample')} onPress={onSample} />
-    </View>
+
+      <Text style={[styles.stepHint, { marginTop: 8, marginBottom: -4 }]}>{tr('report.photo.sample')}</Text>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.sampleGrid}>
+        {Object.keys(CATEGORY_PHOTO).map((key) => (
+          <Pressable key={key} style={styles.sampleThumbWrap} onPress={() => onSample(key)}>
+            <Image source={CATEGORY_PHOTO[key]} style={styles.sampleThumb} resizeMode="cover" />
+            <Text style={styles.sampleThumbLabel}>{tr(`report.category.${key}`)}</Text>
+          </Pressable>
+        ))}
+      </ScrollView>
+    </ScrollView>
   );
 }
 
@@ -426,7 +450,7 @@ function MarkStep({ tr, draft, onMark, onContinue }) {
         onPress={(e) => onMark({ x: e.nativeEvent.locationX, y: e.nativeEvent.locationY })}
       >
         {draft.photoUri && <Image source={{ uri: draft.photoUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />}
-        {draft.samplePhoto && <Image source={SAMPLE_PHOTO} style={StyleSheet.absoluteFill} resizeMode="cover" />}
+        {draft.samplePhoto && <Image source={draft.samplePhoto} style={StyleSheet.absoluteFill} resizeMode="cover" />}
         {draft.pin && (
           <View style={[styles.pin, { left: draft.pin.x - 16, top: draft.pin.y - 16 }]}>
             <Text style={{ fontSize: 22 }}>📍</Text>
@@ -542,7 +566,7 @@ function SubmittedStep({ tr, draft, onDone }) {
   );
 }
 
-function TrainingList({ tr, reports, onStart }) {
+function TrainingList({ tr, reports, onStart, syncedMaterials }) {
   return (
     <ScrollView contentContainerStyle={styles.stepWrap}>
       <Text style={styles.stepTitle}>{tr('training.list.title')}</Text>
@@ -551,6 +575,8 @@ function TrainingList({ tr, reports, onStart }) {
           <View style={[styles.reportThumb, { backgroundColor: r.color }]}>
             {r.photoUri ? (
               <Image source={{ uri: r.photoUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+            ) : r.samplePhoto ? (
+              <Image source={r.samplePhoto} style={StyleSheet.absoluteFill} resizeMode="cover" />
             ) : CATEGORY_PHOTO[r.category] ? (
               <Image source={CATEGORY_PHOTO[r.category]} style={StyleSheet.absoluteFill} resizeMode="cover" />
             ) : (
@@ -566,6 +592,19 @@ function TrainingList({ tr, reports, onStart }) {
           </Pressable>
         </View>
       ))}
+
+      {!!(syncedMaterials && syncedMaterials.length) && (
+        <>
+          <Text style={[styles.stepTitle, { fontSize: 18, marginTop: 12 }]}>{tr('training.synced.title')}</Text>
+          {syncedMaterials.map((m) => (
+            <View key={m.reportId} style={styles.syncedCard}>
+              <Text style={styles.syncedCardTitle}>{m.titleEn}</Text>
+              {!!m.captionKo && <Text style={styles.syncedCardCaption}>{m.captionKo}</Text>}
+              {!!(m.quiz && m.quiz.q) && <Text style={styles.syncedCardQuiz}>❓ {m.quiz.q}</Text>}
+            </View>
+          ))}
+        </>
+      )}
     </ScrollView>
   );
 }
@@ -716,6 +755,14 @@ const styles = StyleSheet.create({
   },
   markPhoto: { borderRadius: 18, alignSelf: 'center', overflow: 'hidden' },
   pin: { position: 'absolute' },
+  sampleGrid: { flexDirection: 'row', gap: 10 },
+  sampleThumbWrap: { width: 92, alignItems: 'center', gap: 4 },
+  sampleThumb: { width: 92, height: 92, borderRadius: 12, backgroundColor: '#333' },
+  sampleThumbLabel: { fontSize: 11, fontWeight: '700', color: C.inkSoft },
+  syncedCard: { backgroundColor: C.card, borderRadius: 14, padding: 14, borderWidth: 1, borderColor: C.border, gap: 4 },
+  syncedCardTitle: { fontWeight: '800', color: C.ink, fontSize: 14 },
+  syncedCardCaption: { color: C.inkSoft, fontSize: 13 },
+  syncedCardQuiz: { color: C.accent, fontSize: 12.5, fontWeight: '600', marginTop: 2 },
   markedLabel: { textAlign: 'center', color: C.low, fontWeight: '700' },
 
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12 },

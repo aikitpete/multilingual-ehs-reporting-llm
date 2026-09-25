@@ -51,6 +51,7 @@
   "report.submitted.body": "안전 관리자에게 한국어로 전달되었습니다.",
   "report.submitted.summary": "요약",
   "training.list.title": "현장 최근 위험 사례",
+  "training.synced.title": "안전 관리자가 제공한 자료",
   "training.list.empty": "아직 신고된 위험이 없습니다. 먼저 신고해보세요.",
   "training.card.cta": "교육 시작",
   "training.quiz.title": "간단한 확인 문제",

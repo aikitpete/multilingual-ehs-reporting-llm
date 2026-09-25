@@ -364,37 +364,16 @@
     </section>
 
     <section class="view" id="view-training">
-      <div class="label-layout">
-        <div class="form">
-          <div>
-            <label>Report</label>
-            <select id="training-report-select">
-              <option value="0">Broken guardrail — 4F, east stair</option>
-              <option value="1">Exposed wiring — B1 storage</option>
-              <option value="2">Blocked fire exit — 2F corridor</option>
-              <option value="3">Loose scaffold plank — Roof, north</option>
-              <option value="4">Heat exposure, no shade — Yard, zone C</option>
-              <option value="5">Trip hazard, uncovered conduit — B2 corridor</option>
-              <option value="6">Frayed extension cord — 3F, unit 12</option>
-              <option value="7">Ladder missing footing pads — Yard, zone A</option>
-              <option value="8">Gas cylinder stored on its side — B1 storage</option>
-            </select>
-          </div>
-          <p style="font-size:12.5px; color:var(--ink-soft); line-height:1.5; margin:0">Turns a worker's hazard report into a training card for the same crew — the photo, the translated caption, and a quick-check question, in every language your workers speak.</p>
-          <button type="button" class="ai-generate-btn" id="training-generate-btn" style="width:100%; justify-content:center">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
-            <span id="training-generate-label">Generate training material</span>
-          </button>
-        </div>
-        <div id="training-result">
-          <div class="empty-hint">Pick a report and generate to preview the training card.</div>
-        </div>
-      </div>
+      <p style="font-size:12.5px; color:var(--ink-soft); line-height:1.5; margin:0 0 16px">Every hazard report is automatically turned into a training card for the crew — the photo, a translated caption, and a quick-check question. New reports are picked up as soon as this tab opens; use a card's own refresh to regenerate just that one. Synced to the mobile app's Training section.</p>
+      <div id="training-list" style="display:flex; flex-direction:column; gap:14px"></div>
     </section>
   </main>
 </div>
 
 <script>
+  // Set before any other script below runs — several IIFEs POST to this on
+  // load, not just after a user action, so it must exist first.
+  window.MOBILE_SERVER_URL = 'https://gently-roland-begun-programmer.trycloudflare.com';
   (function () {
     var STRINGS = {
       "en": {
@@ -475,6 +454,7 @@
       { cat: "Fire", sev: "High", kr: "화재 위험 — 눕혀 보관된 가스통", krLoc: "지하 1층 자재창고", date: "2026-09-17", lang: "vi",
         native: { vi: ["Nguy hiểm cháy nổ — bình gas để nằm", "Kho chứa đồ, tầng hầm B1"], uz: ["Portlash xavfi — gaz balloni yon yotibdi", "B1 ombor"], zh: ["爆炸风险 — 气瓶横放", "B1地下储藏室"], en: ["Fire hazard — gas cylinder on its side", "B1 storage"] } }
     ];
+    REPORTS.forEach(function (r, i) { r.id = 'seed-' + i; });
     window.MGMT_REPORTS = REPORTS;
 
     var reportSelect = document.getElementById('label-report-select');
@@ -631,43 +611,81 @@
       Fall: { q: "What should you do if you see a broken guardrail or loose plank?", correct: "Report it with a photo and stay clear of the area.", wrong: "Fix it yourself if it looks simple." },
       Electrical: { q: "What should you do if you see exposed or frayed wiring?", correct: "Report it immediately and avoid contact with water nearby.", wrong: "Tape it up and keep working." },
       Fire: { q: "What should you do if you see a blocked exit or an unsecured gas cylinder?", correct: "Clear it or report it right away — every exit must stay open.", wrong: "Leave it for the next shift to handle." },
-      Heat: { q: "What should you do if a rest area has no shade in direct sun?", correct: "Report it and take breaks in the shade you have.", wrong: "Skip breaks to finish faster." }
+      Heat: { q: "What should you do if a rest area has no shade in direct sun?", correct: "Report it and take breaks in the shade you have.", wrong: "Skip breaks to finish faster." },
+      Chemical: { q: "What should you do if you find an unlabeled or leaking container?", correct: "Report it and keep others away until it's identified.", wrong: "Move it somewhere out of the way yourself." },
+      Other: { q: "What should you do if you spot a hazard that doesn't fit a category?", correct: "Report it anyway — let the safety team assess it.", wrong: "Ignore it since it's not a listed hazard type." },
     };
     var LANG_LABEL = { vi: 'Vietnamese', uz: 'Uzbek', zh: 'Chinese', en: 'English' };
-    var reportSelect2 = document.getElementById('training-report-select');
-    var genBtn = document.getElementById('training-generate-btn');
-    var genLabel = document.getElementById('training-generate-label');
-    var resultEl = document.getElementById('training-result');
+    var listEl = document.getElementById('training-list');
+    var materialsById = {}; // reportId -> generated material, kept across tab switches
 
-    genBtn.addEventListener('click', function () {
-      if (genBtn.disabled) return;
-      genBtn.disabled = true;
-      genLabel.innerHTML = 'Generating<span class="ai-loading-dots"></span>';
+    function cardHtml(r, material) {
+      var chips = Object.keys(LANG_LABEL).map(function (l) { return '<span>' + LANG_LABEL[l] + '</span>'; }).join('');
+      var thumbCls = 'hz-thumb-' + ({ Fall: 'fall', Electrical: 'electrical', Fire: 'fire', Heat: 'heat', Chemical: 'chemical' }[r.cat] || 'fall');
+      return (
+        '<div class="training-card ai-reveal" data-report-id="' + r.id + '">' +
+          '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px">' +
+            '<div class="ai-badge" style="margin-bottom:0"><span class="hz-thumb ' + thumbCls + '" style="width:22px; height:22px; border-radius:6px; margin-right:2px"></span>Generated from a worker report</div>' +
+            '<button type="button" class="training-refresh-btn" data-report-id="' + r.id + '" title="Regenerate this card">↻</button>' +
+          '</div>' +
+          '<h4>' + material.titleEn + '</h4>' +
+          '<p style="margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5">From ' + r.krLoc + ' (' + r.kr + '), shared as a short lesson for the rest of the crew — same hazard, same site.</p>' +
+          '<div class="training-langs">' + chips + '</div>' +
+          '<div class="training-quiz">' +
+            '<div class="q">Quick check: ' + material.quiz.q + '</div>' +
+            '<div class="opt correct">' + material.quiz.correct + '</div>' +
+            '<div class="opt">' + material.quiz.wrong + '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }
+
+    function generateMaterial(r) {
+      var quiz = QUIZ_BY_CATEGORY[r.cat] || QUIZ_BY_CATEGORY.Other;
+      var material = { reportId: r.id, titleEn: r.native.en[0], captionKo: r.kr, location: r.krLoc, cat: r.cat, langs: Object.keys(LANG_LABEL), quiz: quiz };
+      materialsById[r.id] = material;
+      if (window.MOBILE_SERVER_URL) {
+        fetch(window.MOBILE_SERVER_URL + '/training-materials', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(material),
+        }).catch(function () { /* best-effort sync — card still shows locally either way */ });
+      }
+      return material;
+    }
+
+    function renderList() {
+      listEl.innerHTML = window.MGMT_REPORTS.map(function (r) {
+        var m = materialsById[r.id];
+        return m ? cardHtml(r, m) : '';
+      }).join('') || '<div class="empty-hint">No reports yet.</div>';
+    }
+
+    function processNewReports() {
+      var added = false;
+      window.MGMT_REPORTS.forEach(function (r) {
+        if (!materialsById[r.id]) { generateMaterial(r); added = true; }
+      });
+      if (added) renderList();
+    }
+
+    listEl.addEventListener('click', function (e) {
+      var btn = e.target.closest('.training-refresh-btn');
+      if (!btn) return;
+      var id = btn.getAttribute('data-report-id');
+      var r = window.MGMT_REPORTS.find(function (x) { return x.id === id; });
+      if (!r) return;
+      btn.disabled = true;
+      btn.textContent = '…';
       setTimeout(function () {
-        var r = window.MGMT_REPORTS[Number(reportSelect2.value)];
-        var quiz = QUIZ_BY_CATEGORY[r.cat] || QUIZ_BY_CATEGORY.Fall;
-        var chips = Object.keys(LANG_LABEL).map(function (l) {
-          return '<span>' + LANG_LABEL[l] + '</span>';
-        }).join('');
-        resultEl.innerHTML =
-          '<div class="training-card ai-reveal">' +
-            '<div class="ai-badge" style="margin-bottom:0">' +
-              '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>' +
-              'Generated from a worker report' +
-            '</div>' +
-            '<h4>' + r.native.en[0] + '</h4>' +
-            '<p style="margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5">From ' + r.krLoc + ' (' + r.kr + '), shared as a short lesson for the rest of the crew — same hazard, same site.</p>' +
-            '<div class="training-langs">' + chips + '</div>' +
-            '<div class="training-quiz">' +
-              '<div class="q">Quick check: ' + quiz.q + '</div>' +
-              '<div class="opt correct">' + quiz.correct + '</div>' +
-              '<div class="opt">' + quiz.wrong + '</div>' +
-            '</div>' +
-          '</div>';
-        genLabel.textContent = 'Regenerate';
-        genBtn.disabled = false;
-      }, 1000);
+        generateMaterial(r);
+        renderList();
+      }, 700);
     });
+
+    // Auto-process on open: run once now (covers the seed reports), and
+    // again every time the Training materials tab is clicked, which is
+    // when newly-submitted mobile reports get picked up.
+    processNewReports();
+    document.querySelector('.nav-item[data-tab="training"]').addEventListener('click', processNewReports);
   })();
   (function () {
     var modal = document.getElementById('report-modal');
@@ -757,7 +775,7 @@
     // (see server/server.js), tunneled via a Cloudflare quick tunnel for
     // the demo. Update this if the tunnel is restarted — it gets a new
     // random URL each time (see server/README.md).
-    var MOBILE_SERVER_URL = 'https://gently-roland-begun-programmer.trycloudflare.com';
+    var MOBILE_SERVER_URL = window.MOBILE_SERVER_URL;
     var seenMobileReportIds = {};
     var reportsTable = document.getElementById('reports-table');
     var CAT_DISPLAY = { falls: 'Fall', electrical: 'Electrical', fire: 'Fire', heat: 'Heat', chemical: 'Chemical', other: 'Other' };
@@ -785,7 +803,7 @@
           var loc = rep.location || 'Unspecified';
 
           window.MGMT_REPORTS.unshift({
-            cat: cat, sev: sevLabel, kr: '[모바일 제보] ' + (rep.note || cat + ' 위험'),
+            id: rep.id, cat: cat, sev: sevLabel, kr: '[모바일 제보] ' + (rep.note || cat + ' 위험'),
             krLoc: loc, date: new Date().toISOString().slice(0, 10), lang: rep.lang,
             native: { vi: [title, ''], uz: [title, ''], zh: [title, ''], en: [title, ''] },
           });
