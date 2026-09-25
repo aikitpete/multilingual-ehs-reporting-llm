@@ -62,28 +62,26 @@ function postReportToServer(report) {
   });
 }
 
-function buildQuiz(lang, category) {
-  return [1, 2].map((n) => ({
-    type: 'choice',
-    question: t(lang, `quiz.${category}.q${n}`),
-    options: [1, 2, 3].map((a) => t(lang, `quiz.${category}.q${n}.a${a}`)),
-    correctIndex: 0,
-  })).concat([{ type: 'text', question: t(lang, `quiz.${category}.q3`) }]);
-}
-
 export default function App() {
   const [lang, setLang] = useState('en');
   const [showLangSheet, setShowLangSheet] = useState(false);
   const [showDemoSheet, setShowDemoSheet] = useState(false);
   const [screen, setScreen] = useState('welcome');
-  const [reports, setReports] = useState(SEED_REPORTS);
+  const [sharedReports, setSharedReports] = useState([]);
   const [checkedIn, setCheckedIn] = useState(false);
   const [syncedMaterials, setSyncedMaterials] = useState([]);
 
+  // Training screen shows every submitted hazard from the shared server
+  // (same source the dashboards read from), plus the always-present seed
+  // reports for demo content. Polled like syncedMaterials below.
   useEffect(() => {
     if (screen !== 'training_list') return;
     let cancelled = false;
     const poll = () => {
+      fetch(SERVER_URL + '/reports')
+        .then((r) => r.json())
+        .then((list) => { if (!cancelled) setSharedReports(list); })
+        .catch(() => {});
       fetch(SERVER_URL + '/training-materials')
         .then((r) => r.json())
         .then((list) => { if (!cancelled) setSyncedMaterials(list); })
@@ -94,8 +92,6 @@ export default function App() {
     return () => { cancelled = true; clearInterval(id); };
   }, [screen]);
   const [draft, setDraft] = useState(null);
-  const [activeReport, setActiveReport] = useState(null);
-  const [quiz, setQuiz] = useState(null); // { questions, qIndex, correct, textAnswer }
 
   const tr = (key) => t(lang, key);
 
@@ -112,7 +108,7 @@ export default function App() {
     setDraft({
       photoUri: null,
       samplePhoto: CATEGORY_PHOTO[scenario.category] || null,
-      pin: { x: 150, y: 150 },
+      pin: { xPct: 0.5, yPct: 0.45 },
       category: scenario.category,
       location: scenario.location,
       severity: scenario.severity,
@@ -184,18 +180,6 @@ export default function App() {
   }
 
   function submitReport() {
-    const newReport = {
-      id: 'r' + Date.now(),
-      category: draft.category,
-      severity: draft.severity,
-      note: draft.note,
-      location: draft.location,
-      photoUri: draft.photoUri,
-      samplePhoto: draft.samplePhoto,
-      color: '#556270',
-      icon: CATEGORY_ICON[draft.category],
-    };
-    setReports((prev) => [newReport, ...prev]);
     postReportToServer({
       category: draft.category,
       categoryLabel: tr(`report.category.${draft.category}`),
@@ -205,40 +189,14 @@ export default function App() {
       note: draft.note,
       lang,
       langLabel: LANGUAGES[lang]['lang.name'],
+      // A real photo travels as its local file URI -- only meaningful on
+      // this same device/session, which is fine for a single-phone demo.
+      // A sample photo has no serializable form, so the training screen
+      // falls back to CATEGORY_PHOTO[category] for those instead.
+      photoUri: draft.photoUri || null,
+      pin: draft.pin || null,
     });
     setScreen('report_submitted');
-  }
-
-  function startTraining(report) {
-    setActiveReport(report);
-    if (!QUIZ_CATEGORIES.includes(report.category)) {
-      setScreen('training_nogen');
-      return;
-    }
-    setQuiz({ questions: buildQuiz(lang, report.category), qIndex: 0, correct: 0, textAnswer: '' });
-    setScreen('training_quiz');
-  }
-
-  function answerChoice(optionIndex) {
-    const q = quiz.questions[quiz.qIndex];
-    const isCorrect = optionIndex === q.correctIndex;
-    advanceQuiz(isCorrect ? 1 : 0);
-  }
-
-  function submitTextAnswer() {
-    advanceQuiz(1);
-  }
-
-  function advanceQuiz(scoreDelta) {
-    setQuiz((q) => {
-      const correct = q.correct + scoreDelta;
-      const nextIndex = q.qIndex + 1;
-      if (nextIndex >= q.questions.length) {
-        setScreen('training_result');
-        return { ...q, correct, qIndex: nextIndex };
-      }
-      return { ...q, correct, qIndex: nextIndex, textAnswer: '' };
-    });
   }
 
   if (screen === 'welcome') {
@@ -295,25 +253,7 @@ export default function App() {
       )}
 
       {screen === 'training_list' && (
-        <TrainingList tr={tr} reports={reports} onStart={startTraining} syncedMaterials={syncedMaterials} />
-      )}
-
-      {screen === 'training_nogen' && (
-        <NoQuizStep tr={tr} onDone={() => setScreen('training_list')} />
-      )}
-
-      {screen === 'training_quiz' && quiz && (
-        <QuizStep
-          tr={tr}
-          quiz={quiz}
-          onChoice={answerChoice}
-          onTextChange={(v) => setQuiz((q) => ({ ...q, textAnswer: v }))}
-          onTextSubmit={submitTextAnswer}
-        />
-      )}
-
-      {screen === 'training_result' && quiz && (
-        <ResultStep tr={tr} quiz={quiz} onDone={() => setScreen('training_list')} />
+        <TrainingList tr={tr} reports={[...SEED_REPORTS, ...sharedReports]} syncedMaterials={syncedMaterials} />
       )}
 
       <LangSheet visible={showLangSheet} tr={tr} lang={lang} onSelect={(code) => { setLang(code); setShowLangSheet(false); }} onClose={() => setShowLangSheet(false)} />
@@ -332,8 +272,6 @@ function backFor(screen) {
   const map = {
     report_form: 'home',
     training_list: 'home',
-    training_quiz: 'training_list',
-    training_nogen: 'training_list',
     my_reports: 'home',
   };
   return map[screen] || null;
@@ -532,12 +470,18 @@ function ReportForm({ tr, draft, setDraft, onCamera, onLibrary, onSample, onDemo
           <Text style={styles.stepHint}>{tr('report.mark.hint')}</Text>
           <Pressable
             style={[styles.markPhoto, { width: markSize, height: markSize, alignSelf: 'center', backgroundColor: '#333' }]}
-            onPress={(e) => setDraft((d) => ({ ...d, pin: { x: e.nativeEvent.locationX, y: e.nativeEvent.locationY } }))}
+            onPress={(e) => setDraft((d) => ({
+              ...d,
+              // Stored as a fraction of the marking square, not raw pixels,
+              // so the same pin lands in the right spot later on the
+              // training screen's differently-sized/shaped hazard photo.
+              pin: { xPct: e.nativeEvent.locationX / markSize, yPct: e.nativeEvent.locationY / markSize },
+            }))}
           >
             {draft.photoUri && <Image source={{ uri: draft.photoUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />}
             {draft.samplePhoto && <Image source={draft.samplePhoto} style={StyleSheet.absoluteFill} resizeMode="cover" />}
             {draft.pin && (
-              <View style={[styles.pin, { left: draft.pin.x - 16, top: draft.pin.y - 16 }]}>
+              <View style={[styles.pin, { left: draft.pin.xPct * markSize - 16, top: draft.pin.yPct * markSize - 16 }]}>
                 <Text style={{ fontSize: 22 }}>📍</Text>
               </View>
             )}
@@ -632,32 +576,81 @@ function SubmittedStep({ tr, draft, onDone }) {
   );
 }
 
-function TrainingList({ tr, reports, onStart, syncedMaterials }) {
+// For each hazard type present among submitted reports: one multiple-choice
+// safety question (from the existing quiz.<category>.q1 content, only
+// categories that have it), then every confirmed hazard of that type with
+// a large photo and its marked coordinate, so it's easy to see what and
+// where the hazard is.
+function TrainingList({ tr, reports, syncedMaterials }) {
+  const [answers, setAnswers] = useState({});
+
+  const grouped = {};
+  reports.forEach((r) => {
+    (grouped[r.category] = grouped[r.category] || []).push(r);
+  });
+  const categoriesPresent = CATEGORIES.filter((c) => grouped[c] && grouped[c].length);
+
   return (
     <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContent}>
       <Text style={styles.stepTitle}>{tr('training.list.title')}</Text>
-      {reports.map((r) => (
-        <View key={r.id} style={styles.reportCard}>
-          <View style={[styles.reportThumb, { backgroundColor: r.color }]}>
-            {r.photoUri ? (
-              <Image source={{ uri: r.photoUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
-            ) : r.samplePhoto ? (
-              <Image source={r.samplePhoto} style={StyleSheet.absoluteFill} resizeMode="cover" />
-            ) : CATEGORY_PHOTO[r.category] ? (
-              <Image source={CATEGORY_PHOTO[r.category]} style={StyleSheet.absoluteFill} resizeMode="cover" />
-            ) : (
-              <Text style={{ fontSize: 26 }}>{r.icon}</Text>
+
+      {categoriesPresent.length === 0 && <Text style={styles.stepHint}>{tr('training.list.empty')}</Text>}
+
+      {categoriesPresent.map((cat) => {
+        const selected = answers[cat];
+        return (
+          <View key={cat} style={styles.trainingSection}>
+            <Text style={styles.sectionLabel}>{CATEGORY_ICON[cat]} {tr(`report.category.${cat}`)}</Text>
+
+            {QUIZ_CATEGORIES.includes(cat) && (
+              <View style={styles.quizCard}>
+                <Text style={styles.quizQuestion}>{tr(`quiz.${cat}.q1`)}</Text>
+                {[1, 2, 3].map((n, i) => (
+                  <Pressable
+                    key={n}
+                    style={[
+                      styles.optionCard,
+                      selected === i && (i === 0 ? styles.optionCardCorrect : styles.optionCardWrong),
+                    ]}
+                    onPress={() => setAnswers((a) => ({ ...a, [cat]: i }))}
+                  >
+                    <Text style={styles.optionLabel}>{tr(`quiz.${cat}.q1.a${n}`)}</Text>
+                  </Pressable>
+                ))}
+                {selected != null && (
+                  <Text style={selected === 0 ? styles.quizFeedbackGood : styles.quizFeedbackBad}>
+                    {tr(selected === 0 ? 'training.quiz.correct' : 'training.quiz.incorrect')}
+                  </Text>
+                )}
+              </View>
             )}
+
+            {grouped[cat].map((r) => (
+              <View key={r.id} style={styles.hazardCard}>
+                <View style={styles.hazardPhotoLarge}>
+                  {r.photoUri ? (
+                    <Image source={{ uri: r.photoUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
+                  ) : CATEGORY_PHOTO[cat] ? (
+                    <Image source={CATEGORY_PHOTO[cat]} style={StyleSheet.absoluteFill} resizeMode="cover" />
+                  ) : (
+                    <Text style={{ fontSize: 40 }}>{CATEGORY_ICON[cat]}</Text>
+                  )}
+                  {r.pin && (
+                    <View style={[styles.pin, { left: `${r.pin.xPct * 100}%`, top: `${r.pin.yPct * 100}%`, marginLeft: -16, marginTop: -16 }]}>
+                      <Text style={{ fontSize: 26 }}>📍</Text>
+                    </View>
+                  )}
+                </View>
+                <View style={{ gap: 2 }}>
+                  <Text style={styles.reportSeverity}>{tr(`report.severity.${r.severity}`)}</Text>
+                  {!!r.location && <Text style={styles.reportCategory}>📍 {r.location}</Text>}
+                  {!!r.note && <Text style={styles.stepHint}>{r.note}</Text>}
+                </View>
+              </View>
+            ))}
           </View>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.reportCategory}>{tr(`report.category.${r.category}`)}</Text>
-            <Text style={styles.reportSeverity}>{tr(`report.severity.${r.severity}`)}</Text>
-          </View>
-          <Pressable style={styles.ctaBtn} onPress={() => onStart(r)}>
-            <Text style={styles.ctaBtnLabel}>{tr('training.card.cta')}</Text>
-          </Pressable>
-        </View>
-      ))}
+        );
+      })}
 
       {!!(syncedMaterials && syncedMaterials.length) && (
         <>
@@ -672,61 +665,6 @@ function TrainingList({ tr, reports, onStart, syncedMaterials }) {
         </>
       )}
     </ScrollView>
-  );
-}
-
-function NoQuizStep({ tr, onDone }) {
-  return (
-    <View style={styles.stepWrap}>
-      <Text style={styles.stepTitle}>{tr('training.result.title')}</Text>
-      <Text style={styles.stepHint}>{tr('training.result.body')}</Text>
-      <PrimaryButton label={tr('nav.done')} onPress={onDone} />
-    </View>
-  );
-}
-
-function QuizStep({ tr, quiz, onChoice, onTextChange, onTextSubmit }) {
-  const q = quiz.questions[quiz.qIndex];
-  return (
-    <View style={styles.stepWrap}>
-      <Text style={styles.stepHint}>{tr('training.quiz.title')} · {tr('training.quiz.question')} {quiz.qIndex + 1} {tr('training.quiz.of')} {quiz.questions.length}</Text>
-      <Text style={styles.stepTitle}>{q.question}</Text>
-
-      {q.type === 'choice' ? (
-        q.options.map((opt, i) => (
-          <Pressable key={i} style={styles.optionCard} onPress={() => onChoice(i)}>
-            <Text style={styles.optionLabel}>{opt}</Text>
-          </Pressable>
-        ))
-      ) : (
-        <>
-          <TextInput
-            style={styles.noteInput}
-            placeholder={tr('training.quiz.otherPlaceholder')}
-            placeholderTextColor={C.muted}
-            multiline
-            value={quiz.textAnswer}
-            onChangeText={onTextChange}
-          />
-          <PrimaryButton label={tr('nav.submit')} onPress={onTextSubmit} />
-        </>
-      )}
-    </View>
-  );
-}
-
-function ResultStep({ tr, quiz, onDone }) {
-  const scored = quiz.questions.filter((q) => q.type === 'choice').length;
-  return (
-    <View style={styles.stepWrap}>
-      <View style={styles.checkCircle}>
-        <Text style={{ fontSize: 40 }}>🎉</Text>
-      </View>
-      <Text style={styles.stepTitle}>{tr('training.result.title')}</Text>
-      <Text style={styles.stepHint}>{tr('training.result.body')}</Text>
-      <Text style={styles.scoreText}>{quiz.correct}/{scored} {tr('training.result.score')}</Text>
-      <PrimaryButton label={tr('nav.done')} onPress={onDone} />
-    </View>
   );
 }
 
@@ -891,19 +829,21 @@ const styles = StyleSheet.create({
   summaryRow: { fontSize: 16, fontWeight: '700', color: C.ink },
   summaryNote: { fontSize: 14, color: C.inkSoft },
 
-  reportCard: {
-    flexDirection: 'row', alignItems: 'center', gap: 12, backgroundColor: C.card,
-    borderRadius: 16, padding: 12, borderWidth: 1, borderColor: C.border,
-  },
-  reportThumb: { width: 52, height: 52, borderRadius: 12, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
   reportCategory: { fontWeight: '800', color: C.ink, fontSize: 15 },
   reportSeverity: { color: C.inkSoft, fontSize: 13 },
-  ctaBtn: { backgroundColor: C.ink, paddingHorizontal: 14, paddingVertical: 10, borderRadius: 12 },
-  ctaBtnLabel: { color: '#fff', fontWeight: '700', fontSize: 12 },
 
+  trainingSection: { gap: 10, marginBottom: 8 },
+  quizCard: { backgroundColor: C.card, borderRadius: 16, padding: 14, borderWidth: 1, borderColor: C.border, gap: 8 },
+  quizQuestion: { fontSize: 15, fontWeight: '700', color: C.ink },
   optionCard: { borderWidth: 1, borderColor: C.border, backgroundColor: C.card, borderRadius: 14, padding: 16 },
   optionLabel: { fontSize: 15, color: C.ink, fontWeight: '600' },
-  scoreText: { fontSize: 28, fontWeight: '800', color: C.accent, textAlign: 'center' },
+  optionCardCorrect: { borderColor: C.low, backgroundColor: '#EAF3E8' },
+  optionCardWrong: { borderColor: C.high, backgroundColor: '#F7E9E6' },
+  quizFeedbackGood: { color: C.low, fontWeight: '700', fontSize: 13.5 },
+  quizFeedbackBad: { color: C.high, fontWeight: '700', fontSize: 13.5 },
+
+  hazardCard: { backgroundColor: C.card, borderRadius: 16, padding: 12, borderWidth: 1, borderColor: C.border, gap: 10 },
+  hazardPhotoLarge: { width: '100%', aspectRatio: 4 / 3, borderRadius: 14, overflow: 'hidden', backgroundColor: '#333', alignItems: 'center', justifyContent: 'center' },
 
   primaryBtn: { backgroundColor: C.accent, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 'auto' },
   primaryBtnLabel: { color: '#fff', fontWeight: '800', fontSize: 16 },

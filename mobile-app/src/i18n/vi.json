@@ -60,7 +60,6 @@
   "training.list.title": "Các nguy hiểm gần đây tại công trường",
   "training.synced.title": "Từ đội an toàn của bạn",
   "training.list.empty": "Chưa có báo cáo nào. Hãy báo cáo trước.",
-  "training.card.cta": "Bắt đầu đào tạo",
-  "training.result.title": "Làm tốt lắm",
-  "training.result.body": "Bạn đã hoàn thành mô-đun đào tạo này."
+  "training.quiz.correct": "Đúng rồi — đó là lựa chọn an toàn.",
+  "training.quiz.incorrect": "Chưa đúng — đáp án an toàn đã được đánh dấu."
 }
