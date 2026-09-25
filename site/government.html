@@ -3,46 +3,55 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+KR:wght@500;700;800&display=swap">
 <style>
   :root {
-    --bg: #F2ECE0; --surface: #FFFFFF; --surface-2: #FAF6EE; --border: #E3E0D8;
-    --ink: #242424; --ink-soft: #625F5A; --muted: #8C8983;
-    --accent: #C97A1F; --accent-strong: #242424;
+    --bg: #EEF2F5; --surface: #FFFFFF; --surface-2: #F5F8FA; --border: #DAE3E9;
+    --ink: #1B2733; --ink-soft: #4C5C6B; --muted: #7C8B98;
+    --accent: #2C6E9E; --accent-strong: #16324A;
     --high: #C2402A; --high-bg: #FBE3DC; --med: #C97A1F; --med-bg: #FBE8D0; --low: #3D7A34; --low-bg: #E8F0E0;
     color-scheme: light;
   }
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
-      --bg: #161616; --surface: #201F1F; --surface-2: #1B1A1A; --border: #3A3A38;
-      --ink: #F5F1E8; --ink-soft: #D6D2C9; --muted: #8C8983; --accent: #FFC629;
+      --bg: #10181F; --surface: #17222B; --surface-2: #131C23; --border: #2A3A45;
+      --ink: #EAF1F6; --ink-soft: #C6D3DC; --muted: #8C9BA8; --accent: #5EC8F2;
       --high: #E8836A; --high-bg: #33180F; --med: #FFC629; --med-bg: #332A12; --low: #86C46B; --low-bg: #1B2E14;
       color-scheme: dark;
     }
   }
   :root[data-theme="dark"] {
-    --bg: #161616; --surface: #201F1F; --surface-2: #1B1A1A; --border: #3A3A38;
-    --ink: #F5F1E8; --ink-soft: #D6D2C9; --muted: #8C8983; --accent: #FFC629;
+    --bg: #10181F; --surface: #17222B; --surface-2: #131C23; --border: #2A3A45;
+    --ink: #EAF1F6; --ink-soft: #C6D3DC; --muted: #8C9BA8; --accent: #5EC8F2;
     --high: #E8836A; --high-bg: #33180F; --med: #FFC629; --med-bg: #332A12; --low: #86C46B; --low-bg: #1B2E14;
     color-scheme: dark;
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', Arial, sans-serif; font-variant-numeric: tabular-nums; }
-  header.top {
-    background: var(--accent-strong); color: #F7F3EA; padding: 22px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+  .app { display: flex; min-height: 100vh; }
+  nav.side {
+    width: 240px; flex: none; background: var(--accent-strong); color: #F7F3EA; padding: 28px 20px;
+    display: flex; flex-direction: column; gap: 28px;
   }
   .brand { display: flex; align-items: center; gap: 10px; }
   .brand .sq { width: 14px; height: 14px; background: var(--accent); border-radius: 4px; }
   .brand span { font-family: 'Noto Sans KR', 'Rubik', Arial, sans-serif; font-weight: 800; font-size: 18px; }
-  header.top .region { font-size: 13px; font-weight: 600; background: rgba(255,255,255,0.08); padding: 8px 14px; border-radius: 999px; color: #DAD5CB; }
-  header.top .topbar-right { display: flex; align-items: center; gap: 12px; }
-  header.top .user-chip { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.08); border-radius: 999px; padding: 6px 14px 6px 6px; }
-  header.top .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent); color: #242424; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex: none; font-family: 'Noto Sans KR', Arial, sans-serif; }
-  header.top .user-meta { display: flex; flex-direction: column; line-height: 1.25; }
-  header.top .user-name { font-size: 12.5px; font-weight: 700; color: #F7F3EA; }
-  header.top .user-role { font-size: 11px; color: #DAD5CB; }
-  header.top .user-caret { color: #DAD5CB; font-size: 10px; margin-left: 2px; }
-  main { max-width: 1240px; margin: 0 auto; padding: 32px 40px 60px; display: flex; flex-direction: column; gap: 28px; }
-  .page-title { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 12px; }
-  .page-title h1 { font-family: 'Rubik', Arial, sans-serif; font-size: 28px; font-weight: 800; margin: 0; }
-  .page-title p { margin: 4px 0 0; color: var(--ink-soft); font-size: 14px; }
+  .lang-toggle { display: flex; gap: 4px; background: rgba(255,255,255,0.06); border-radius: 999px; padding: 4px; }
+  .lang-toggle button { flex: 1; border: none; background: transparent; color: #C9D6DE; font-size: 12px; font-weight: 700; padding: 7px 0; border-radius: 999px; cursor: pointer; font-family: inherit; }
+  .lang-toggle button.on { background: var(--accent); color: #0E1B24; }
+  .nav-items { display: flex; flex-direction: column; gap: 4px; }
+  .nav-item { padding: 11px 14px; border-radius: 10px; font-size: 14px; font-weight: 600; color: #C9D6DE; cursor: default; }
+  .nav-item.on { background: rgba(94,200,242,0.18); color: #F7F3EA; }
+  .nav-item .k { color: var(--accent); margin-right: 8px; }
+  .side-foot { margin-top: auto; font-size: 12px; color: #8C9BA8; }
+  main { flex: 1; padding: 32px 40px 60px; max-width: 1240px; display: flex; flex-direction: column; gap: 28px; }
+  .topbar { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; }
+  .topbar h1 { font-family: 'Rubik', Arial, sans-serif; font-size: 26px; font-weight: 800; margin: 0; }
+  .topbar-sub { margin: 4px 0 0; color: var(--ink-soft); font-size: 14px; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .user-chip { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px 6px 6px; }
+  .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-strong); color: #F7F3EA; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex: none; font-family: 'Noto Sans KR', Arial, sans-serif; }
+  .user-meta { display: flex; flex-direction: column; line-height: 1.25; }
+  .user-name { font-size: 12.5px; font-weight: 700; color: var(--ink); }
+  .user-role { font-size: 11px; color: var(--muted); }
+  .user-caret { color: var(--muted); font-size: 10px; margin-left: 2px; }
   .btn-link { font-size: 13px; font-weight: 700; color: var(--accent); text-decoration: underline; cursor: pointer; }
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
   .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 6px; }
@@ -91,36 +100,47 @@
   @keyframes ai-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
   .empty-hint { font-size: 13px; color: var(--muted); font-style: italic; }
   @media (max-width: 860px) {
-    header.top, main { padding-left: 20px; padding-right: 20px; }
+    nav.side { width: 100%; flex-direction: row; align-items: center; padding: 16px 20px; }
+    .nav-items { display: none; }
+    .side-foot { display: none; }
+    main { padding: 24px 18px 48px; }
     .stats { grid-template-columns: repeat(2, 1fr); }
     .grid-2 { grid-template-columns: 1fr; }
     table { display: block; overflow-x: auto; }
   }
 </style>
 
-<header class="top">
-  <div class="brand"><div class="sq"></div><span>안전톡</span></div>
-  <div class="topbar-right">
-    <span class="region">Gyeonggi region · 2027 pilot cohort</span>
-    <div class="user-chip">
-      <div class="user-avatar">김</div>
-      <div class="user-meta">
-        <div class="user-name">Kim Min-seo</div>
-        <div class="user-role">Labor Inspector, MOEL</div>
+<div class="app">
+  <nav class="side">
+    <div class="brand"><div class="sq"></div><span>안전톡</span></div>
+    <div class="lang-toggle" id="dash-lang-toggle">
+      <button type="button" class="on" data-lang="en">EN</button>
+      <button type="button" data-lang="ko">한국어</button>
+    </div>
+    <div class="nav-items">
+      <div class="nav-item on"><span class="k">◆</span><span data-i18n="nav.compliance">Compliance overview</span></div>
+    </div>
+    <p class="side-foot" data-i18n="side.region">Gyeonggi region · 2027 pilot cohort</p>
+  </nav>
+  <main>
+    <div class="topbar">
+      <div>
+        <h1 data-i18n="page.title">Foreign-worker safety compliance</h1>
+        <p class="topbar-sub" data-i18n="page.subtitle">Aggregated from site-level hazard reports and completed safety-education records</p>
       </div>
-      <span class="user-caret">▾</span>
+      <div class="topbar-right">
+        <div class="user-chip">
+          <div class="user-avatar">김</div>
+          <div class="user-meta">
+            <div class="user-name">Kim Min-seo</div>
+            <div class="user-role">Labor Inspector, MOEL</div>
+          </div>
+          <span class="user-caret">▾</span>
+        </div>
+      </div>
     </div>
-  </div>
-</header>
-<main>
-  <div class="page-title">
-    <div>
-      <h1>Foreign-worker safety compliance</h1>
-      <p>Aggregated from site-level hazard reports and completed safety-education records</p>
-    </div>
-  </div>
 
-  <div class="panel ai-panel">
+    <div class="panel ai-panel">
     <div class="ai-badge">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
       AI compliance narrative
@@ -134,46 +154,49 @@
   </div>
 
   <div class="stats">
-    <div class="stat"><span class="n">15</span><span class="l">Sites reporting</span></div>
-    <div class="stat"><span class="n" id="gov-report-count">1,204</span><span class="l">Hazard reports, this quarter</span></div>
-    <div class="stat"><span class="n">100%</span><span class="l">New foreign hires with training on file</span></div>
-    <div class="stat"><span class="n">31%</span><span class="l">Fewer repeat high-severity reports vs. last quarter</span></div>
-    <div class="stat"><span class="n">96%</span><span class="l">Sites with electronic attendance tracking live</span></div>
+    <div class="stat"><span class="n">15</span><span class="l" data-i18n="stat.sites">Sites reporting</span></div>
+    <div class="stat"><span class="n" id="gov-report-count">1,204</span><span class="l" data-i18n="stat.reports">Hazard reports, this quarter</span></div>
+    <div class="stat"><span class="n">89%</span><span class="l" data-i18n="stat.newhire">New hires (last 90 days), training on file</span></div>
+    <div class="stat"><span class="n">31%</span><span class="l" data-i18n="stat.repeat">Fewer repeat high-severity reports vs. last quarter</span></div>
+    <div class="stat"><span class="n">96%</span><span class="l" data-i18n="stat.attendance">Sites with electronic attendance tracking live</span></div>
   </div>
 
   <div class="grid-2">
     <div class="panel">
-      <div class="panel-head"><h2>Hazard reports by category, this quarter</h2></div>
+      <div class="panel-head"><h2 data-i18n="panel.bycategory">Hazard reports by category, this quarter</h2></div>
       <div class="panel-body">
         <div class="bars">
-          <div class="bar-col"><div class="bar" style="height:88%; background:#C2402A"></div><span class="l">Falls</span></div>
-          <div class="bar-col"><div class="bar" style="height:58%; background:#C97A1F"></div><span class="l">Fire</span></div>
-          <div class="bar-col"><div class="bar" style="height:46%; background:#242424"></div><span class="l">Heat</span></div>
-          <div class="bar-col"><div class="bar" style="height:34%; background:#3D7A34"></div><span class="l">Electrical</span></div>
-          <div class="bar-col"><div class="bar" style="height:22%; background:#8C8983"></div><span class="l">Other</span></div>
+          <div class="bar-col"><div class="bar" style="height:88%; background:#C2402A"></div><span class="l" data-i18n="cat.falls">Falls</span></div>
+          <div class="bar-col"><div class="bar" style="height:58%; background:#C97A1F"></div><span class="l" data-i18n="cat.fire">Fire</span></div>
+          <div class="bar-col"><div class="bar" style="height:46%; background:#5B6B78"></div><span class="l" data-i18n="cat.heat">Heat</span></div>
+          <div class="bar-col"><div class="bar" style="height:34%; background:#3D7A34"></div><span class="l" data-i18n="cat.electrical">Electrical</span></div>
+          <div class="bar-col"><div class="bar" style="height:22%; background:#8C8983"></div><span class="l" data-i18n="cat.other">Other</span></div>
         </div>
       </div>
       <div class="legend">
-        <span><i style="background:#C2402A"></i>Falls remain the leading category, consistent with 2025 fatality data</span>
+        <span><i style="background:#C2402A"></i><span data-i18n="legend.falls">Falls remain the leading category, consistent with 2025 fatality data</span></span>
       </div>
     </div>
     <div class="panel">
-      <div class="panel-head"><h2>Training completion by language</h2></div>
+      <div class="panel-head"><h2 data-i18n="panel.bylanguage">Training completion by language</h2></div>
       <div class="panel-body compliance-list">
-        <div class="c-row"><span class="lbl">Vietnamese</span><div class="c-track"><div class="c-fill" style="width:100%"></div></div><span class="pct">100%</span></div>
-        <div class="c-row"><span class="lbl">Uzbek</span><div class="c-track"><div class="c-fill" style="width:97%"></div></div><span class="pct">97%</span></div>
-        <div class="c-row"><span class="lbl">Chinese</span><div class="c-track"><div class="c-fill" style="width:100%"></div></div><span class="pct">100%</span></div>
-        <div class="c-row"><span class="lbl">English</span><div class="c-track"><div class="c-fill" style="width:100%"></div></div><span class="pct">100%</span></div>
+        <div class="c-row"><span class="lbl" data-i18n="lang.vi">Vietnamese</span><div class="c-track"><div class="c-fill" style="width:100%"></div></div><span class="pct">100%</span></div>
+        <div class="c-row"><span class="lbl" data-i18n="lang.zh">Chinese</span><div class="c-track"><div class="c-fill" style="width:100%"></div></div><span class="pct">100%</span></div>
+        <div class="c-row"><span class="lbl" data-i18n="lang.uz">Uzbek</span><div class="c-track"><div class="c-fill" style="width:81%"></div></div><span class="pct">81%</span></div>
+        <div class="c-row"><span class="lbl" data-i18n="lang.km">Khmer</span><div class="c-track"><div class="c-fill" style="width:34%; background:var(--high)"></div></div><span class="pct">34%</span></div>
+      </div>
+      <div class="legend" style="padding:0 22px 18px">
+        <span><i style="background:var(--high)"></i><span data-i18n="legend.khmer">New Khmer-speaking crew onboarded at Suwon this month — training rollout still catching up</span></span>
       </div>
     </div>
   </div>
 
   <div class="panel">
-    <div class="panel-head"><h2>Site-level status</h2></div>
+    <div class="panel-head"><h2 data-i18n="panel.sitestatus">Site-level status</h2></div>
     <table>
-      <tr><th>Site</th><th>Region</th><th>Foreign crew</th><th>Reports, this quarter</th><th>Training on file</th><th>Status</th></tr>
+      <tr><th data-i18n="th.site">Site</th><th data-i18n="th.region">Region</th><th data-i18n="th.crew">Foreign crew</th><th data-i18n="th.reports">Reports, this quarter</th><th data-i18n="th.trainingfile">Training on file</th><th data-i18n="th.status">Status</th></tr>
       <tr><td class="main">Site 4 · Wonju</td><td>Gangwon</td><td>42</td><td>18</td><td>100%</td><td><span class="pill ok">Compliant</span></td></tr>
-      <tr><td class="main">Site 7 · Suwon</td><td>Gyeonggi</td><td>65</td><td>34</td><td>97%</td><td><span class="pill warn">2 pending</span></td></tr>
+      <tr><td class="main">Site 7 · Suwon</td><td>Gyeonggi</td><td>71</td><td>34</td><td>84%</td><td><span class="pill warn">9 pending · new Khmer crew</span></td></tr>
       <tr><td class="main">Site 2 · Incheon</td><td>Incheon</td><td>51</td><td>21</td><td>100%</td><td><span class="pill ok">Compliant</span></td></tr>
       <tr><td class="main">Site 9 · Cheonan</td><td>Chungnam</td><td>38</td><td>12</td><td>100%</td><td><span class="pill ok">Compliant</span></td></tr>
       <tr><td class="main">Site 11 · Pyeongtaek</td><td>Gyeonggi</td><td>57</td><td>29</td><td>100%</td><td><span class="pill ok">Compliant</span></td></tr>
@@ -181,7 +204,8 @@
       <tr><td class="main">Site 6 · Ansan</td><td>Gyeonggi</td><td>48</td><td>22</td><td>100%</td><td><span class="pill ok">Compliant</span></td></tr>
     </table>
   </div>
-</main>
+  </main>
+</div>
 
 <style>
   /* Dev-only, not part of the demo — barely visible until hovered. */
