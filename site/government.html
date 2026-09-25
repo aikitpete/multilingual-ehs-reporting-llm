@@ -193,7 +193,7 @@
   // count only, never individual report content (governance model: this
   // actor only ever sees aggregate compliance metrics).
   var GOV_BASELINE_REPORTS = 1204;
-  var GOV_SERVER_URL = 'https://nursing-networks-payroll-satisfied.trycloudflare.com';
+  var GOV_SERVER_URL = 'https://teacher-achieved-encyclopedia-precipitation.trycloudflare.com';
   function pollGovReportCount() {
     fetch(GOV_SERVER_URL + '/reports').then(function (r) { return r.json(); }).then(function (list) {
       var el = document.getElementById('gov-report-count');

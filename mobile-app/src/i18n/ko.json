@@ -35,6 +35,8 @@
   "report.ai.checking": "설명을 확인하는 중",
   "report.ai.allgood": "좋습니다 — 이대로 보내셔도 충분히 명확해요.",
   "report.ai.unavailable": "설명을 자동으로 만들지 못했어요 — 아래에 직접 작성해주세요.",
+  "report.ai.generateBtn": "AI로 설명 생성",
+  "report.ai.success": "설명이 생성되었어요 — 자유롭게 수정하세요.",
   "report.description.title": "무슨 일인가요?",
   "report.description.hint": "본인의 말로 설명해주세요",
   "report.description.placeholder": "보이는 것을 입력하거나 설명하세요...",

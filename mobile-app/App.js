@@ -49,7 +49,7 @@ const SEVERITY_COLOR = { low: C.low, medium: C.accent, high: C.high };
 // server.js and server/README.md) so it works on any WiFi, not just the
 // local LAN. Update this if the tunnel is restarted — it gets a new
 // random URL each time.
-const SERVER_URL = 'https://nursing-networks-payroll-satisfied.trycloudflare.com';
+const SERVER_URL = 'https://teacher-achieved-encyclopedia-precipitation.trycloudflare.com';
 
 function postReportToServer(report) {
   fetch(SERVER_URL + '/reports', {
@@ -123,7 +123,7 @@ export default function App() {
     if (!perm.granted) return pickSample('falls');
     const res = await ImagePicker.launchCameraAsync({ quality: 0.6, base64: true });
     if (!res.canceled) {
-      setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, samplePhoto: false }));
+      setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, photoBase64: res.assets[0].base64, samplePhoto: false }));
       requestAiDescribe(res.assets[0].base64);
     }
   }
@@ -133,13 +133,13 @@ export default function App() {
     if (!perm.granted) return pickSample('falls');
     const res = await ImagePicker.launchImageLibraryAsync({ quality: 0.6, base64: true });
     if (!res.canceled) {
-      setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, samplePhoto: false }));
+      setDraft((d) => ({ ...d, photoUri: res.assets[0].uri, photoBase64: res.assets[0].base64, samplePhoto: false }));
       requestAiDescribe(res.assets[0].base64);
     }
   }
 
   function pickSample(key) {
-    setDraft((d) => ({ ...d, photoUri: null, samplePhoto: CATEGORY_PHOTO[key], aiDescribe: null }));
+    setDraft((d) => ({ ...d, photoUri: null, photoBase64: null, samplePhoto: CATEGORY_PHOTO[key], aiDescribe: null }));
   }
 
   // Best-effort, non-blocking: attempts a real vision LLM call (server-side,
@@ -244,6 +244,7 @@ export default function App() {
           onLibrary={pickFromLibrary}
           onSample={pickSample}
           onDemoData={() => setShowDemoSheet(true)}
+          onGenerateDescription={() => requestAiDescribe(draft.photoBase64)}
           onSubmit={submitReport}
         />
       )}
@@ -393,7 +394,7 @@ function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome, ch
 // requested order (description -> photo -> mark -> category -> location
 // -> severity -> AI check) so the form never dumps everything on the
 // worker at once, while still being one screen/one scroll, not a wizard.
-function ReportForm({ tr, draft, setDraft, onCamera, onLibrary, onSample, onDemoData, onSubmit }) {
+function ReportForm({ tr, draft, setDraft, onCamera, onLibrary, onSample, onDemoData, onGenerateDescription, onSubmit }) {
   const [showSamples, setShowSamples] = React.useState(false);
   const markSize = Math.min(Dimensions.get('window').width - 72, 300);
 
@@ -442,13 +443,27 @@ function ReportForm({ tr, draft, setDraft, onCamera, onLibrary, onSample, onDemo
       {showDescription && (
         <>
           <Text style={styles.sectionLabel}>{tr('report.description.title')}</Text>
-          <Text style={styles.stepHint}>
-            {aiDescribing
-              ? tr('report.ai.checking') + '…'
-              : draft.aiDescribe && draft.aiDescribe.ok === false
-              ? tr('report.ai.unavailable')
-              : tr('report.description.hint')}
-          </Text>
+          <Text style={styles.stepHint}>{tr('report.description.hint')}</Text>
+
+          {!!draft.photoBase64 && (
+            <>
+              <Pressable
+                style={[styles.aiGenerateBtn, aiDescribing && styles.aiGenerateBtnBusy]}
+                onPress={onGenerateDescription}
+                disabled={aiDescribing}
+              >
+                <Text style={styles.aiGenerateBtnLabel}>
+                  {aiDescribing ? tr('report.ai.checking') + '…' : '✨ ' + tr('report.ai.generateBtn')}
+                </Text>
+              </Pressable>
+              {!aiDescribing && draft.aiDescribe && draft.aiDescribe.status === 'done' && (
+                <Text style={draft.aiDescribe.ok === false ? styles.aiStatusBad : styles.aiStatusGood}>
+                  {draft.aiDescribe.ok === false ? tr('report.ai.unavailable') : tr('report.ai.success')}
+                </Text>
+              )}
+            </>
+          )}
+
           <TextInput
             style={styles.noteInput}
             placeholder={tr('report.description.placeholder')}
@@ -780,6 +795,12 @@ const styles = StyleSheet.create({
   sectionLabel: { fontSize: 18, fontWeight: '800', color: C.ink, marginTop: 22 },
   demoDataBar: { alignSelf: 'flex-start', paddingVertical: 10, paddingHorizontal: 8, marginTop: 2, opacity: 0.4 },
   demoDataBarLabel: { fontSize: 13, color: C.muted },
+
+  aiGenerateBtn: { backgroundColor: C.accentBg, borderRadius: 12, paddingVertical: 12, alignItems: 'center', alignSelf: 'flex-start', paddingHorizontal: 16 },
+  aiGenerateBtnBusy: { opacity: 0.6 },
+  aiGenerateBtnLabel: { color: C.accent, fontWeight: '700', fontSize: 13.5 },
+  aiStatusGood: { color: C.low, fontWeight: '600', fontSize: 13 },
+  aiStatusBad: { color: C.high, fontWeight: '600', fontSize: 13 },
 
   cameraPreview: {
     height: 220, borderRadius: 18, backgroundColor: '#1c1c1c',
