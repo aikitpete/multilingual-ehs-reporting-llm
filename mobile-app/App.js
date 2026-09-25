@@ -15,9 +15,12 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import * as ImagePicker from 'expo-image-picker';
 import { LANGUAGES, LANGUAGE_CODES, t } from './src/i18n';
-import { SEED_REPORTS, CATEGORIES, CATEGORY_ICON, QUIZ_CATEGORIES } from './src/data/seedReports';
+import { SEED_REPORTS, CATEGORIES, CATEGORY_ICON, CATEGORY_PHOTO, QUIZ_CATEGORIES, LOCATIONS, DEFAULT_LOCATION } from './src/data/seedReports';
 
-const SAMPLE_PHOTO = require('./assets/hazards/sample.jpg');
+// Generic placeholder for the mark-the-spot step, shown before the worker
+// has picked a category — Training list thumbnails use the category-
+// matched photo instead (see CATEGORY_PHOTO).
+const SAMPLE_PHOTO = CATEGORY_PHOTO.falls;
 
 const C = {
   bg: '#F2ECE0',
@@ -67,6 +70,7 @@ export default function App() {
   const [showLangSheet, setShowLangSheet] = useState(false);
   const [screen, setScreen] = useState('welcome');
   const [reports, setReports] = useState(SEED_REPORTS);
+  const [checkedIn, setCheckedIn] = useState(false);
   const [draft, setDraft] = useState(null);
   const [activeReport, setActiveReport] = useState(null);
   const [quiz, setQuiz] = useState(null); // { questions, qIndex, correct, textAnswer }
@@ -74,7 +78,7 @@ export default function App() {
   const tr = (key) => t(lang, key);
 
   function startReport() {
-    setDraft({ photoUri: null, samplePhoto: false, pin: null, category: null, severity: null, note: '' });
+    setDraft({ photoUri: null, samplePhoto: false, pin: null, category: null, location: DEFAULT_LOCATION, severity: null, note: '' });
     setScreen('report_photo');
   }
 
@@ -109,6 +113,7 @@ export default function App() {
       category: draft.category,
       severity: draft.severity,
       note: draft.note,
+      location: draft.location,
       photoUri: draft.photoUri,
       samplePhoto: draft.samplePhoto,
       color: '#556270',
@@ -120,6 +125,7 @@ export default function App() {
       categoryLabel: tr(`report.category.${draft.category}`),
       severity: draft.severity,
       severityLabel: tr(`report.severity.${draft.severity}`),
+      location: draft.location,
       note: draft.note,
       lang,
       langLabel: LANGUAGES[lang]['lang.name'],
@@ -174,7 +180,25 @@ export default function App() {
       <Header lang={lang} tr={tr} onLangPress={() => setShowLangSheet(true)} onBack={backFor(screen)} onBackPress={() => setScreen(backFor(screen))} />
 
       {screen === 'home' && (
-        <Home tr={tr} lang={lang} onReport={startReport} onTraining={() => setScreen('training_list')} onLangPress={() => setShowLangSheet(true)} onReplayWelcome={() => setScreen('welcome')} />
+        <Home
+          tr={tr}
+          lang={lang}
+          onReport={startReport}
+          onTraining={() => setScreen('training_list')}
+          onLangPress={() => setShowLangSheet(true)}
+          onReplayWelcome={() => setScreen('welcome')}
+          checkedIn={checkedIn}
+          onToggleCheckIn={() => setCheckedIn((v) => !v)}
+          onMyReports={() => setScreen('my_reports')}
+        />
+      )}
+
+      {screen === 'my_reports' && (
+        <View style={styles.stepWrap}>
+          <Text style={styles.stepTitle}>{tr('myReports.title')}</Text>
+          <Text style={styles.stepHint}>{tr('myReports.body')}</Text>
+          <PrimaryButton label={tr('nav.done')} onPress={() => setScreen('home')} />
+        </View>
       )}
 
       {screen === 'report_photo' && (
@@ -195,6 +219,15 @@ export default function App() {
           tr={tr}
           selected={draft?.category}
           onSelect={(cat) => setDraft((d) => ({ ...d, category: cat }))}
+          onContinue={() => setScreen('report_location')}
+        />
+      )}
+
+      {screen === 'report_location' && (
+        <LocationStep
+          tr={tr}
+          selected={draft?.location}
+          onSelect={(loc) => setDraft((d) => ({ ...d, location: loc }))}
           onContinue={() => setScreen('report_severity')}
         />
       )}
@@ -245,10 +278,12 @@ function backFor(screen) {
     report_photo: 'home',
     report_mark: 'report_photo',
     report_category: 'report_mark',
-    report_severity: 'report_category',
+    report_location: 'report_category',
+    report_severity: 'report_location',
     training_list: 'home',
     training_quiz: 'training_list',
     training_nogen: 'training_list',
+    my_reports: 'home',
   };
   return map[screen] || null;
 }
@@ -326,7 +361,7 @@ function WelcomeSequence({ lang, onSelectLang, tr, onFinish }) {
   );
 }
 
-function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome }) {
+function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome, checkedIn, onToggleCheckIn, onMyReports }) {
   return (
     <ScrollView contentContainerStyle={styles.homeWrap}>
       {/* Presenter-only hotspot to replay the welcome sequence on demand — deliberately invisible, not a demo affordance */}
@@ -339,6 +374,13 @@ function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome }) 
       <Text style={styles.homeTitle}>{tr('home.title')}</Text>
       <Text style={styles.homeSubtitle}>{tr('home.subtitle')}</Text>
 
+      {/* Site-wide electronic attendance tracking (OSH Act amendment) — worker's own check-in */}
+      <Pressable style={[styles.checkinPill, checkedIn && styles.checkinPillActive]} onPress={onToggleCheckIn}>
+        <Text style={[styles.checkinPillLabel, checkedIn && styles.checkinPillLabelActive]}>
+          {checkedIn ? tr('home.checkedin') : tr('home.checkin')}
+        </Text>
+      </Pressable>
+
       <Pressable style={[styles.bigCard, { backgroundColor: C.ink }]} onPress={onReport}>
         <Text style={styles.bigCardIcon}>⚠️</Text>
         <Text style={styles.bigCardTitle}>{tr('home.report')}</Text>
@@ -349,6 +391,10 @@ function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome }) 
         <Text style={styles.bigCardIcon}>🎓</Text>
         <Text style={styles.bigCardTitle}>{tr('home.training')}</Text>
         <Text style={styles.bigCardSub}>{tr('home.trainingSub')}</Text>
+      </Pressable>
+
+      <Pressable style={styles.myReportsLink} onPress={onMyReports}>
+        <Text style={styles.myReportsLinkLabel}>{tr('home.myReports')}</Text>
       </Pressable>
     </ScrollView>
   );
@@ -414,6 +460,28 @@ function CategoryStep({ tr, selected, onSelect, onContinue }) {
   );
 }
 
+function LocationStep({ tr, selected, onSelect, onContinue }) {
+  return (
+    <View style={styles.stepWrap}>
+      <Text style={styles.stepTitle}>{tr('report.location.title')}</Text>
+      <Text style={styles.stepHint}>{tr('report.location.hint')}</Text>
+      <View style={{ gap: 10 }}>
+        {LOCATIONS.map((loc) => (
+          <Pressable
+            key={loc}
+            style={[styles.locationRow, selected === loc && styles.locationRowActive]}
+            onPress={() => onSelect(loc)}
+          >
+            <Text style={[styles.locationRowLabel, selected === loc && { color: C.accent }]}>{loc}</Text>
+            {selected === loc && <Text style={{ color: C.accent, fontWeight: '800' }}>✓</Text>}
+          </Pressable>
+        ))}
+      </View>
+      <PrimaryButton label={tr('nav.continue')} onPress={onContinue} disabled={!selected} />
+    </View>
+  );
+}
+
 function SeverityStep({ tr, draft, onSelect, onNote, onSubmit }) {
   return (
     <ScrollView contentContainerStyle={styles.stepWrap}>
@@ -465,6 +533,7 @@ function SubmittedStep({ tr, draft, onDone }) {
       <View style={styles.summaryCard}>
         <Text style={styles.summaryLabel}>{tr('report.submitted.summary')}</Text>
         <Text style={styles.summaryRow}>{CATEGORY_ICON[draft.category]}  {tr(`report.category.${draft.category}`)} · {tr(`report.severity.${draft.severity}`)}</Text>
+        {!!draft.location && <Text style={styles.summaryNote}>📍 {draft.location}</Text>}
         {!!draft.note && <Text style={styles.summaryNote}>{draft.note}</Text>}
       </View>
 
@@ -482,8 +551,8 @@ function TrainingList({ tr, reports, onStart }) {
           <View style={[styles.reportThumb, { backgroundColor: r.color }]}>
             {r.photoUri ? (
               <Image source={{ uri: r.photoUri }} style={StyleSheet.absoluteFill} resizeMode="cover" />
-            ) : r.samplePhoto ? (
-              <Image source={SAMPLE_PHOTO} style={StyleSheet.absoluteFill} resizeMode="cover" />
+            ) : CATEGORY_PHOTO[r.category] ? (
+              <Image source={CATEGORY_PHOTO[r.category]} style={StyleSheet.absoluteFill} resizeMode="cover" />
             ) : (
               <Text style={{ fontSize: 26 }}>{r.icon}</Text>
             )}
@@ -624,6 +693,12 @@ const styles = StyleSheet.create({
   homeWrap: { padding: 20, gap: 16 },
   langPill: { backgroundColor: C.card, borderWidth: 1, borderColor: C.border, borderRadius: 999, paddingHorizontal: 14, paddingVertical: 8 },
   langPillLabel: { fontSize: 13, fontWeight: '700', color: C.ink },
+  checkinPill: { alignSelf: 'flex-start', backgroundColor: C.card, borderWidth: 1, borderColor: C.border, borderRadius: 999, paddingHorizontal: 16, paddingVertical: 10, marginBottom: 4 },
+  checkinPillActive: { backgroundColor: C.low, borderColor: C.low },
+  checkinPillLabel: { fontSize: 13, fontWeight: '700', color: C.ink },
+  checkinPillLabelActive: { color: '#fff' },
+  myReportsLink: { alignItems: 'center', paddingVertical: 14 },
+  myReportsLinkLabel: { fontSize: 14, fontWeight: '700', color: C.inkSoft, textDecorationLine: 'underline' },
   homeTitle: { fontSize: 42, fontWeight: '800', color: C.ink, marginTop: 12 },
   homeSubtitle: { fontSize: 16, color: C.inkSoft, marginBottom: 12 },
   bigCard: { borderRadius: 20, padding: 24, gap: 4 },
@@ -650,6 +725,10 @@ const styles = StyleSheet.create({
   },
   catCardActive: { borderColor: C.accent, backgroundColor: C.accentBg },
   catLabel: { fontSize: 12, fontWeight: '700', color: C.ink },
+
+  locationRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: C.card, borderWidth: 1, borderColor: C.border, borderRadius: 14, paddingVertical: 14, paddingHorizontal: 16 },
+  locationRowActive: { borderColor: C.accent, backgroundColor: C.accentBg },
+  locationRowLabel: { fontSize: 15, fontWeight: '600', color: C.ink },
 
   severityRow: { flexDirection: 'row', gap: 10 },
   sevPill: { flex: 1, borderWidth: 2, borderRadius: 14, paddingVertical: 14, alignItems: 'center' },
