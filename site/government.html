@@ -56,7 +56,7 @@
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
   .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 6px; }
   .stat .n { font-family: 'Rubik', Arial, sans-serif; font-size: 32px; font-weight: 800; }
-  .stat .l { font-size: 13px; color: var(--ink-soft); }
+  .stat .l { font-size: 14.5px; color: var(--ink-soft); }
   .grid-2 { display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 20px; align-items: start; }
   .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; overflow: hidden; }
   .panel-head { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
@@ -65,32 +65,32 @@
   .bars { display: flex; align-items: flex-end; gap: 24px; height: 200px; }
   .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 10px; height: 100%; justify-content: flex-end; }
   .bar { width: 100%; border-radius: 8px 8px 0 0; }
-  .bar-col .l { font-size: 12px; color: var(--ink-soft); }
-  .legend { display: flex; gap: 14px; font-size: 12px; color: var(--ink-soft); flex-wrap: wrap; padding: 0 22px 18px; }
+  .bar-col .l { font-size: 13.5px; color: var(--ink-soft); }
+  .legend { display: flex; gap: 14px; font-size: 14px; color: var(--ink-soft); flex-wrap: wrap; padding: 0 22px 18px; }
   .legend span { display: flex; align-items: center; gap: 6px; }
   .legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  th { text-align: left; padding: 12px 22px; color: var(--muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
+  table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  th { text-align: left; padding: 12px 22px; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
   td { padding: 13px 22px; border-bottom: 1px solid var(--border); color: var(--ink-soft); }
   tr:last-child td { border-bottom: none; }
   td.main { color: var(--ink); font-weight: 600; }
-  .pill { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+  .pill { font-size: 12.5px; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
   .pill.ok { background: var(--low-bg); color: var(--low); }
   .pill.warn { background: var(--med-bg); color: var(--med); }
   .compliance-list { display: flex; flex-direction: column; gap: 14px; }
   .c-row { display: flex; align-items: center; gap: 12px; }
-  .c-row .lbl { width: 120px; font-size: 13px; color: var(--ink-soft); flex: none; }
+  .c-row .lbl { width: 120px; font-size: 14.5px; color: var(--ink-soft); flex: none; }
   .c-track { flex: 1; height: 10px; border-radius: 999px; background: var(--border); overflow: hidden; }
   .c-fill { height: 100%; background: var(--accent-strong); }
-  .c-row .pct { width: 44px; text-align: right; font-size: 13px; font-weight: 700; }
+  .c-row .pct { width: 44px; text-align: right; font-size: 14.5px; font-weight: 700; }
   .ai-panel { background: linear-gradient(155deg, var(--surface-2), var(--surface)); border: 1px solid var(--accent); border-radius: 12px; padding: 18px 20px; }
   .ai-panel .ai-badge { display: inline-flex; align-items: center; gap: 6px; font-size: 10.5px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
   .ai-panel .ai-badge svg { width: 13px; height: 13px; }
   .ai-panel p { margin: 0; font-size: 14px; color: var(--ink); line-height: 1.6; }
-  .ai-panel h4 { margin: 14px 0 6px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+  .ai-panel h4 { margin: 14px 0 6px; font-size: 13.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
   .ai-panel h4:first-child { margin-top: 0; }
   .ai-panel ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
-  .ai-panel li { font-size: 13.5px; color: var(--ink); line-height: 1.5; }
+  .ai-panel li { font-size: 15.5px; color: var(--ink); line-height: 1.5; }
   .ai-generate-btn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-strong)); color: #F7F3EA; border: none; padding: 12px 20px; border-radius: 10px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 12px; }
   .ai-generate-btn svg { width: 15px; height: 15px; flex: none; }
   .ai-generate-btn[disabled] { opacity: 0.7; cursor: default; }
@@ -98,8 +98,9 @@
   @keyframes ai-dots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } 100% { content: ''; } }
   .ai-reveal { animation: ai-fade-in 0.4s ease both; }
   @keyframes ai-fade-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
-  .empty-hint { font-size: 13px; color: var(--muted); font-style: italic; }
+  .empty-hint { font-size: 14.5px; color: var(--muted); font-style: italic; }
   @media (max-width: 860px) {
+    .app { flex-direction: column; }
     nav.side { width: 100%; flex-direction: row; align-items: center; padding: 16px 20px; }
     .nav-items { display: none; }
     .side-foot { display: none; }
@@ -248,6 +249,64 @@
   }
   pollGovReportCount();
   setInterval(pollGovReportCount, 4000);
+</script>
+<script>
+  (function () {
+    var STRINGS = {
+      "en": {
+        "nav.compliance": "Compliance overview",
+        "side.region": "Gyeonggi region · 2027 pilot cohort",
+        "page.title": "Foreign-worker safety compliance",
+        "page.subtitle": "Aggregated from site-level hazard reports and completed safety-education records",
+        "stat.sites": "Sites reporting", "stat.reports": "Hazard reports, this quarter",
+        "stat.newhire": "New hires (last 90 days), training on file",
+        "stat.repeat": "Fewer repeat high-severity reports vs. last quarter",
+        "stat.attendance": "Sites with electronic attendance tracking live",
+        "panel.bycategory": "Hazard reports by category, this quarter",
+        "cat.falls": "Falls", "cat.fire": "Fire", "cat.heat": "Heat", "cat.electrical": "Electrical", "cat.other": "Other",
+        "legend.falls": "Falls remain the leading category, consistent with 2025 fatality data",
+        "panel.bylanguage": "Training completion by language",
+        "lang.vi": "Vietnamese", "lang.zh": "Chinese", "lang.uz": "Uzbek", "lang.km": "Khmer",
+        "legend.khmer": "New Khmer-speaking crew onboarded at Suwon this month — training rollout still catching up",
+        "panel.sitestatus": "Site-level status",
+        "th.site": "Site", "th.region": "Region", "th.crew": "Foreign crew", "th.reports": "Reports, this quarter",
+        "th.trainingfile": "Training on file", "th.status": "Status"
+      },
+      "ko": {
+        "nav.compliance": "준수 현황",
+        "side.region": "경기 지역 · 2027 시범 사업",
+        "page.title": "외국인 근로자 안전 준수 현황",
+        "page.subtitle": "현장별 위험 신고와 안전교육 이수 기록을 집계한 자료입니다",
+        "stat.sites": "신고 참여 현장", "stat.reports": "이번 분기 위험 신고",
+        "stat.newhire": "최근 90일 신규 채용자 중 교육 이수",
+        "stat.repeat": "전 분기 대비 고위험 반복 신고 감소",
+        "stat.attendance": "전자 출근 관리 운영 현장",
+        "panel.bycategory": "이번 분기 분류별 위험 신고",
+        "cat.falls": "추락", "cat.fire": "화재", "cat.heat": "온열", "cat.electrical": "감전", "cat.other": "기타",
+        "legend.falls": "추락이 여전히 가장 많은 분류이며, 2025년 사망 통계와 일치합니다",
+        "panel.bylanguage": "언어별 교육 이수율",
+        "lang.vi": "베트남어", "lang.zh": "중국어", "lang.uz": "우즈베크어", "lang.km": "크메르어",
+        "legend.khmer": "이번 달 수원 현장에 크메르어 사용 근로자가 새로 합류 — 교육이 아직 진행 중입니다",
+        "panel.sitestatus": "현장별 현황",
+        "th.site": "현장", "th.region": "지역", "th.crew": "외국인 인원", "th.reports": "이번 분기 신고",
+        "th.trainingfile": "교육 이수", "th.status": "상태"
+      }
+    };
+    function applyLang(lang) {
+      document.querySelectorAll('[data-i18n]').forEach(function (el) {
+        var dict = STRINGS[lang] || STRINGS.en;
+        var key = el.getAttribute('data-i18n');
+        el.textContent = (dict && dict[key]) || (STRINGS.en && STRINGS.en[key]) || key;
+      });
+    }
+    document.querySelectorAll('#dash-lang-toggle button').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        document.querySelectorAll('#dash-lang-toggle button').forEach(function (b) { b.classList.remove('on'); });
+        btn.classList.add('on');
+        applyLang(btn.getAttribute('data-lang'));
+      });
+    });
+  })();
 </script>
 <script>
   (function () {
