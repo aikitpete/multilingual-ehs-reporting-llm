@@ -45,6 +45,13 @@
   .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; flex-wrap: wrap; gap: 12px; }
   .topbar h1 { font-family: 'Rubik', Arial, sans-serif; font-size: 26px; font-weight: 800; margin: 0; }
   .site-pick { font-size: 13px; font-weight: 600; background: var(--surface); border: 1px solid var(--border); padding: 8px 14px; border-radius: 999px; }
+  .topbar-right { display: flex; align-items: center; gap: 12px; }
+  .user-chip { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 6px 14px 6px 6px; }
+  .user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--accent-strong); color: #F7F3EA; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 13px; flex: none; font-family: 'Noto Sans KR', Arial, sans-serif; }
+  .user-meta { display: flex; flex-direction: column; line-height: 1.25; }
+  .user-name { font-size: 12.5px; font-weight: 700; color: var(--ink); }
+  .user-role { font-size: 11px; color: var(--muted); }
+  .user-caret { color: var(--muted); font-size: 10px; margin-left: 2px; }
   .view { display: none; flex-direction: column; gap: 24px; }
   .view.on { display: flex; }
   .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
@@ -205,7 +212,17 @@
   <main>
     <div class="topbar">
       <h1 id="page-title" data-i18n="nav.reports">Reports</h1>
-      <span class="site-pick">Site 4 · Wonju ▾</span>
+      <div class="topbar-right">
+        <span class="site-pick">Site 4 · Wonju ▾</span>
+        <div class="user-chip">
+          <div class="user-avatar">박</div>
+          <div class="user-meta">
+            <div class="user-name">Park Ji-hoon</div>
+            <div class="user-role">Site Safety Manager</div>
+          </div>
+          <span class="user-caret">▾</span>
+        </div>
+      </div>
     </div>
 
     <section class="view on" id="view-reports">
