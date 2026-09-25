@@ -89,8 +89,9 @@
   .ai-panel p { margin: 0; font-size: 14px; color: var(--ink); line-height: 1.6; }
   .ai-panel h4 { margin: 14px 0 6px; font-size: 13.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
   .ai-panel h4:first-child { margin-top: 0; }
-  .ai-panel ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
-  .ai-panel li { font-size: 15.5px; color: var(--ink); line-height: 1.5; }
+  .ai-panel ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; }
+  .ai-panel li { font-size: 15.5px; color: var(--ink); line-height: 1.45; }
+  .ai-panel li b { font-weight: 800; }
   .ai-generate-btn { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-strong)); color: #F7F3EA; border: none; padding: 12px 20px; border-radius: 10px; font-size: 13.5px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 12px; }
   .ai-generate-btn svg { width: 15px; height: 15px; flex: none; }
   .ai-generate-btn[disabled] { opacity: 0.7; cursor: default; }
@@ -336,16 +337,16 @@
 
     function buildGovReportHtml() {
       return '<h4>Key findings</h4><ul>' +
-          '<li>Fifteen sites reported this quarter, covering 1,204 hazard submissions in aggregate.</li>' +
-          '<li>Falls remain the leading hazard category, consistent with 2025 national fatality data.</li>' +
-          '<li>Repeat high-severity reports fell 31% quarter over quarter, indicating corrective actions from the prior cycle are taking effect.</li>' +
-          '<li>Training completion sits at or above 97% across all four languages on file.</li>' +
-          '<li>Two sites (Suwon, Cheongju) have pending training records, unresolved as of this reporting period.</li>' +
+          '<li><b>15 sites</b> reported this quarter, covering <b>1,204 hazard submissions</b> in aggregate.</li>' +
+          '<li><b>Falls</b> remain the leading hazard category, consistent with 2025 national fatality data.</li>' +
+          '<li>Repeat high-severity reports fell <b>31%</b> quarter over quarter — corrective actions from the prior cycle are taking effect.</li>' +
+          '<li><b>Vietnamese and Chinese crews at 100%</b> training completion; <b>Uzbek at 81%</b>; a newly onboarded <b>Khmer-speaking crew at 34%</b> is the outlier.</li>' +
+          '<li><b>Suwon</b> has <b>9 pending</b> training records, driven by that new Khmer cohort; <b>Cheongju</b> has 3 pending, unrelated.</li>' +
         '</ul>' +
         '<h4>Recommendations</h4><ul>' +
-          '<li>Prioritize a compliance follow-up at Suwon and Cheongju before the next audit window, given their pending training records.</li>' +
-          '<li>Given falls remain the leading category and track national fatality trends, consider requiring a fall-protection audit at sites with elevated-work exposure.</li>' +
-          '<li>Maintain the 97% training-completion threshold as a standing licensing condition, given current performance is already at that bar.</li>' +
+          '<li><b>Priority:</b> compliance follow-up at <b>Suwon</b> before the next audit window — the Khmer cohort\'s training rollout is the specific gap, not a general site issue.</li>' +
+          '<li><b>Falls</b> track national fatality trends — consider requiring a fall-protection audit at sites with elevated-work exposure.</li>' +
+          '<li>Maintain the <b>97%+</b> training-completion threshold as a standing licensing condition for established cohorts, with a grace period for newly onboarded language groups.</li>' +
           '<li>Direct operators with repeat high-severity locations to submit a corrective-action log for regulatory review, to sustain this quarter\'s improvement.</li>' +
         '</ul>';
     }

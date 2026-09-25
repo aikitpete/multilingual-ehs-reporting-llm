@@ -156,9 +156,11 @@
   .empty-hint { font-size: 14.5px; color: var(--muted); font-style: italic; padding: 18px 0; text-align: center; }
   .site-report h4 { font-size: 13.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.4px; color: var(--accent); margin: 16px 0 6px; }
   .site-report h4:first-child { margin-top: 0; }
-  .site-report p { font-size: 14px; color: var(--ink); line-height: 1.6; margin: 0 0 4px; }
-  .site-report ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 5px; }
-  .site-report li { font-size: 15.5px; color: var(--ink); line-height: 1.5; }
+  .site-report p { font-size: 15px; color: var(--ink); line-height: 1.6; margin: 0 0 4px; }
+  .site-report ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; }
+  .site-report li { font-size: 15.5px; color: var(--ink); line-height: 1.45; }
+  .site-report li b { font-weight: 800; }
+  .site-report-count { color: var(--muted); font-weight: 600; }
   .compliance-list { display: flex; flex-direction: column; gap: 12px; }
   .c-row { display: flex; align-items: center; gap: 12px; }
   .c-row .lbl { width: 120px; font-size: 14.5px; color: var(--ink-soft); flex: none; }
@@ -1114,17 +1116,17 @@
       var topCatConcentration = topCatByLoc[0] ? Math.round((topCatByLoc[0].count / topCat.count) * 100) : 0;
 
       var html = '';
-      html += '<h4>Summary</h4><p>' + total + ' reports on record, ' + high + ' at high severity.</p>';
+      html += '<h4>Summary</h4><p><b>' + total + '</b> reports on record, <b>' + high + '</b> at high severity.</p>';
 
       var insights = [];
       if (topHighLoc && topHighLoc.count >= 2) {
-        insights.push('<b>' + topHighLoc.key + '</b> accounts for ' + topHighLoc.count + ' of the ' + high + ' high-severity reports — a concentration, not scattered incidents.');
+        insights.push('<b>' + topHighLoc.key + '</b> accounts for <b>' + topHighLoc.count + ' of ' + high + '</b> high-severity reports — a concentration, not scattered incidents.');
       }
       if (topCatByLoc[0] && topCat.count >= 2 && topCatConcentration >= 50) {
-        insights.push(topCatConcentration + '% of ' + topCat.key.toLowerCase() + ' reports trace back to <b>' + topCatByLoc[0].key + '</b>, pointing to a site-specific condition there rather than a workforce-wide gap.');
+        insights.push('<b>' + topCatConcentration + '%</b> of ' + topCat.key.toLowerCase() + ' reports trace back to <b>' + topCatByLoc[0].key + '</b> — a site-specific condition, not a workforce-wide gap.');
       }
       if (repeatLocs.length) {
-        insights.push(repeatLocs.length + ' location' + (repeatLocs.length > 1 ? 's have' : ' has') + ' repeat reports this quarter and should be prioritized for a walkthrough, not treated as isolated incidents.');
+        insights.push('<b>' + repeatLocs.length + ' location' + (repeatLocs.length > 1 ? 's' : '') + '</b> ' + (repeatLocs.length > 1 ? 'have' : 'has') + ' repeat reports this quarter — prioritize for a walkthrough, not isolated incidents.');
       }
       if (!insights.length) insights.push('Hazards are broadly distributed across categories and locations this quarter — no single site or type dominates yet.');
 
@@ -1132,12 +1134,12 @@
 
       var recs = [];
       byCat.forEach(function (c) {
-        recs.push('<b>' + c.key + '</b> (' + c.count + ' report' + (c.count > 1 ? 's' : '') + '): ' + (CAT_PREVENTION[c.key] || CAT_PREVENTION.Other));
+        recs.push('<b>' + c.key + '</b> <span class="site-report-count">(' + c.count + ' report' + (c.count > 1 ? 's' : '') + ')</span> — ' + (CAT_PREVENTION[c.key] || CAT_PREVENTION.Other));
       });
       repeatLocs.forEach(function (l) {
-        recs.push('Schedule a full walkthrough of <b>' + l.key + '</b> — ' + l.count + ' separate reports this quarter suggests a systemic issue, not isolated incidents.');
+        recs.push('<b>Repeat location:</b> schedule a full walkthrough of <b>' + l.key + '</b> — <b>' + l.count + '</b> separate reports this quarter suggests a systemic issue, not isolated incidents.');
       });
-      if (high > 0) recs.push(high + ' high-severity report' + (high > 1 ? 's remain' : ' remains') + ' open — confirm corrective action is logged for each before next review.');
+      if (high > 0) recs.push('<b>Open high-severity:</b> <b>' + high + '</b> report' + (high > 1 ? 's remain' : ' remains') + ' open — confirm corrective action is logged for each before next review.');
 
       html += '<h4>Recommendations</h4><ul>' + recs.map(function (r) { return '<li>' + r + '</li>'; }).join('') + '</ul>';
       return html;
