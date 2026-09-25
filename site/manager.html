@@ -167,8 +167,6 @@
   .training-quiz .q { font-weight: 700; font-size: 13.5px; }
   .training-quiz .opt { font-size: 13px; color: var(--ink-soft); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border); }
   .training-quiz .opt.correct { border-color: var(--can, #3D7A34); color: var(--ink); background: var(--low-bg, #E8F0E0); }
-  .training-langs { display: flex; gap: 6px; flex-wrap: wrap; }
-  .training-langs span { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 999px; background: var(--surface-2); color: var(--ink-soft); border: 1px solid var(--border); }
   @media (max-width: 860px) {
     .app { flex-direction: column; }
     nav.side { width: 100%; flex-direction: row; align-items: center; padding: 16px 20px; }
@@ -386,6 +384,13 @@
 
     <section class="view" id="view-training">
       <p style="font-size:12.5px; color:var(--ink-soft); line-height:1.5; margin:0 0 16px">Every hazard report is automatically turned into a training card for the crew — the photo, a translated caption, and a quick-check question. New reports are picked up as soon as this tab opens; use a card's own refresh to regenerate just that one. Synced to the mobile app's Training section.</p>
+      <div id="training-lang-filter" style="display:flex; gap:8px; margin-bottom:16px">
+        <button type="button" class="chip" data-lang="ko" style="flex:none; min-width:64px">한국어</button>
+        <button type="button" class="chip" data-lang="vi" style="flex:none; min-width:64px">Tiếng Việt</button>
+        <button type="button" class="chip" data-lang="uz" style="flex:none; min-width:64px">O'zbek</button>
+        <button type="button" class="chip" data-lang="zh" style="flex:none; min-width:64px">中文</button>
+        <button type="button" class="chip on" data-lang="en" style="flex:none; min-width:64px">English</button>
+      </div>
       <div id="training-list" style="display:flex; flex-direction:column; gap:14px"></div>
     </section>
   </main>
@@ -636,26 +641,88 @@
       Chemical: { q: "What should you do if you find an unlabeled or leaking container?", correct: "Report it and keep others away until it's identified.", wrong: "Move it somewhere out of the way yourself." },
       Other: { q: "What should you do if you spot a hazard that doesn't fit a category?", correct: "Report it anyway — let the safety team assess it.", wrong: "Ignore it since it's not a listed hazard type." },
     };
+    // Per-language versions of the same quiz content, for the dashboard's own
+    // interactive language filter. Kept separate from QUIZ_BY_CATEGORY above,
+    // which stays English-only since that's the flat shape already synced to
+    // the mobile app's Training screen via POST /training-materials.
+    var QUIZ_BY_CATEGORY_LANG = {
+      Fall: {
+        en: QUIZ_BY_CATEGORY.Fall,
+        ko: { q: "부서진 안전난간이나 헐거운 발판을 보면 어떻게 해야 하나요?", correct: "사진을 찍어 신고하고 그 구역에서 떨어져 있으세요.", wrong: "간단해 보이면 직접 고친다." },
+        vi: { q: "Bạn nên làm gì nếu thấy lan can gãy hoặc tấm ván lỏng?", correct: "Chụp ảnh báo cáo và tránh xa khu vực đó.", wrong: "Tự sửa nếu thấy đơn giản." },
+        uz: { q: "Buzilgan panjara yoki bo'sh taxtani ko'rsangiz nima qilishingiz kerak?", correct: "Rasmga olib xabar bering va u hududdan uzoqroqda turing.", wrong: "Oddiy ko'rinsa, o'zingiz tuzating." },
+        zh: { q: "如果你看到护栏损坏或木板松动，你应该怎么做？", correct: "拍照报告并远离该区域。", wrong: "如果看起来简单就自己修理。" },
+      },
+      Electrical: {
+        en: QUIZ_BY_CATEGORY.Electrical,
+        ko: { q: "노출되거나 손상된 전선을 보면 어떻게 해야 하나요?", correct: "즉시 신고하고 근처 물에 닿지 않도록 하세요.", wrong: "테이프로 감고 계속 작업한다." },
+        vi: { q: "Bạn nên làm gì nếu thấy dây điện hở hoặc sờn?", correct: "Báo cáo ngay và tránh tiếp xúc với nước gần đó.", wrong: "Dán băng keo lại và tiếp tục làm việc." },
+        uz: { q: "Ochiq yoki yeyilgan simlarni ko'rsangiz nima qilishingiz kerak?", correct: "Darhol xabar bering va yaqin atrofdagi suvga tegmang.", wrong: "Lenta bilan o'rab, ishni davom ettiring." },
+        zh: { q: "如果你看到裸露或磨损的电线，你应该怎么做？", correct: "立即报告，并避免接触附近的水。", wrong: "用胶带缠上继续工作。" },
+      },
+      Fire: {
+        en: QUIZ_BY_CATEGORY.Fire,
+        ko: { q: "막힌 비상구나 고정되지 않은 가스통을 보면 어떻게 해야 하나요?", correct: "즉시 치우거나 신고하세요 — 모든 비상구는 열려 있어야 합니다.", wrong: "다음 근무조가 처리하도록 둔다." },
+        vi: { q: "Bạn nên làm gì nếu thấy lối thoát hiểm bị chặn hoặc bình gas không được cố định?", correct: "Dọn ngay hoặc báo cáo ngay lập tức — mọi lối thoát phải luôn thông thoáng.", wrong: "Để ca làm việc sau xử lý." },
+        uz: { q: "Berkitilgan chiqish yo'li yoki mahkamlanmagan gaz ballonini ko'rsangiz nima qilasiz?", correct: "Darhol tozalang yoki xabar bering — har bir chiqish yo'li ochiq turishi kerak.", wrong: "Keyingi smenaga qoldiring." },
+        zh: { q: "如果你看到出口被堵或未固定的煤气罐，你应该怎么做？", correct: "立即清理或报告——所有出口必须保持畅通。", wrong: "留给下一班处理。" },
+      },
+      Heat: {
+        en: QUIZ_BY_CATEGORY.Heat,
+        ko: { q: "휴게 구역에 그늘이 없고 직사광선이 내리쬐면 어떻게 해야 하나요?", correct: "신고하고 있는 그늘에서 휴식을 취하세요.", wrong: "빨리 끝내려고 휴식을 건너뛴다." },
+        vi: { q: "Bạn nên làm gì nếu khu vực nghỉ không có bóng râm và nắng chiếu trực tiếp?", correct: "Báo cáo và nghỉ ngơi ở nơi có bóng râm hiện có.", wrong: "Bỏ qua giờ nghỉ để làm nhanh hơn." },
+        uz: { q: "Dam olish joyida soya yo'q va to'g'ridan-to'g'ri quyosh tushsa nima qilasiz?", correct: "Xabar bering va mavjud soyada dam oling.", wrong: "Tezroq tugatish uchun tanaffuslarni o'tkazib yuborish." },
+        zh: { q: "如果休息区没有遮荫，阳光直射，你应该怎么做？", correct: "报告情况，并在现有阴凉处休息。", wrong: "跳过休息以更快完成工作。" },
+      },
+      Chemical: {
+        en: QUIZ_BY_CATEGORY.Chemical,
+        ko: { q: "라벨이 없거나 새는 용기를 발견하면 어떻게 해야 하나요?", correct: "신고하고 확인될 때까지 다른 사람들을 접근시키지 마세요.", wrong: "직접 다른 곳으로 옮긴다." },
+        vi: { q: "Bạn nên làm gì nếu thấy thùng chứa không nhãn hoặc bị rò rỉ?", correct: "Báo cáo và giữ mọi người tránh xa cho đến khi xác định được.", wrong: "Tự di chuyển nó sang chỗ khác." },
+        uz: { q: "Yorlig'i yo'q yoki oqayotgan idishni topsangiz nima qilasiz?", correct: "Xabar bering va aniqlanguncha boshqalarni yaqinlashtirmang.", wrong: "O'zingiz uni boshqa joyga ko'chiring." },
+        zh: { q: "如果发现无标签或泄漏的容器，你应该怎么做？", correct: "报告情况，并在确认之前让其他人远离。", wrong: "自己把它挪到别处。" },
+      },
+      Other: {
+        en: QUIZ_BY_CATEGORY.Other,
+        ko: { q: "분류에 맞지 않는 위험을 발견하면 어떻게 해야 하나요?", correct: "그래도 신고하세요 — 안전팀이 평가하도록 하세요.", wrong: "목록에 없는 유형이니 무시한다." },
+        vi: { q: "Bạn nên làm gì nếu phát hiện mối nguy không thuộc danh mục nào?", correct: "Vẫn cứ báo cáo — để đội an toàn đánh giá.", wrong: "Bỏ qua vì không thuộc loại nào trong danh sách." },
+        uz: { q: "Hech qaysi turkumga to'g'ri kelmaydigan xavfni ko'rsangiz nima qilasiz?", correct: "Baribir xabar bering — xavfsizlik jamoasi baholasin.", wrong: "Ro'yxatda yo'q turi bo'lgani uchun e'tiborsiz qoldirish." },
+        zh: { q: "如果发现不属于任何分类的隐患，你应该怎么做？", correct: "仍然要报告——让安全团队来评估。", wrong: "因为不在列表中的类型而忽略它。" },
+      },
+    };
+    var TRAINING_UI = {
+      badge: { en: 'Generated from a worker report', ko: '작업자 신고를 기반으로 생성됨', vi: 'Được tạo từ báo cáo của công nhân', uz: 'Ishchi hisobotidan yaratilgan', zh: '根据工人报告生成' },
+      captionTpl: {
+        en: 'From {loc}, shared as a short lesson for the rest of the crew — same hazard, same site.',
+        ko: '{loc}에서 발생한 사례로, 같은 현장의 동료들을 위한 짧은 교육 자료로 공유합니다.',
+        vi: 'Từ {loc}, được chia sẻ như một bài học ngắn cho cả đội — cùng mối nguy, cùng công trường.',
+        uz: "{loc} dan, jamoaning qolgan a'zolari uchun qisqa dars sifatida ulashildi — bir xil xavf, bir xil obyekt.",
+        zh: '来自{loc}，作为给其他工友的简短培训分享——同样的隐患，同一个工地。',
+      },
+      quickCheck: { en: 'Quick check:', ko: '간단한 확인:', vi: 'Kiểm tra nhanh:', uz: 'Tezkor tekshiruv:', zh: '快速检测：' },
+    };
     var LANG_LABEL = { vi: 'Vietnamese', uz: 'Uzbek', zh: 'Chinese', en: 'English' };
     var listEl = document.getElementById('training-list');
     var materialsById = {}; // reportId -> generated material, kept across tab switches
+    var trainingLang = 'en';
 
-    function cardHtml(r, material) {
-      var chips = Object.keys(LANG_LABEL).map(function (l) { return '<span>' + LANG_LABEL[l] + '</span>'; }).join('');
+    function cardHtml(r, material, lang) {
+      var quiz = (QUIZ_BY_CATEGORY_LANG[r.cat] && QUIZ_BY_CATEGORY_LANG[r.cat][lang]) || QUIZ_BY_CATEGORY_LANG.Other[lang] || material.quiz;
+      var title = (r.native[lang] && r.native[lang][0]) || material.titleEn;
+      var loc = (r.native[lang] && r.native[lang][1]) || r.krLoc;
+      var caption = (TRAINING_UI.captionTpl[lang] || TRAINING_UI.captionTpl.en).replace('{loc}', loc);
       var thumbCls = 'hz-thumb-' + ({ Fall: 'fall', Electrical: 'electrical', Fire: 'fire', Heat: 'heat', Chemical: 'chemical' }[r.cat] || 'fall');
       return (
         '<div class="training-card ai-reveal" data-report-id="' + r.id + '">' +
           '<div style="display:flex; justify-content:space-between; align-items:flex-start; gap:10px">' +
-            '<div class="ai-badge" style="margin-bottom:0"><span class="hz-thumb ' + thumbCls + '" style="width:22px; height:22px; border-radius:6px; margin-right:2px"></span>Generated from a worker report</div>' +
+            '<div class="ai-badge" style="margin-bottom:0"><span class="hz-thumb ' + thumbCls + '" style="width:22px; height:22px; border-radius:6px; margin-right:2px"></span>' + (TRAINING_UI.badge[lang] || TRAINING_UI.badge.en) + '</div>' +
             '<button type="button" class="training-refresh-btn" data-report-id="' + r.id + '" title="Regenerate this card">↻</button>' +
           '</div>' +
-          '<h4>' + material.titleEn + '</h4>' +
-          '<p style="margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5">From ' + r.krLoc + ' (' + r.kr + '), shared as a short lesson for the rest of the crew — same hazard, same site.</p>' +
-          '<div class="training-langs">' + chips + '</div>' +
+          '<h4>' + title + '</h4>' +
+          '<p style="margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.5">' + caption + '</p>' +
           '<div class="training-quiz">' +
-            '<div class="q">Quick check: ' + material.quiz.q + '</div>' +
-            '<div class="opt correct">' + material.quiz.correct + '</div>' +
-            '<div class="opt">' + material.quiz.wrong + '</div>' +
+            '<div class="q">' + (TRAINING_UI.quickCheck[lang] || TRAINING_UI.quickCheck.en) + ' ' + quiz.q + '</div>' +
+            '<div class="opt correct">' + quiz.correct + '</div>' +
+            '<div class="opt">' + quiz.wrong + '</div>' +
           '</div>' +
         '</div>'
       );
@@ -676,9 +743,17 @@
     function renderList() {
       listEl.innerHTML = window.MGMT_REPORTS.map(function (r) {
         var m = materialsById[r.id];
-        return m ? cardHtml(r, m) : '';
+        return m ? cardHtml(r, m, trainingLang) : '';
       }).join('') || '<div class="empty-hint">No reports yet.</div>';
     }
+
+    document.getElementById('training-lang-filter').addEventListener('click', function (e) {
+      var btn = e.target.closest('button[data-lang]');
+      if (!btn) return;
+      trainingLang = btn.getAttribute('data-lang');
+      this.querySelectorAll('button').forEach(function (b) { b.classList.toggle('on', b === btn); });
+      renderList();
+    });
 
     function processNewReports() {
       var added = false;
