@@ -403,7 +403,7 @@ function WelcomeSequence({ lang, onSelectLang, tr, onFinish }) {
 
 function Home({ tr, lang, onReport, onTraining, onLangPress, onReplayWelcome, checkedIn, onToggleCheckIn, onMyReports }) {
   return (
-    <ScrollView contentContainerStyle={styles.homeWrap}>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.homeWrap}>
       {/* Presenter-only hotspot to replay the welcome sequence on demand — deliberately invisible, not a demo affordance */}
       <Pressable style={styles.hiddenHotspot} onPress={onReplayWelcome} />
       <View style={{ flexDirection: 'row', justifyContent: 'flex-end' }}>
@@ -459,7 +459,7 @@ function ReportForm({ tr, draft, setDraft, onCamera, onLibrary, onSample, onDemo
   const aiDescribing = draft.aiDescribe && draft.aiDescribe.status === 'loading';
 
   return (
-    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.stepWrap} keyboardShouldPersistTaps="handled">
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
       <Text style={styles.stepTitle}>{tr('home.report')}</Text>
 
       <Text style={[styles.sectionLabel, { marginTop: 0 }]}>{tr('report.photo.title')}</Text>
@@ -619,7 +619,7 @@ function SubmittedStep({ tr, draft, onDone }) {
 
 function TrainingList({ tr, reports, onStart, syncedMaterials }) {
   return (
-    <ScrollView contentContainerStyle={styles.stepWrap}>
+    <ScrollView style={{ flex: 1 }} contentContainerStyle={styles.scrollContent}>
       <Text style={styles.stepTitle}>{tr('training.list.title')}</Text>
       {reports.map((r) => (
         <View key={r.id} style={styles.reportCard}>
@@ -817,6 +817,11 @@ const styles = StyleSheet.create({
   bigCardSub: { fontSize: 14, color: 'rgba(255,255,255,0.8)' },
 
   stepWrap: { flex: 1, padding: 20, gap: 14 },
+  // ScrollView contentContainerStyle must NOT have flex:1 -- that pins the
+  // content's height to the viewport instead of letting it grow with
+  // content, which is what silently breaks scrolling. Use this for any
+  // ScrollView's contentContainerStyle; keep stepWrap for plain Views.
+  scrollContent: { padding: 20, gap: 14 },
   stepTitle: { fontSize: 22, fontWeight: '800', color: C.ink },
   stepHint: { fontSize: 14, color: C.inkSoft, marginBottom: 4 },
   sectionLabel: { fontSize: 18, fontWeight: '800', color: C.ink, marginTop: 22 },
