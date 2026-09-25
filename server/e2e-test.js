@@ -183,6 +183,23 @@ async function run() {
   check('training material exists for the fall scenario report', materialsAfterDemo.some((m) => m.reportId === fallPosted.id && m.titleEn.length > 0));
   check('training material exists for the cable+water scenario report', materialsAfterDemo.some((m) => m.reportId === cablePosted.id && m.titleEn.length > 0));
 
+  // 13. AI feedback endpoint: with no ANTHROPIC_API_KEY configured (the
+  // default/test environment), must resolve fast and safely -- never a
+  // 500, never a hang -- since the mobile UI's Submit must never be
+  // blocked by this. This is the exact contract getAiFeedback() promises.
+  const aiRes = await fetch(`${BASE}/ai-feedback`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ note: fall.note, category: 'Fall', severity: 'High', location: fall.location, lang: 'en' }),
+  });
+  const aiBody = await aiRes.json();
+  check('ai-feedback responds 200 even with no API key configured', aiRes.status === 200);
+  check('ai-feedback response is always the safe-fallback shape when no key is set', aiBody.ok === true && aiBody.fallback === true && aiBody.feedback === null);
+
+  const aiEmptyRes = await fetch(`${BASE}/ai-feedback`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ note: '' }),
+  });
+  check('ai-feedback handles an empty note without erroring', aiEmptyRes.status === 200);
+
   return steps;
 }
 

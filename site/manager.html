@@ -374,6 +374,12 @@
   // Set before any other script below runs — several IIFEs POST to this on
   // load, not just after a user action, so it must exist first.
   window.MOBILE_SERVER_URL = 'https://nursing-networks-payroll-satisfied.trycloudflare.com';
+  document.getElementById('dev-clear-btn').addEventListener('click', function () {
+    if (!confirm('Clear all mobile-submitted demo reports and training materials? This cannot be undone.')) return;
+    fetch(window.MOBILE_SERVER_URL + '/reports', { method: 'DELETE' })
+      .then(function () { location.reload(); })
+      .catch(function () { alert('Could not reach the server.'); });
+  });
   (function () {
     var STRINGS = {
       "en": {
@@ -949,7 +955,12 @@
   .proto-nav-menu a { display: block; padding: 9px 12px; border-radius: 9px; font-size: 13px; color: var(--ink); text-decoration: none; }
   .proto-nav-menu a:hover { background: var(--bg); }
   .proto-nav-menu .current { padding: 9px 12px; font-size: 13px; color: var(--muted); }
+  /* Dev-only, not part of the demo — deliberately tucked away, opposite
+     corner from the nav cluster, easy to miss unless you're looking. */
+  .dev-clear-btn { position: fixed; left: 14px; bottom: 14px; z-index: 999; font-size: 10px; color: var(--muted); background: none; border: none; opacity: 0.35; font-family: inherit; cursor: pointer; }
+  .dev-clear-btn:hover { opacity: 1; }
 </style>
+<button class="dev-clear-btn" id="dev-clear-btn" type="button">⚠ clear demo data</button>
 <div class="proto-nav" id="proto-nav">
   <button class="proto-nav-btn" id="export-pdf-btn" type="button">Export PDF</button>
   <button class="proto-nav-btn" id="proto-nav-btn" aria-expanded="false" aria-controls="proto-nav-menu">Navigation</button>
