@@ -214,7 +214,7 @@ export default function App() {
   return (
     <SafeAreaView style={styles.safe}>
       <StatusBar style="dark" />
-      <Header lang={lang} tr={tr} onLangPress={() => setShowLangSheet(true)} onBack={backFor(screen)} onBackPress={() => setScreen(backFor(screen))} />
+      <Header lang={lang} tr={tr} screen={screen} onLangPress={() => setShowLangSheet(true)} onBack={backFor(screen)} onBackPress={() => setScreen(backFor(screen))} />
 
       {screen === 'home' && (
         <Home
@@ -281,7 +281,10 @@ function backFor(screen) {
   return map[screen] || null;
 }
 
-function Header({ tr, onLangPress, onBack, onBackPress }) {
+const HEADER_SCREEN_TITLE_KEY = { report_form: 'home.report', training_list: 'home.training' };
+
+function Header({ tr, screen, onLangPress, onBack, onBackPress }) {
+  const titleKey = HEADER_SCREEN_TITLE_KEY[screen];
   return (
     <View style={styles.header}>
       {onBack ? (
@@ -291,7 +294,7 @@ function Header({ tr, onLangPress, onBack, onBackPress }) {
       ) : (
         <View style={styles.headerSide} />
       )}
-      <Text style={styles.headerTitle}>안전톡</Text>
+      <Text style={styles.headerTitle}>{titleKey ? tr(titleKey) : '안전톡'}</Text>
       <Pressable onPress={onLangPress} hitSlop={10} style={[styles.headerSide, { alignItems: 'flex-end' }]}>
         <Text style={styles.headerLang}>🌐</Text>
       </Pressable>
@@ -616,12 +619,14 @@ function TrainingList({ tr, reports, syncedMaterials }) {
 
       {categoriesPresent.map((cat) => {
         const selected = answers[cat];
+        const hazards = grouped[cat];
         return (
           <View key={cat} style={styles.trainingSection}>
             <Text style={styles.sectionLabel}>{CATEGORY_ICON[cat]} {tr(`report.category.${cat}`)}</Text>
 
             {QUIZ_CATEGORIES.includes(cat) && (
               <View style={styles.quizCard}>
+                <Text style={styles.quizKicker}>{tr('training.quiz.kicker')}</Text>
                 <Text style={styles.quizQuestion}>{tr(`quiz.${cat}.q1`)}</Text>
                 {[1, 2, 3].map((n, i) => (
                   <Pressable
@@ -643,7 +648,8 @@ function TrainingList({ tr, reports, syncedMaterials }) {
               </View>
             )}
 
-            {grouped[cat].map((r) => (
+            <Text style={styles.hazardListHeader}>{tr('training.cases.header')} ({hazards.length})</Text>
+            {hazards.map((r, i) => (
               <View key={r.id} style={styles.hazardCard}>
                 <View style={styles.hazardPhotoLarge}>
                   {r.photoUri ? (
@@ -653,13 +659,24 @@ function TrainingList({ tr, reports, syncedMaterials }) {
                   ) : (
                     <Text style={{ fontSize: 40 }}>{CATEGORY_ICON[cat]}</Text>
                   )}
-                  {r.pin && (
+                  {/* A pin only means something on the actual photo it was
+                      placed on. A generic category stock photo (no real
+                      photoUri) is shared by every report of that type, so
+                      overlaying a pin on it would point at an arbitrary spot
+                      in an unrelated image -- looks like a bug, not a hazard. */}
+                  {r.pin && r.photoUri && (
                     <View style={[styles.pin, { left: `${r.pin.xPct * 100}%`, top: `${r.pin.yPct * 100}%`, marginLeft: -16, marginTop: -16 }]}>
                       <Text style={{ fontSize: 26 }}>📍</Text>
                     </View>
                   )}
+                  {!r.photoUri && (
+                    <View style={styles.examplePhotoBadge}>
+                      <Text style={styles.examplePhotoBadgeText}>{tr('training.examplePhoto')}</Text>
+                    </View>
+                  )}
                 </View>
                 <View style={{ gap: 2 }}>
+                  <Text style={styles.hazardCardIndex}>{tr('training.cases.item')} {i + 1}</Text>
                   <Text style={styles.reportSeverity}>{tr(`report.severity.${r.severity}`)}</Text>
                   {!!r.location && <Text style={styles.reportCategory}>📍 {r.location}</Text>}
                   {!!r.note && <Text style={styles.stepHint}>{r.note}</Text>}
@@ -856,8 +873,9 @@ const styles = StyleSheet.create({
   reportCategory: { fontWeight: '800', color: C.ink, fontSize: 15 },
   reportSeverity: { color: C.inkSoft, fontSize: 13 },
 
-  trainingSection: { gap: 10, marginBottom: 8 },
-  quizCard: { backgroundColor: C.card, borderRadius: 16, padding: 14, borderWidth: 1, borderColor: C.border, gap: 8 },
+  trainingSection: { gap: 10, marginBottom: 18, paddingBottom: 14, borderBottomWidth: 1, borderBottomColor: C.border },
+  quizCard: { backgroundColor: C.accentBg, borderRadius: 16, padding: 14, borderWidth: 1, borderColor: C.border, gap: 8 },
+  quizKicker: { fontSize: 11, fontWeight: '800', color: C.accent, textTransform: 'uppercase', letterSpacing: 0.5 },
   quizQuestion: { fontSize: 15, fontWeight: '700', color: C.ink },
   optionCard: { borderWidth: 1, borderColor: C.border, backgroundColor: C.card, borderRadius: 14, padding: 16 },
   optionLabel: { fontSize: 15, color: C.ink, fontWeight: '600' },
@@ -866,8 +884,12 @@ const styles = StyleSheet.create({
   quizFeedbackGood: { color: C.low, fontWeight: '700', fontSize: 13.5 },
   quizFeedbackBad: { color: C.high, fontWeight: '700', fontSize: 13.5 },
 
+  hazardListHeader: { fontSize: 12.5, fontWeight: '800', color: C.muted, textTransform: 'uppercase', letterSpacing: 0.4, marginTop: 4 },
+  hazardCardIndex: { fontSize: 11, fontWeight: '800', color: C.muted, textTransform: 'uppercase', letterSpacing: 0.4 },
   hazardCard: { backgroundColor: C.card, borderRadius: 16, padding: 12, borderWidth: 1, borderColor: C.border, gap: 10 },
   hazardPhotoLarge: { width: '100%', aspectRatio: 4 / 3, borderRadius: 14, overflow: 'hidden', backgroundColor: '#333', alignItems: 'center', justifyContent: 'center' },
+  examplePhotoBadge: { position: 'absolute', right: 8, top: 8, backgroundColor: 'rgba(36,36,36,0.72)', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 4 },
+  examplePhotoBadgeText: { color: '#fff', fontSize: 10.5, fontWeight: '700' },
 
   primaryBtn: { backgroundColor: C.accent, borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 'auto' },
   primaryBtnLabel: { color: '#fff', fontWeight: '800', fontSize: 16 },

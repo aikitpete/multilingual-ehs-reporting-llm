@@ -61,5 +61,9 @@
   "training.synced.title": "Từ đội an toàn của bạn",
   "training.list.empty": "Chưa có báo cáo nào. Hãy báo cáo trước.",
   "training.quiz.correct": "Đúng rồi — đó là lựa chọn an toàn.",
-  "training.quiz.incorrect": "Chưa đúng — đáp án an toàn đã được đánh dấu."
+  "training.quiz.incorrect": "Chưa đúng — đáp án an toàn đã được đánh dấu.",
+  "training.quiz.kicker": "Kiểm tra nhanh",
+  "training.cases.header": "Báo cáo từ công trường của bạn",
+  "training.cases.item": "Báo cáo",
+  "training.examplePhoto": "Ảnh minh họa"
 }
