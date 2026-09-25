@@ -331,7 +331,7 @@ function WelcomeSequence({ lang, onSelectLang, tr, onFinish }) {
     // so each option is shown only in its own native name (no instructional
     // text to read), over a real jobsite photo for a visual, non-verbal cue.
     return (
-      <ImageBackground source={WELCOME_BG} style={styles.welcomeLangBg} imageStyle={{ opacity: 0.65 }}>
+      <ImageBackground source={WELCOME_BG} style={styles.welcomeLangBg} resizeMode="contain" imageStyle={{ opacity: 0.65 }}>
         <View style={styles.welcomeLangOverlay}>
           <Text style={styles.welcomeLangTitle}>안전톡</Text>
           <View style={styles.welcomeLangGrid}>
@@ -776,7 +776,10 @@ const styles = StyleSheet.create({
   welcomeBrand: { fontSize: 56, fontWeight: '800', color: '#fff' },
   welcomeLine: { fontSize: 24, fontWeight: '700', color: '#fff', textAlign: 'center' },
   welcomeLangBg: { flex: 1 },
-  welcomeLangOverlay: { flex: 1, backgroundColor: 'rgba(15,15,15,0.6)', alignItems: 'center', justifyContent: 'center', padding: 28, gap: 28 },
+  // justify-start (not center): the background photo's faces sit in the
+  // lower half, so the title+buttons stack under the status bar/crane area
+  // instead of covering people's faces.
+  welcomeLangOverlay: { flex: 1, backgroundColor: 'rgba(15,15,15,0.6)', alignItems: 'center', justifyContent: 'flex-start', paddingTop: 64, paddingHorizontal: 28, gap: 28 },
   welcomeLangTitle: { fontSize: 48, fontWeight: '800', color: '#fff' },
   welcomeLangGrid: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 14 },
   welcomeLangCard: { backgroundColor: 'rgba(255,255,255,0.94)', borderRadius: 16, paddingVertical: 18, paddingHorizontal: 24, minWidth: 130, alignItems: 'center' },
