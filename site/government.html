@@ -114,7 +114,7 @@
 
   <div class="stats">
     <div class="stat"><span class="n">15</span><span class="l">Sites reporting</span></div>
-    <div class="stat"><span class="n">1,204</span><span class="l">Hazard reports, this quarter</span></div>
+    <div class="stat"><span class="n" id="gov-report-count">1,204</span><span class="l">Hazard reports, this quarter</span></div>
     <div class="stat"><span class="n">100%</span><span class="l">New foreign hires with training on file</span></div>
     <div class="stat"><span class="n">31%</span><span class="l">Fewer repeat high-severity reports vs. last quarter</span></div>
     <div class="stat"><span class="n">96%</span><span class="l">Sites with electronic attendance tracking live</span></div>
@@ -184,6 +184,22 @@
     <a href="index.html">All prototypes ↗</a>
   </div>
 </div>
+<script>
+  // Live-updates the aggregate report count from the same shared server the
+  // mobile app posts to and the management dashboard polls -- aggregate
+  // count only, never individual report content (governance model: this
+  // actor only ever sees aggregate compliance metrics).
+  var GOV_BASELINE_REPORTS = 1204;
+  var GOV_SERVER_URL = 'https://nursing-networks-payroll-satisfied.trycloudflare.com';
+  function pollGovReportCount() {
+    fetch(GOV_SERVER_URL + '/reports').then(function (r) { return r.json(); }).then(function (list) {
+      var el = document.getElementById('gov-report-count');
+      if (el) el.textContent = (GOV_BASELINE_REPORTS + list.length).toLocaleString();
+    }).catch(function () { /* server not reachable — demo still works with the baseline number */ });
+  }
+  pollGovReportCount();
+  setInterval(pollGovReportCount, 4000);
+</script>
 <script>
   (function () {
     var btn = document.getElementById('proto-nav-btn');

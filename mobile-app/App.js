@@ -43,7 +43,7 @@ const SEVERITY_COLOR = { low: C.low, medium: C.accent, high: C.high };
 // server.js and server/README.md) so it works on any WiFi, not just the
 // local LAN. Update this if the tunnel is restarted — it gets a new
 // random URL each time.
-const SERVER_URL = 'https://gently-roland-begun-programmer.trycloudflare.com';
+const SERVER_URL = 'https://nursing-networks-payroll-satisfied.trycloudflare.com';
 
 function postReportToServer(report) {
   fetch(SERVER_URL + '/reports', {
