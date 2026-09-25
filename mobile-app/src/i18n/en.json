@@ -34,6 +34,7 @@
   "report.ai.title": "AI check",
   "report.ai.checking": "Checking your description",
   "report.ai.allgood": "Looks good — this is clear enough to send.",
+  "report.ai.unavailable": "Couldn't auto-generate a description — write your own below.",
   "report.description.title": "What's happening?",
   "report.description.hint": "Describe it in your own words",
   "report.description.placeholder": "Type or describe what you see...",

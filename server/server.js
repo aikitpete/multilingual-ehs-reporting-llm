@@ -13,6 +13,15 @@ const trainingMaterials = [];
 // and the app shows its own localized "looks good" message. Never throws,
 // never blocks — the worker-report flow must not stall on this.
 const AI_TIMEOUT_MS = 4500;
+// Vision calls (photo + prompt) genuinely take longer than a plain text
+// call -- a short timeout here was making a slow-but-working call look
+// identical to a broken one. Client-side timeout is 14s, so this must
+// stay comfortably under that.
+const AI_VISION_TIMEOUT_MS = 9000;
+
+if (!process.env.ANTHROPIC_API_KEY) {
+  console.warn('ANTHROPIC_API_KEY not set -- /ai-feedback and /ai-describe-photo will always fall back (no AI text/description). Export it before starting this server if you want real AI output in the demo.');
+}
 
 async function getAiFeedback({ note, category, severity, location, lang }) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
@@ -78,7 +87,7 @@ async function getAiPhotoDescription({ imageBase64, mimeType, lang }) {
   ].join('\n');
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), AI_TIMEOUT_MS);
+  const timer = setTimeout(() => controller.abort(), AI_VISION_TIMEOUT_MS);
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -100,12 +109,16 @@ async function getAiPhotoDescription({ imageBase64, mimeType, lang }) {
       }),
       signal: controller.signal,
     });
-    if (!res.ok) return { ok: true, description: null, fallback: true };
+    if (!res.ok) {
+      console.warn('ai-describe-photo: Anthropic API returned', res.status, await res.text().catch(() => ''));
+      return { ok: true, description: null, fallback: true };
+    }
     const data = await res.json();
     const text = data && data.content && data.content[0] && data.content[0].text;
     if (!text) return { ok: true, description: null, fallback: true };
     return { ok: true, description: text.trim(), fallback: false };
   } catch (e) {
+    console.warn('ai-describe-photo: failed --', e.message);
     return { ok: true, description: null, fallback: true };
   } finally {
     clearTimeout(timer);

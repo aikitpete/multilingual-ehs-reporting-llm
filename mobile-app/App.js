@@ -151,10 +151,16 @@ export default function App() {
   // in the worker's own language. Always resolves to either a draft or a
   // blank, editable field within a bounded time — never blocks the form.
   function requestAiDescribe(base64) {
-    if (!base64) return;
+    if (!base64) {
+      console.warn('ai-describe-photo: no base64 from picker, skipping');
+      return;
+    }
     setDraft((cur) => ({ ...cur, aiDescribe: { status: 'loading' } }));
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 6000);
+    // Vision call + uploading the photo itself can take longer than a
+    // plain text call, especially over a tunnel -- give it real headroom
+    // so a slow-but-working call isn't mistaken for a dead one.
+    const timer = setTimeout(() => controller.abort(), 14000);
     fetch(SERVER_URL + '/ai-describe-photo', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -163,11 +169,16 @@ export default function App() {
     })
       .then((r) => r.json())
       .then((res) => {
-        const description = res && res.description ? res.description : '';
-        setDraft((cur) => ({ ...cur, note: description, aiDescribe: { status: 'done' } }));
+        if (res && res.description) {
+          setDraft((cur) => ({ ...cur, note: res.description, aiDescribe: { status: 'done', ok: true } }));
+        } else {
+          console.warn('ai-describe-photo: no description in response', res);
+          setDraft((cur) => ({ ...cur, aiDescribe: { status: 'done', ok: false } }));
+        }
       })
-      .catch(() => {
-        setDraft((cur) => ({ ...cur, aiDescribe: { status: 'done' } }));
+      .catch((e) => {
+        console.warn('ai-describe-photo: request failed', e.message);
+        setDraft((cur) => ({ ...cur, aiDescribe: { status: 'done', ok: false } }));
       })
       .finally(() => clearTimeout(timer));
   }
@@ -494,7 +505,11 @@ function ReportForm({ tr, draft, setDraft, onCamera, onLibrary, onSample, onDemo
         <>
           <Text style={styles.sectionLabel}>{tr('report.description.title')}</Text>
           <Text style={styles.stepHint}>
-            {aiDescribing ? tr('report.ai.checking') + '…' : tr('report.description.hint')}
+            {aiDescribing
+              ? tr('report.ai.checking') + '…'
+              : draft.aiDescribe && draft.aiDescribe.ok === false
+              ? tr('report.ai.unavailable')
+              : tr('report.description.hint')}
           </Text>
           <TextInput
             style={styles.noteInput}
