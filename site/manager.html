@@ -503,18 +503,38 @@
         .sort(function (a, b) { return LANG_ORDER.indexOf(a) - LANG_ORDER.indexOf(b); });
     }
 
+    // A warning sign is not a paraphrase of the worker's report -- it's a
+    // fixed signal word (severity) plus a short hazard name (category),
+    // the same way a real ISO/KOSHA sign works. Deliberately not
+    // generative: the worker's own wording stays in the Original report
+    // panel and the Reports table, never on the sign itself.
+    var SIGNAL_WORD = {
+      High: { ko: '위험', vi: 'NGUY HIỂM', uz: 'XAVFLI', zh: '危险', en: 'DANGER' },
+      Medium: { ko: '경고', vi: 'CẢNH BÁO', uz: 'OGOHLANTIRISH', zh: '警告', en: 'WARNING' },
+      Low: { ko: '주의', vi: 'THẬN TRỌNG', uz: 'EHTIYOT BOʻLING', zh: '注意', en: 'CAUTION' },
+    };
+    var HAZARD_NAME = {
+      Fall: { ko: '추락', vi: 'TÉ NGÃ', uz: 'YIQILISH', zh: '坠落', en: 'FALL' },
+      Electrical: { ko: '감전', vi: 'ĐIỆN GIẬT', uz: 'TOK URISHI', zh: '触电', en: 'ELECTRIC SHOCK' },
+      Fire: { ko: '화재', vi: 'CHÁY', uz: 'YONGʻIN', zh: '火灾', en: 'FIRE' },
+      Heat: { ko: '고온', vi: 'NHIỆT ĐỘ CAO', uz: 'YUQORI HARORAT', zh: '高温', en: 'HEAT' },
+      Chemical: { ko: '화학물질', vi: 'HÓA CHẤT', uz: 'KIMYOVIY MODDA', zh: '化学品', en: 'CHEMICAL' },
+      Other: { ko: '위험 요소', vi: 'NGUY HIỂM', uz: 'XAVF', zh: '危险', en: 'HAZARD' },
+    };
+
     function render() {
       var r = REPORTS[Number(reportSelect.value)];
+      var hazard = HAZARD_NAME[r.cat] || HAZARD_NAME.Other;
+      var signal = SIGNAL_WORD[r.sev] || SIGNAL_WORD.Medium;
       tagEl.textContent = r.cat + ' hazard';
       signPreviewEl.className = 'sign-preview sev-' + r.sev.toLowerCase();
-      krEl.textContent = r.kr;
+      krEl.textContent = signal.ko + ' — ' + hazard.ko;
       krLocEl.textContent = r.krLoc;
       var langs = selectedLangs();
       linesEl.innerHTML = '';
       langs.forEach(function (l) {
-        var n = r.native[l];
         var p1 = document.createElement('p');
-        p1.textContent = n[0];
+        p1.textContent = (signal[l] || signal.en) + ' — ' + (hazard[l] || hazard.en);
         linesEl.appendChild(p1);
       });
       pictogramIcon.innerHTML = picRow.querySelector('.pic-btn.on svg').outerHTML;
