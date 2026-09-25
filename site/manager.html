@@ -155,6 +155,12 @@
   .c-track { flex: 1; height: 10px; border-radius: 999px; background: var(--border); overflow: hidden; }
   .c-fill { height: 100%; background: var(--accent); }
   .c-row .pct { width: 30px; text-align: right; font-size: 13px; font-weight: 700; }
+  .charts-row { display: flex; gap: 28px; flex-wrap: wrap; align-items: center; }
+  .chart-block { flex: 1; min-width: 200px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .chart-block h3 { margin: 0; font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); align-self: flex-start; }
+  .chart-legend { display: flex; flex-direction: column; gap: 6px; align-self: flex-start; }
+  .chart-legend span { font-size: 13px; color: var(--ink-soft); display: flex; align-items: center; gap: 8px; }
+  .chart-legend-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
   .training-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; }
   .training-card h4 { margin: 0; font-family: 'Rubik', Arial, sans-serif; font-size: 18px; font-weight: 800; }
   .training-quiz { background: var(--surface-2); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
@@ -211,6 +217,21 @@
         <div class="stat"><span class="n">92%</span><span class="l" data-i18n="stat.resolved48">Resolved within 48h</span></div>
         <div class="stat"><span class="n">100%</span><span class="l" data-i18n="stat.training">New hires, safety training on file</span></div>
         <div class="stat"><span class="n">142/148</span><span class="l" data-i18n="stat.attendance">Checked in electronically, today</span></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Reports overview</h2></div>
+        <div class="panel-body charts-row">
+          <div class="chart-block">
+            <h3>By severity</h3>
+            <svg id="severity-donut" viewBox="0 0 120 120" width="150" height="150"></svg>
+            <div class="chart-legend" id="severity-legend"></div>
+          </div>
+          <div class="chart-block">
+            <h3>By category</h3>
+            <svg id="category-bars" width="100%" height="150" preserveAspectRatio="xMinYMid meet"></svg>
+          </div>
+        </div>
       </div>
 
       <div class="panel ai-panel">
@@ -822,6 +843,7 @@
           (refRow ? refRow.parentNode : reportsTable).insertBefore(tr, refRow);
           bindReportRows();
           renderLocationBreakdown();
+          renderCharts();
         });
       }).catch(function () { /* server not reachable — demo still works with seed data */ });
     }
@@ -854,7 +876,55 @@
         return '<div class="c-row"><span class="lbl">' + l.key + '</span><div class="c-track"><div class="c-fill" style="width:' + pct + '%"></div></div><span class="pct">' + l.count + '</span></div>';
       }).join('');
     }
+
+    var SEV_CHART_COLOR = { High: 'var(--high)', Medium: 'var(--med)', Low: 'var(--low)' };
+    var CAT_CHART_COLOR = { Fall: '#C2402A', Electrical: '#C97A1F', Fire: '#B23A3A', Heat: '#3D7A34', Chemical: '#6B4FA0', Other: '#8C8983' };
+
+    function renderCharts() {
+      var rows = currentRowsData();
+      var total = rows.length || 1;
+
+      // Severity donut: one stroke-dasharray arc per severity, drawn as
+      // segments of a single circle -- no chart library needed.
+      var bySev = tally(rows, 'sev');
+      var r = 50, cx = 60, cy = 60, circumference = 2 * Math.PI * r;
+      var offset = 0;
+      var arcs = bySev.map(function (s) {
+        var dash = (s.count / total) * circumference;
+        var svg = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="none" stroke="' + (SEV_CHART_COLOR[s.key] || 'var(--muted)') +
+          '" stroke-width="20" stroke-dasharray="' + dash + ' ' + (circumference - dash) + '" stroke-dashoffset="' + (-offset) +
+          '" transform="rotate(-90 ' + cx + ' ' + cy + ')" />';
+        offset += dash;
+        return svg;
+      }).join('');
+      document.getElementById('severity-donut').innerHTML = arcs +
+        '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r - 20) + '" fill="var(--surface)" />' +
+        '<text x="' + cx + '" y="' + (cy + 7) + '" text-anchor="middle" font-size="22" font-weight="800" fill="var(--ink)">' + total + '</text>';
+      document.getElementById('severity-legend').innerHTML = bySev.map(function (s) {
+        return '<span><span class="chart-legend-dot" style="background:' + (SEV_CHART_COLOR[s.key] || 'var(--muted)') + '"></span>' + s.key + ' (' + s.count + ')</span>';
+      }).join('');
+
+      // Category bars, sized to the panel width so it stays readable
+      // whether 2 or 6 categories are present.
+      var byCat = tally(rows, 'cat');
+      var max = byCat[0] ? byCat[0].count : 1;
+      var barW = 40, gap = 22, chartH = 100, baseY = 118;
+      var vbW = Math.max(byCat.length * (barW + gap) + gap, 200);
+      var bars = byCat.map(function (c, i) {
+        var h = Math.round((c.count / max) * chartH) || 4;
+        var x = gap + i * (barW + gap);
+        var color = CAT_CHART_COLOR[c.key] || 'var(--muted)';
+        return '<rect x="' + x + '" y="' + (baseY - h) + '" width="' + barW + '" height="' + h + '" rx="6" fill="' + color + '" />' +
+          '<text x="' + (x + barW / 2) + '" y="' + (baseY + 16) + '" text-anchor="middle" font-size="11" fill="var(--ink-soft)">' + c.key + '</text>' +
+          '<text x="' + (x + barW / 2) + '" y="' + (baseY - h - 6) + '" text-anchor="middle" font-size="12" font-weight="700" fill="var(--ink)">' + c.count + '</text>';
+      }).join('');
+      var catSvg = document.getElementById('category-bars');
+      catSvg.setAttribute('viewBox', '0 0 ' + vbW + ' 140');
+      catSvg.innerHTML = bars;
+    }
+
     renderLocationBreakdown();
+    renderCharts();
 
     document.getElementById('site-report-btn').addEventListener('click', function () {
       var btn = document.getElementById('site-report-btn');
@@ -948,6 +1018,7 @@
   .proto-nav:hover, .proto-nav:focus-within { opacity: 1; }
   .proto-nav-btn { font-size: 10.5px; font-weight: 600; padding: 6px 11px; border-radius: 999px; background: rgba(36,36,36,0.7); color: #C9C5BA; border: none; cursor: pointer; box-shadow: none; }
   .proto-nav-menu { position: absolute; right: 0; bottom: calc(100% + 10px); background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 8px; display: flex; flex-direction: column; min-width: 220px; box-shadow: 0 16px 36px rgba(0,0,0,0.22); }
+  .proto-nav-menu[hidden] { display: none; }
   .proto-nav-menu a { display: block; padding: 9px 12px; border-radius: 9px; font-size: 13px; color: var(--ink); text-decoration: none; }
   .proto-nav-menu a:hover { background: var(--bg); }
   .proto-nav-menu .current { padding: 9px 12px; font-size: 13px; color: var(--muted); }
