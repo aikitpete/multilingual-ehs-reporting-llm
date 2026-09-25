@@ -1,324 +1,252 @@
 <meta charset="utf-8">
-<title>AnjeonTok Backend Architecture</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+KR:wght@500;700;800&display=swap">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>안전톡 — Backend, how it works</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=Noto+Sans+KR:wght@500;700;800&display=swap">
 <style>
   :root {
-    --bg: #F2ECE0; --surface: #FFFFFF; --surface-2: #FAF6EE; --border: #E3E0D8;
-    --ink: #242424; --ink-soft: #625F5A; --muted: #8C8983;
-    --accent: #C97A1F; --accent-strong: #242424; --yellow: #FFC629;
-    --ok: #3D7A34; --ok-bg: #E8F0E0; --warn: #C97A1F; --warn-bg: #FBE8D0;
-    color-scheme: light;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root:not([data-theme="light"]) {
-      --bg: #161616; --surface: #201F1F; --surface-2: #1B1A1A; --border: #3A3A38;
-      --ink: #F5F1E8; --ink-soft: #D6D2C9; --muted: #8C8983; --accent: #FFC629;
-      --ok: #86C46B; --ok-bg: #1B2E14; --warn: #FFC629; --warn-bg: #332A12;
-      color-scheme: dark;
-    }
-  }
-  :root[data-theme="dark"] {
-    --bg: #161616; --surface: #201F1F; --surface-2: #1B1A1A; --border: #3A3A38;
-    --ink: #F5F1E8; --ink-soft: #D6D2C9; --muted: #8C8983; --accent: #FFC629;
-    --ok: #86C46B; --ok-bg: #1B2E14; --warn: #FFC629; --warn-bg: #332A12;
     color-scheme: dark;
+    --navy: #242424;
+    --navy-deep: #161616;
+    --navy-panel: #292928;
+    --border: #3A3A38;
+    --yellow: #FFC629;
+    --off: #F7F3EA;
+    --red: #C2402A;
+    --green: #3D7A34;
+    --amber: #C97A1F;
+    --muted: #A69F91;
+    --soft: #DED9CE;
   }
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', Arial, sans-serif; }
-  header.top { background: var(--accent-strong); color: #F7F3EA; padding: 26px 40px; }
-  .brand { display: flex; align-items: center; gap: 10px; }
-  .brand .sq { width: 14px; height: 14px; background: var(--yellow); border-radius: 4px; }
-  .brand span { font-family: 'Noto Sans KR', 'Rubik', Arial, sans-serif; font-weight: 800; font-size: 18px; }
-  header.top p { margin: 6px 0 0; color: #DAD5CB; font-size: 13.5px; }
-  main { max-width: 880px; margin: 0 auto; padding: 36px 24px 80px; }
-  h1.page-title { font-family: 'Rubik', Arial, sans-serif; font-size: 26px; font-weight: 800; margin: 0 0 6px; }
-  .lede { color: var(--ink-soft); font-size: 15px; line-height: 1.5; margin: 0 0 20px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px 24px; margin-bottom: 16px; }
-  .card h2 { font-family: 'Rubik', Arial, sans-serif; font-size: 17px; font-weight: 800; margin: 0 0 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-  .badge { font-size: 10.5px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
-  .badge.ok { background: var(--ok-bg); color: var(--ok); }
-  .badge.warn { background: var(--warn-bg); color: var(--warn); }
-  .badge.now { background: var(--ink); color: var(--surface); }
-  .badge.open { background: transparent; border: 1px dashed var(--border); color: var(--muted); }
-  .card .num { font-family: 'Rubik', Arial, sans-serif; font-weight: 800; color: var(--accent); }
-  .card p { font-size: 14px; color: var(--ink-soft); line-height: 1.6; margin: 10px 0 0; }
-  .card p b, .card li b { color: var(--ink); }
-  .card ul { margin: 10px 0 0; padding-left: 20px; }
-  .card li { font-size: 14px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 6px; }
-  .sources { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border); display: flex; flex-direction: column; gap: 6px; }
-  .sources a { font-size: 12.5px; color: var(--accent); text-decoration: none; }
-  .sources a:hover { text-decoration: underline; }
-  .section-title { font-family: 'Rubik', Arial, sans-serif; font-size: 15px; font-weight: 800; margin: 32px 0 12px; color: var(--ink); }
-  .assumptions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .assumptions .card { margin-bottom: 0; }
-  .note { background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; font-size: 13px; color: var(--ink-soft); line-height: 1.6; margin-top: 28px; }
-  .note b { color: var(--ink); }
-  code { background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 1px 5px; font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; color: var(--ink); }
-  .legend { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 0 0 18px; font-size: 12.5px; color: var(--muted); }
+  html, body { margin: 0; padding: 0; background: var(--navy-deep); color: var(--off); font-family: 'IBM Plex Sans', Arial, sans-serif; }
+  .kr { font-family: 'Noto Sans KR', 'IBM Plex Sans', sans-serif; }
+  h1, h2 { margin: 0; font-family: 'Oswald', Arial, sans-serif; text-transform: uppercase; font-weight: 700; }
+  p { margin: 0; }
 
-  /* Flow diagram — plain HTML/CSS boxes, no library, no external asset. */
-  .flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .flow-step { background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; position: relative; }
-  .flow-step .k { font-family: 'Rubik', Arial, sans-serif; font-size: 10.5px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); }
-  .flow-step b { display: block; font-size: 14.5px; margin: 4px 0 5px; color: var(--ink); }
-  .flow-step span { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; display: block; }
-  .flow-step.wide { grid-column: span 3; }
-  .flow-legend { margin-top: 12px; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
-
-  /* Tables */
-  .tbl-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 6px 4px; margin-bottom: 16px; overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
-  th { text-align: left; padding: 12px 16px; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; border-bottom: 1px solid var(--border); font-weight: 800; }
-  td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--ink-soft); vertical-align: top; line-height: 1.5; }
-  tr:last-child td { border-bottom: none; }
-  td.first { color: var(--ink); font-weight: 600; white-space: nowrap; }
-  .yes { color: var(--ok); font-weight: 700; }
-  .no { color: var(--muted); font-weight: 700; }
-  .tbl-caption { font-size: 12.5px; color: var(--muted); padding: 10px 16px 14px; line-height: 1.55; }
-
-  /* Lifecycle status strip */
-  .statuses { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
-  .statuses span { font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); color: var(--ink-soft); }
-
-  @media (max-width: 760px) {
-    header.top, main { padding-left: 20px; padding-right: 20px; }
-    .assumptions { grid-template-columns: 1fr; }
-    .flow { grid-template-columns: 1fr; }
-    .flow-step.wide { grid-column: span 1; }
+  .slide {
+        position: relative;
+        min-height: 100vh;
+        --gap: clamp(10px, 1.6vh, 22px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: var(--gap);
+    padding: clamp(16px, 2.6vh, 34px) clamp(20px, 3vw, 58px) clamp(16px, 2.4vh, 30px) clamp(34px, 4vw, 74px);
   }
+  .spine { position: absolute; left: 0; top: 0; width: 14px; height: 100%; background: repeating-linear-gradient(0deg, var(--yellow) 0px, var(--yellow) 24px, var(--navy) 24px, var(--navy) 48px); z-index: 3; }
+
+  .head { display: flex; justify-content: space-between; align-items: flex-end; gap: 18px; flex-wrap: wrap; }
+  .eyebrow { font-size: clamp(11px, 1.05vw, 15px); font-weight: 700; letter-spacing: 3px; color: var(--yellow); text-transform: uppercase; }
+  h1.title { font-size: clamp(23px, 2.7vw, 44px); line-height: 1.05; margin-top: 4px; }
+  .sub { font-size: clamp(13px, 1.12vw, 18px); color: var(--soft); margin-top: 6px; }
+  .legend { display: flex; gap: 10px; align-items: center; font-size: clamp(10.5px, 0.82vw, 13px); color: var(--muted); white-space: nowrap; }
+  .legend b { color: var(--yellow); }
+
+  /* ---------- trunk ---------- */
+  .trunk { display: grid; grid-template-columns: 1fr 20px 1fr 20px 1fr; align-items: stretch; }
+  .node {
+    background: var(--navy-panel); border: 1px solid var(--border); border-radius: 12px;
+    padding: clamp(8px, 1.1vh, 14px) clamp(10px, 0.95vw, 16px);
+    display: flex; gap: clamp(8px, 0.9vw, 14px); align-items: center; min-width: 0;
+  }
+  .node.photo { padding: 0; overflow: hidden; }
+  .node.photo .thumb { width: clamp(66px, 7.4vw, 118px); align-self: stretch; background: center/cover no-repeat; flex: none; position: relative; }
+  .node.photo .thumb::after { content: '📍'; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: clamp(15px, 1.5vw, 23px); }
+  .node.photo .txt { padding: clamp(8px, 1.1vh, 14px) clamp(10px, 0.95vw, 16px) clamp(8px, 1.1vh, 14px) 0; min-width: 0; }
+  .node.out { background: rgba(255,198,41,0.1); border-color: var(--yellow); }
+  .k { font-family: 'Oswald', Arial, sans-serif; text-transform: uppercase; font-size: clamp(9.5px, 0.76vw, 12px); letter-spacing: 1.4px; color: var(--yellow); }
+  .node b { display: block; font-size: clamp(13px, 1.15vw, 19px); font-weight: 700; margin-top: 3px; line-height: 1.2; }
+  .node span { display: block; font-size: clamp(11px, 0.9vw, 14.5px); color: var(--muted); line-height: 1.35; margin-top: 3px; }
+  .arrow { display: flex; align-items: center; justify-content: center; color: var(--yellow); font-size: clamp(13px, 1.3vw, 20px); }
+
+  /* ---------- fork after the output ---------- */
+    /* The junction reuses the trunk's own grid tracks, so the stem lands under
+       the output node by construction rather than at a hand-tuned pixel offset. */
+    .junction { display: flex; flex-direction: column; margin-top: calc(-1 * var(--gap)); }
+    .stem-row { display: grid; grid-template-columns: 1fr 20px 1fr 20px 1fr; }
+    .stem { grid-column: 5; justify-self: center; width: 2px; height: clamp(12px, 1.8vh, 22px); background: var(--yellow); }
+    .fork-bar { height: 0; margin: 0 12.5%; border-top: 2px solid var(--yellow); }
+    .branches { display: grid; grid-template-columns: repeat(4, 1fr); --tick: clamp(9px, 1.4vh, 16px); padding-top: var(--tick); }
+    .branch { padding: 0 clamp(4px, 0.45vw, 8px); min-width: 0; position: relative; }
+    .branch::before { content: ''; position: absolute; left: 50%; top: calc(-1 * var(--tick)); width: 2px; height: var(--tick); background: var(--yellow); }
+  .branch .card {
+    height: 100%; background: var(--navy-panel); border: 1px solid var(--border); border-radius: 12px;
+    padding: clamp(9px, 1.2vh, 15px) clamp(10px, 0.95vw, 16px);
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .branch .card.gov { border-color: rgba(255,198,41,0.5); }
+  .branch b { font-size: clamp(12.5px, 1.08vw, 17px); font-weight: 700; line-height: 1.2; }
+  .branch span { font-size: clamp(10.5px, 0.88vw, 14px); color: var(--muted); line-height: 1.35; }
+  .branch em { font-style: normal; font-size: clamp(9.5px, 0.76vw, 12px); color: var(--amber); }
+
+  .annot {
+    background: rgba(255,198,41,0.08); border-left: 3px solid var(--yellow); border-radius: 8px;
+    padding: clamp(7px, 1vh, 12px) clamp(10px, 0.95vw, 16px);
+    font-size: clamp(11px, 0.94vw, 15px); color: var(--soft); line-height: 1.4;
+  }
+  .annot b { color: var(--yellow); }
+
+  /* ---------- prompt example ---------- */
+  .prompt { display: flex; flex-direction: column; gap: clamp(6px, 0.8vh, 10px); }
+  .prompt .ph { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .prompt h2 { font-size: clamp(12px, 1.02vw, 16px); letter-spacing: 1.6px; }
+  .prompt .tag { font-size: clamp(9.5px, 0.76vw, 12px); color: var(--amber); border: 1px dashed var(--amber); border-radius: 999px; padding: 3px 10px; font-weight: 700; white-space: nowrap; }
+  .cols { display: grid; grid-template-columns: 0.85fr 1.05fr 1.25fr; gap: clamp(7px, 0.75vw, 12px); }
+  .col { background: var(--navy-panel); border: 1px solid var(--border); border-radius: 12px; padding: clamp(8px, 1vh, 13px) clamp(9px, 0.85vw, 14px); min-width: 0; display: flex; flex-direction: column; gap: 5px; }
+  .col .ct { font-family: 'Oswald', Arial, sans-serif; text-transform: uppercase; font-size: clamp(9px, 0.72vw, 11.5px); letter-spacing: 1.5px; color: var(--yellow); }
+  .col p { font-size: clamp(10.5px, 0.85vw, 13.5px); color: var(--soft); line-height: 1.4; }
+  pre { margin: 0; font-family: ui-monospace, Consolas, 'Courier New', monospace; font-size: clamp(9.5px, 0.77vw, 12.5px); line-height: 1.45; color: var(--off); white-space: pre-wrap; word-break: break-word; }
+  pre .s { color: var(--yellow); }
+  pre .k2 { color: #8FB3D9; }
+  .col .hint { margin-top: auto; font-size: clamp(9.5px, 0.74vw, 12px); color: var(--muted); line-height: 1.35; }
+  .col .hint b { color: var(--soft); }
+
+  footer.f { font-size: clamp(10px, 0.8vw, 13px); color: var(--muted); line-height: 1.4; }
+  footer.f b { color: var(--soft); }
+
+  @media (max-height: 820px) {
+      /* Laptop/projector heights: tighten rhythm so the slide still fits one screen. */
+      .slide {
+        --gap: clamp(5px, 0.8vh, 8px);
+        padding-top: clamp(9px, 1.3vh, 15px);
+        padding-bottom: clamp(9px, 1.3vh, 15px);
+      }
+      .col p, pre { line-height: 1.3; }
+      .annot { padding-top: 6px; padding-bottom: 6px; line-height: 1.32; }
+      footer.f { line-height: 1.3; }
+      .stem { height: clamp(9px, 1.3vh, 14px); }
+      .branches { --tick: clamp(7px, 1.1vh, 12px); }
+    }
+
+  @media (max-width: 900px) {
+      .trunk { grid-template-columns: 1fr; }
+      .arrow { padding: 2px 0; }
+      .stem-row, .fork-bar, .branch::before { display: none; }
+      .branches { grid-template-columns: 1fr; gap: 8px; padding-top: 0; }
+      .branch { padding: 0; }
+      .junction { margin-top: 0; }
+      .cols { grid-template-columns: 1fr; }
+    }
 </style>
 
-<header class="top">
-  <div class="brand"><div class="sq"></div><span>안전톡</span></div>
-  <p>Backend architecture &middot; how the system would work</p>
-</header>
-<main>
-  <h1 class="page-title">How the backend works</h1>
-  <p class="lede">One worker speaks a hazard into a phone in Vietnamese; a Korean site manager gets an actionable report, a printable warning sign in two languages, and a training card for the same crew — while the government sees only aggregate numbers. This page is the system behind that, and it separates what the demo <b>actually runs today</b> from what a real deployment would need.</p>
+<div class="slide">
+  <div class="spine"></div>
 
-  <div class="legend">
-    <span>Key:</span>
-    <span class="badge now">Runs today</span>
-    <span class="badge warn">Proposed</span>
-    <span class="badge open">Open question</span>
+  <div class="head">
+    <div>
+      <p class="eyebrow">Backend — how it works</p>
+      <h1 class="title">One photo. One report. Four outcomes.</h1>
+      <p class="sub">The worker's own language in, everything a Korean site needs out.</p>
+    </div>
+    <div class="legend"><b>●</b> runs in the demo today &nbsp;·&nbsp; ◌ proposed design</div>
   </div>
 
-  <div class="section-title">The system at a glance</div>
-  <div class="card">
-    <h2>From a spoken sentence to a printed sign</h2>
-    <p>Six stages. The only one a worker ever sees is the first.</p>
-    <div class="flow" style="margin-top:16px">
-      <div class="flow-step">
-        <div class="k">Step 1</div>
-        <b>Capture</b>
-        <span>Worker holds to speak (or types), picks a photo, marks the danger spot, sets category / severity / location. Language is chosen once, at setup.</span>
-      </div>
-      <div class="flow-step">
-        <div class="k">Step 2</div>
-        <b>Ingest API</b>
-        <span>Authenticated, site-scoped write. Media goes to private storage; the structured record goes to the report database. Nothing is generated here, so capture never fails because a model is slow.</span>
-      </div>
-      <div class="flow-step">
-        <div class="k">Step 3</div>
-        <b>AI workers (async)</b>
-        <span>Queued jobs: speech&nbsp;→&nbsp;text, translate to Korean, check the worker's severity vs. the category, draft the management report. Failures retry and fall back to a human, never to invented content.</span>
-      </div>
-      <div class="flow-step">
-        <div class="k">Step 4</div>
-        <b>Human review</b>
-        <span>A supervisor triages and assigns; the Safety &amp; Health Manager records corrective action. A person approves anything safety-critical before a sign or translation is printed.</span>
-      </div>
-      <div class="flow-step">
-        <div class="k">Step 5</div>
-        <b>Outputs</b>
-        <span>Korean management report, bilingual warning labels (fixed signage wording, not the worker's sentence), and a training card fed back into the same app.</span>
-      </div>
-      <div class="flow-step">
-        <div class="k">Step 6</div>
-        <b>Aggregate view</b>
-        <span>Government sees counts, categories and trends by site — never an individual report, never the worker's language. Enforced by the API, not by hiding a column.</span>
+  <!-- trunk: photo -> AI -> output -->
+  <div class="trunk">
+    <div class="node photo">
+      <div class="thumb" id="ph" style="background-image:url('data:image/jpeg;base64,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')"></div>
+      <div class="txt">
+        <p class="k">1 · The photo</p>
+        <b>Worker reports a hazard</b>
+        <span>Photo with the danger spot marked, voice or text, category, severity, location, in their own language, chosen once at setup.</span>
       </div>
     </div>
-    <div class="flow-legend">The 원청 → 하청 (primary contractor → subcontractor) chain is modelled explicitly here, because a worker reporting a hazard usually doesn't know — and the system shouldn't guess — which company is accountable for fixing it.</div>
-  </div>
-
-  <div class="section-title">What runs today vs. what a real backend adds</div>
-  <div class="tbl-wrap">
-    <table>
-      <thead>
-        <tr><th>Piece</th><th>Demo today</th><th>Proposed for a real deployment</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="first">Report storage</td>
-          <td>An in-memory array in <code>server/server.js</code>. Restarting the process clears every report — fine for a live demo, useless as a record.</td>
-          <td>Relational database of record, one tenant per company and one scope per site, so a supervisor can only ever query the sites they're assigned to.</td>
-        </tr>
-        <tr>
-          <td class="first">Photos</td>
-          <td>Stay on the device. The submitted payload carries text fields only — the marked-up image is never uploaded.</td>
-          <td>Private object storage, short-lived signed URLs so an image can't be fetched from a leaked link, and location metadata stripped before storage.</td>
-        </tr>
-        <tr>
-          <td class="first">AI</td>
-          <td>One genuine call: <code>POST /ai-feedback</code> asks a model for a single short tip on improving the description, in the worker's language — but only if <code>ANTHROPIC_API_KEY</code> is set server-side. The Korean report, translations, signs and training cards are hand-built demo content.</td>
-          <td>A queued pipeline (transcribe → translate → classify → draft) with retries, a per-request budget, and a review queue. Every generation is stored with the record it produced, so a manager can see what the draft was based on.</td>
-        </tr>
-        <tr>
-          <td class="first">Authentication</td>
-          <td>None. The demo server is open, CORS <code>*</code>, reachable by anyone who has the tunnel URL.</td>
-          <td>Identity per person (worker / supervisor / manager / auditor), issued per site, revocable on the day someone leaves a crew. The worker's phone holds no long-lived secret.</td>
-        </tr>
-        <tr>
-          <td class="first">Worker's language</td>
-          <td>Sent in the payload and hidden at the dashboard's UI layer — the table shows English only, and the language appears in a click-to-reveal modal.</td>
-          <td>A restricted field enforced server-side: the general report API doesn't return it at all. A UI convention is not access control.</td>
-        </tr>
-        <tr>
-          <td class="first">Transport</td>
-          <td>A Cloudflare quick tunnel with a random hostname hardcoded in the app and both dashboards; it changes on every restart and dies with the laptop.</td>
-          <td>A stable HTTPS endpoint with a real certificate, config supplied to the client at build time, and no shared secret living in a client binary.</td>
-        </tr>
-        <tr>
-          <td class="first">Dashboards</td>
-          <td>Poll the same open endpoint every few seconds and fall back to seed data when it's unreachable.</td>
-          <td>Read-only APIs per role, paginated, with the aggregate endpoint physically unable to return individual records.</td>
-        </tr>
-        <tr>
-          <td class="first">Tests</td>
-          <td><code>node server/e2e-test.js</code> — 27 checks against a throwaway server on its own port, including that AI feedback never blocks a submit.</td>
-          <td>Same contract tests kept as the safety net, wired into CI, plus tests that a supervisor's token cannot read another site's reports.</td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="tbl-caption">The demo column is not aspirational — it describes <code>server/server.js</code> as it exists in this repo. The proposed column is a design, not a commitment to any vendor or price.</div>
-  </div>
-
-  <div class="section-title">The lifecycle of one report</div>
-  <div class="card">
-    <h2>Status is about the work, not the danger</h2>
-    <p>Severity (low / medium / high) is what the worker says about the hazard. Status is where the report is in someone's queue. Keeping them separate is what makes "how many high-severity reports are still untouched?" a question the system can actually answer.</p>
-    <div class="statuses">
-      <span>Submitted</span><span>Processing</span><span>Ready for review</span><span>Assigned</span><span>Corrective action logged</span><span>Resolved</span>
+    <div class="arrow">→</div>
+    <div class="node">
+      <p class="k">2 · AI ◌</p>
+      <b>Translate and structure</b>
+      <span>Vietnamese, Uzbek or Chinese into formal Korean, returned as JSON against a fixed schema.</span>
     </div>
-    <ul>
-      <li><b>Submitted</b> — the record is already durable and visible to the supervisor, <em>before</em> any AI step runs. Generation is an enhancement on top of a saved report, never a gate in front of one.</li>
-      <li><b>Processing</b> — transcription, translation and drafting run as jobs. If a job fails or times out, the report falls through to <b>Ready for review</b> with a plain-text description rather than being blocked or auto-approved.</li>
-      <li><b>Assigned</b> — a named person is accountable, on the correct layer of the 원청/하청 chain.</li>
-      <li><b>Corrective action logged</b> — the Safety &amp; Health Manager records what was done, matching the investigation duty the governance model assigns to that role. Evidence is additive: the original report is never edited.</li>
-      <li><b>Resolved</b> — closes the loop, and feeds the aggregate compliance view.</li>
-    </ul>
-  </div>
-
-  <div class="section-title">System capability map</div>
-  <p class="lede">The governance model lists seven capabilities the system must provide. These are the same seven, one line each on how the backend would carry them.</p>
-  <div class="assumptions">
-    <div class="card">
-      <h2>Report intake <span class="badge warn">Proposed</span></h2>
-      <p>Offline-tolerant capture: a report queues on the phone if the site has no signal, then syncs. Photo, marked area, category, severity, location, description. The worker proposes severity and category; a supervisor can correct them.</p>
-    </div>
-    <div class="card">
-      <h2>Triage &amp; assignment <span class="badge warn">Proposed</span></h2>
-      <p>Rules on high-severity reports so that none sits untouched, an escalation path that works across the subcontracting chain, and a visible owner per report rather than a flat "employer" field.</p>
-    </div>
-    <div class="card">
-      <h2>Label generation <span class="badge warn">Proposed</span></h2>
-      <p>Signage wording comes from a fixed lookup table — signal word from severity, hazard name from category — rendered in Korean plus the worker's language. Real signs state a hazard; they don't read like an incident report, and the worker's own words stay available for comparison.</p>
-    </div>
-    <div class="card">
-      <h2>Training content <span class="badge warn">Proposed</span></h2>
-      <p>An approved report becomes a training card (photo, translated caption, short quiz) for the same crew. Human approval gates what gets taught, so a mis-translation never becomes curriculum.</p>
-    </div>
-    <div class="card">
-      <h2>Compliance dashboard <span class="badge warn">Proposed</span></h2>
-      <p>Site- and company-level aggregates: counts, categories, repeat locations, action times. No individual report content, no worker identity.</p>
-    </div>
-    <div class="card">
-      <h2>Access control &amp; privacy <span class="badge warn">Proposed</span></h2>
-      <p>Role- and site-scoped authorization at the API. The worker's language is one restricted field, readable only by the Safety &amp; Health Manager in the context of a sign or follow-up material.</p>
-    </div>
-    <div class="card">
-      <h2>Audit trail <span class="badge warn">Proposed</span></h2>
-      <p>Append-only. Corrections are new entries; the original submission stays intact and attributable, so "what did the worker actually report" always has an answer.</p>
-    </div>
-    <div class="card">
-      <h2>Notifications <span class="badge warn">Proposed</span></h2>
-      <p>The one capability the governance model doesn't yet list: getting a high-severity report in front of a named person on a crew's phone, and confirming they saw it.</p>
+    <div class="arrow">→</div>
+    <div class="node out">
+      <p class="k">3 · Output</p>
+      <b>Korean site report</b>
+      <span>One structured record: summary, location, suggested action, sign key.</span>
     </div>
   </div>
 
-  <div class="section-title">Who can see what</div>
-  <div class="tbl-wrap">
-    <table>
-      <thead>
-        <tr><th>Data</th><th>Worker</th><th>Site supervisor</th><th>Safety &amp; Health Manager</th><th>Government</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="first">Own reports</td>
-          <td class="yes">Yes</td><td class="yes">Yes, own sites</td><td class="yes">Yes, own sites</td><td class="no">No</td>
-        </tr>
-        <tr>
-          <td class="first">Another worker's reports</td>
-          <td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td>
-        </tr>
-        <tr>
-          <td class="first">Source language</td>
-          <td>Its own only</td><td class="no">No</td><td>Yes — restricted field</td><td class="no">No</td>
-        </tr>
-        <tr>
-          <td class="first">Raw photo / audio</td>
-          <td>Its own</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td>
-        </tr>
-        <tr>
-          <td class="first">Individual identity</td>
-          <td>Its own</td><td>Site-level</td><td class="yes">Yes</td><td class="no">No</td>
-        </tr>
-        <tr>
-          <td class="first">Site aggregates</td>
-          <td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td>
-        </tr>
-        <tr>
-          <td class="first">Edit a submitted report</td>
-          <td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="no">No</td>
-        </tr>
-      </tbody>
-    </table>
-    <div class="tbl-caption">Distilled from the governance model's six-actor obligations. The reason the language field is restricted at all is structural, not cosmetic: an E-9 visa holder needs their employer's consent to change workplaces, so anything that identifies a reporting worker to the people holding that leverage is a reason not to report.</div>
-  </div>
-
-  <div class="section-title">What's deliberately not decided</div>
-  <div class="assumptions">
-    <div class="card">
-      <h2>Retention &amp; deletion <span class="badge open">Open question</span></h2>
-      <p>No policy exists yet for how long reports and photos are kept, who may delete them, or on what legal basis. This has to be settled before a real pilot, not after — it changes the schema, not just a settings screen.</p>
+  <!-- forks out of the output: stem under the output node, a bar, then one tick per branch -->
+    <div class="junction" aria-hidden="true">
+      <div class="stem-row"><div class="stem"></div></div>
+      <div class="fork-bar"></div>
     </div>
-    <div class="card">
-      <h2>Response time <span class="badge open">Open question</span></h2>
-      <p>No source sets a required time-to-action on a high-severity report. "Every high-severity report has a named owner" is a defensible product default; it should not be presented as a legal deadline.</p>
+    <div class="branches">
+    <div class="branch">
+      <div class="card">
+        <b>Site manager</b>
+        <span>Review, assign an owner, log the corrective action.</span>
+      </div>
     </div>
-    <div class="card">
-      <h2>Role collapse on small sites <span class="badge open">Open question</span></h2>
-      <p>On a small site the supervisor and the Safety &amp; Health Manager may be one person. The access rules must state what happens when the roles merge — the restricted language field becomes much weaker if a single login holds both.</p>
+    <div class="branch">
+      <div class="card">
+        <b>Warning sign 🔒</b>
+        <span>Korean plus the worker's language, printed for the site.</span>
+      </div>
     </div>
-    <div class="card">
-      <h2>Government access <span class="badge open">Open question</span></h2>
-      <p>Aggregate-only is this project's proposal, not a confirmed legal requirement. Any move toward per-report government access needs a specific legal basis and a visible audit entry.</p>
+    <div class="branch">
+      <div class="card">
+        <b>Training card</b>
+        <span>Photo and caption, back into the crew's app.</span>
+      </div>
     </div>
-    <div class="card">
-      <h2>Korean privacy law <span class="badge open">Open question</span></h2>
-      <p>Sending a worker's speech, photos and location labels to a hosted model means personal data leaves the site. Korean personal-data law would govern purpose limitation, retention, overseas transfer and the processor contract — a legal question to confirm before building, not a checkbox after.</p>
-    </div>
-    <div class="card">
-      <h2>Where it runs <span class="badge open">Open question</span></h2>
-      <p>Korean-region hosting and whatever public-sector certification a government customer requires are both plausible constraints for this buyer, and neither is settled here. Flagged as a consideration for a pilot conversation.</p>
+    <div class="branch">
+      <div class="card gov">
+        <b>Government 🔒</b>
+        <span>Aggregate counts and trends only, no names, no language.</span>
+        <em>restricted by the API, not by hiding a column</em>
+      </div>
     </div>
   </div>
 
-  <div class="note">
-    <b>What this page is, and isn't.</b> The only backend code that exists in this repo is <code>server/server.js</code> (an in-memory store for the live demo) and its test <code>server/e2e-test.js</code>. Everything labelled <span class="badge warn">Proposed</span> is a design — no service, vendor, price or certification is committed, and nothing here implies government adoption, a pilot, or measured results. The point of the page is that a reviewer can see which half of the story is built and which half is a plan, in about a minute.
+  <p class="annot"><b>The fork is the point.</b> The worker's language and identity never reach the supervisor's table or the government view. The Korean report is generated once and then routed, so no branch can leak what the others were never given.</p>
+
+  <!-- structured prompt example -->
+  <div class="prompt">
+    <div class="ph">
+      <h2>Example — the translation prompt, and what comes back</h2>
+      <span class="tag">EXAMPLE · proposed, not the live call</span>
+    </div>
+    <div class="cols">
+      <div class="col">
+        <p class="ct">System</p>
+        <p>You write Korean construction-site safety reports. Translate the worker's report into plain formal Korean for the safety manager.</p>
+        <p>Use only facts in the input, never invent a detail, never change the severity, return JSON only.</p>
+        <p class="hint">Output language is fixed by the prompt, so the worker never has to read Korean.</p>
+      </div>
+      <div class="col">
+        <p class="ct">Input — the worker's own words</p>
+        <pre>{
+  <span class="k2">"lang"</span>: <span class="s">"vi"</span>,
+  <span class="k2">"category"</span>: <span class="s">"falls"</span>,
+  <span class="k2">"severity"</span>: <span class="s">"high"</span>,
+  <span class="k2">"location"</span>: <span class="s">"4F east stairwell"</span>,
+  <span class="k2">"note"</span>: <span class="s">"Cầu thang tầng 4 có một tấm
+  ván bị lỏng, tôi suýt vấp ngã.
+  Cần cố định lại ngay."</span>
+}</pre>
+        <p class="hint">The original is <b>stored unedited</b> and stays the worker's own record, so the translation is never the only version.</p>
+      </div>
+      <div class="col">
+        <p class="ct">Output — JSON, routed to each branch</p>
+        <pre>{
+  <span class="k2">"summary_ko"</span>: <span class="s">"4층 동쪽 계단에 발판이
+  느슨하게 놓여 넘어질 위험이
+  있습니다. 즉시 고정이 필요합니다."</span>,
+  <span class="k2">"action_ko"</span>: <span class="s">"느슨한 발판을 즉시
+  고정하고 주변을 정리하십시오."</span>,
+  <span class="k2">"signal_word"</span>: <span class="s">"위험"</span>,
+  <span class="k2">"hazard_name"</span>: <span class="s">"추락"</span>,
+  <span class="k2">"needs_review"</span>: <span class="s">false</span>
+}</pre>
+        <p class="hint"><b>위험 and 추락 come from the app's fixed signage table</b>, not from the model's own wording, so a printed sign always reads like a real sign.</p>
+      </div>
+    </div>
   </div>
-</main>
+
+  <footer class="f">
+    <b>Demo today:</b> the phone posts to a live server and both dashboards update from it, and one real model call runs, the report-quality tip at <span class="kr">POST /ai-feedback</span>. The translation pipeline above is the design, not running code. <b>needs_review</b> sends anything unclear to a person before a sign or a translation is used.
+  </footer>
+</div>
 
 <div class="proto-nav" id="proto-nav">
   <button class="proto-nav-btn" id="proto-nav-btn" aria-expanded="false" aria-controls="proto-nav-menu">Navigation</button>
@@ -336,26 +264,34 @@
 </div>
 
 <style>
-  .proto-nav { position: fixed; right: 18px; bottom: 18px; z-index: 999; font-family: 'IBM Plex Sans', Arial, sans-serif; display: flex; align-items: flex-end; gap: 8px; }
-  .proto-nav-btn { font-size: 12.5px; font-weight: 700; padding: 11px 18px; border-radius: 999px; background: #242424; color: #F7F3EA; border: none; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.28); }
-  .proto-nav-menu { position: absolute; right: 0; bottom: calc(100% + 10px); background: #242424; color: #F7F3EA; border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 2px; min-width: 220px; box-shadow: 0 20px 44px rgba(0,0,0,0.32); }
-  .proto-nav-menu .current { font-size: 11.5px; font-weight: 700; color: #ACA495; padding: 8px 12px 4px; }
-  .proto-nav-menu a { font-size: 13px; font-weight: 600; color: #F7F3EA; text-decoration: none; padding: 9px 12px; border-radius: 8px; }
-  .proto-nav-menu a:hover { background: rgba(255,255,255,0.08); }
+  .proto-nav { position: fixed; right: 14px; bottom: 14px; z-index: 999; font-family: 'IBM Plex Sans', Arial, sans-serif; display: flex; align-items: flex-end; gap: 6px; opacity: 0.22; transition: opacity 0.2s ease; }
+  .proto-nav:hover, .proto-nav:focus-within { opacity: 1; }
+  .proto-nav-btn { font-size: 10.5px; font-weight: 600; padding: 6px 11px; border-radius: 999px; background: rgba(36,36,36,0.7); color: #C9C5BA; border: none; cursor: pointer; box-shadow: none; }
+  .proto-nav-menu { position: absolute; right: 0; bottom: calc(100% + 10px); background: #292928; border: 1px solid #3A3A38; border-radius: 14px; padding: 8px; display: flex; flex-direction: column; min-width: 230px; box-shadow: 0 16px 36px rgba(0,0,0,0.4); }
+  /* the display:flex above outranks the browser's [hidden] rule, so restore it */
+  .proto-nav-menu[hidden] { display: none; }
+  .proto-nav-menu a { display: block; padding: 10px 12px; border-radius: 9px; font-size: 13.5px; color: #F7F3EA; text-decoration: none; }
+  .proto-nav-menu a:hover { background: #161616; }
+  .proto-nav-menu .current { padding: 10px 12px; font-size: 13.5px; color: #8C8983; }
 </style>
 <script>
   (function () {
     var btn = document.getElementById('proto-nav-btn');
     var menu = document.getElementById('proto-nav-menu');
     var wrap = document.getElementById('proto-nav');
+    function setOpen(open) {
+      menu.hidden = !open;
+      btn.setAttribute('aria-expanded', String(open));
+    }
     btn.addEventListener('click', function (e) {
       e.stopPropagation();
-      var willOpen = menu.hidden;
-      menu.hidden = !willOpen;
-      btn.setAttribute('aria-expanded', String(willOpen));
+      setOpen(menu.hidden);
     });
     document.addEventListener('click', function (e) {
-      if (!wrap.contains(e.target)) { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+      if (!wrap.contains(e.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') setOpen(false);
     });
   })();
 </script>
