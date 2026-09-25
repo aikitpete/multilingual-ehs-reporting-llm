@@ -403,7 +403,7 @@ function ReportForm({ tr, draft, setDraft, onCamera, onLibrary, onSample, onDemo
 
   const hasPhoto = !!(draft.photoUri || draft.samplePhoto);
   const showDescription = hasPhoto;
-  const showMark = showDescription && draft.note.trim().length > 0;
+  const showMark = showDescription;
   const showCategory = showMark && !!draft.pin;
   const showLocation = showCategory && !!draft.category;
   const showSeverity = showLocation && !!draft.location;
