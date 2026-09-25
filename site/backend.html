@@ -1,0 +1,361 @@
+<meta charset="utf-8">
+<title>AnjeonTok Backend Architecture</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+KR:wght@500;700;800&display=swap">
+<style>
+  :root {
+    --bg: #F2ECE0; --surface: #FFFFFF; --surface-2: #FAF6EE; --border: #E3E0D8;
+    --ink: #242424; --ink-soft: #625F5A; --muted: #8C8983;
+    --accent: #C97A1F; --accent-strong: #242424; --yellow: #FFC629;
+    --ok: #3D7A34; --ok-bg: #E8F0E0; --warn: #C97A1F; --warn-bg: #FBE8D0;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #161616; --surface: #201F1F; --surface-2: #1B1A1A; --border: #3A3A38;
+      --ink: #F5F1E8; --ink-soft: #D6D2C9; --muted: #8C8983; --accent: #FFC629;
+      --ok: #86C46B; --ok-bg: #1B2E14; --warn: #FFC629; --warn-bg: #332A12;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #161616; --surface: #201F1F; --surface-2: #1B1A1A; --border: #3A3A38;
+    --ink: #F5F1E8; --ink-soft: #D6D2C9; --muted: #8C8983; --accent: #FFC629;
+    --ok: #86C46B; --ok-bg: #1B2E14; --warn: #FFC629; --warn-bg: #332A12;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'IBM Plex Sans', Arial, sans-serif; }
+  header.top { background: var(--accent-strong); color: #F7F3EA; padding: 26px 40px; }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand .sq { width: 14px; height: 14px; background: var(--yellow); border-radius: 4px; }
+  .brand span { font-family: 'Noto Sans KR', 'Rubik', Arial, sans-serif; font-weight: 800; font-size: 18px; }
+  header.top p { margin: 6px 0 0; color: #DAD5CB; font-size: 13.5px; }
+  main { max-width: 880px; margin: 0 auto; padding: 36px 24px 80px; }
+  h1.page-title { font-family: 'Rubik', Arial, sans-serif; font-size: 26px; font-weight: 800; margin: 0 0 6px; }
+  .lede { color: var(--ink-soft); font-size: 15px; line-height: 1.5; margin: 0 0 20px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 22px 24px; margin-bottom: 16px; }
+  .card h2 { font-family: 'Rubik', Arial, sans-serif; font-size: 17px; font-weight: 800; margin: 0 0 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .badge { font-size: 10.5px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 10px; border-radius: 999px; }
+  .badge.ok { background: var(--ok-bg); color: var(--ok); }
+  .badge.warn { background: var(--warn-bg); color: var(--warn); }
+  .badge.now { background: var(--ink); color: var(--surface); }
+  .badge.open { background: transparent; border: 1px dashed var(--border); color: var(--muted); }
+  .card .num { font-family: 'Rubik', Arial, sans-serif; font-weight: 800; color: var(--accent); }
+  .card p { font-size: 14px; color: var(--ink-soft); line-height: 1.6; margin: 10px 0 0; }
+  .card p b, .card li b { color: var(--ink); }
+  .card ul { margin: 10px 0 0; padding-left: 20px; }
+  .card li { font-size: 14px; color: var(--ink-soft); line-height: 1.6; margin-bottom: 6px; }
+  .sources { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border); display: flex; flex-direction: column; gap: 6px; }
+  .sources a { font-size: 12.5px; color: var(--accent); text-decoration: none; }
+  .sources a:hover { text-decoration: underline; }
+  .section-title { font-family: 'Rubik', Arial, sans-serif; font-size: 15px; font-weight: 800; margin: 32px 0 12px; color: var(--ink); }
+  .assumptions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .assumptions .card { margin-bottom: 0; }
+  .note { background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 16px 18px; font-size: 13px; color: var(--ink-soft); line-height: 1.6; margin-top: 28px; }
+  .note b { color: var(--ink); }
+  code { background: var(--surface-2); border: 1px solid var(--border); border-radius: 5px; padding: 1px 5px; font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; color: var(--ink); }
+  .legend { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 0 0 18px; font-size: 12.5px; color: var(--muted); }
+
+  /* Flow diagram — plain HTML/CSS boxes, no library, no external asset. */
+  .flow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .flow-step { background: var(--surface-2); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; position: relative; }
+  .flow-step .k { font-family: 'Rubik', Arial, sans-serif; font-size: 10.5px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); }
+  .flow-step b { display: block; font-size: 14.5px; margin: 4px 0 5px; color: var(--ink); }
+  .flow-step span { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; display: block; }
+  .flow-step.wide { grid-column: span 3; }
+  .flow-legend { margin-top: 12px; font-size: 12.5px; color: var(--muted); line-height: 1.55; }
+
+  /* Tables */
+  .tbl-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 6px 4px; margin-bottom: 16px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th { text-align: left; padding: 12px 16px; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; border-bottom: 1px solid var(--border); font-weight: 800; }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--border); color: var(--ink-soft); vertical-align: top; line-height: 1.5; }
+  tr:last-child td { border-bottom: none; }
+  td.first { color: var(--ink); font-weight: 600; white-space: nowrap; }
+  .yes { color: var(--ok); font-weight: 700; }
+  .no { color: var(--muted); font-weight: 700; }
+  .tbl-caption { font-size: 12.5px; color: var(--muted); padding: 10px 16px 14px; line-height: 1.55; }
+
+  /* Lifecycle status strip */
+  .statuses { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+  .statuses span { font-size: 12px; font-weight: 700; padding: 6px 12px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border); color: var(--ink-soft); }
+
+  @media (max-width: 760px) {
+    header.top, main { padding-left: 20px; padding-right: 20px; }
+    .assumptions { grid-template-columns: 1fr; }
+    .flow { grid-template-columns: 1fr; }
+    .flow-step.wide { grid-column: span 1; }
+  }
+</style>
+
+<header class="top">
+  <div class="brand"><div class="sq"></div><span>안전톡</span></div>
+  <p>Backend architecture &middot; how the system would work</p>
+</header>
+<main>
+  <h1 class="page-title">How the backend works</h1>
+  <p class="lede">One worker speaks a hazard into a phone in Vietnamese; a Korean site manager gets an actionable report, a printable warning sign in two languages, and a training card for the same crew — while the government sees only aggregate numbers. This page is the system behind that, and it separates what the demo <b>actually runs today</b> from what a real deployment would need.</p>
+
+  <div class="legend">
+    <span>Key:</span>
+    <span class="badge now">Runs today</span>
+    <span class="badge warn">Proposed</span>
+    <span class="badge open">Open question</span>
+  </div>
+
+  <div class="section-title">The system at a glance</div>
+  <div class="card">
+    <h2>From a spoken sentence to a printed sign</h2>
+    <p>Six stages. The only one a worker ever sees is the first.</p>
+    <div class="flow" style="margin-top:16px">
+      <div class="flow-step">
+        <div class="k">Step 1</div>
+        <b>Capture</b>
+        <span>Worker holds to speak (or types), picks a photo, marks the danger spot, sets category / severity / location. Language is chosen once, at setup.</span>
+      </div>
+      <div class="flow-step">
+        <div class="k">Step 2</div>
+        <b>Ingest API</b>
+        <span>Authenticated, site-scoped write. Media goes to private storage; the structured record goes to the report database. Nothing is generated here, so capture never fails because a model is slow.</span>
+      </div>
+      <div class="flow-step">
+        <div class="k">Step 3</div>
+        <b>AI workers (async)</b>
+        <span>Queued jobs: speech&nbsp;→&nbsp;text, translate to Korean, check the worker's severity vs. the category, draft the management report. Failures retry and fall back to a human, never to invented content.</span>
+      </div>
+      <div class="flow-step">
+        <div class="k">Step 4</div>
+        <b>Human review</b>
+        <span>A supervisor triages and assigns; the Safety &amp; Health Manager records corrective action. A person approves anything safety-critical before a sign or translation is printed.</span>
+      </div>
+      <div class="flow-step">
+        <div class="k">Step 5</div>
+        <b>Outputs</b>
+        <span>Korean management report, bilingual warning labels (fixed signage wording, not the worker's sentence), and a training card fed back into the same app.</span>
+      </div>
+      <div class="flow-step">
+        <div class="k">Step 6</div>
+        <b>Aggregate view</b>
+        <span>Government sees counts, categories and trends by site — never an individual report, never the worker's language. Enforced by the API, not by hiding a column.</span>
+      </div>
+    </div>
+    <div class="flow-legend">The 원청 → 하청 (primary contractor → subcontractor) chain is modelled explicitly here, because a worker reporting a hazard usually doesn't know — and the system shouldn't guess — which company is accountable for fixing it.</div>
+  </div>
+
+  <div class="section-title">What runs today vs. what a real backend adds</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th>Piece</th><th>Demo today</th><th>Proposed for a real deployment</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="first">Report storage</td>
+          <td>An in-memory array in <code>server/server.js</code>. Restarting the process clears every report — fine for a live demo, useless as a record.</td>
+          <td>Relational database of record, one tenant per company and one scope per site, so a supervisor can only ever query the sites they're assigned to.</td>
+        </tr>
+        <tr>
+          <td class="first">Photos</td>
+          <td>Stay on the device. The submitted payload carries text fields only — the marked-up image is never uploaded.</td>
+          <td>Private object storage, short-lived signed URLs so an image can't be fetched from a leaked link, and location metadata stripped before storage.</td>
+        </tr>
+        <tr>
+          <td class="first">AI</td>
+          <td>One genuine call: <code>POST /ai-feedback</code> asks a model for a single short tip on improving the description, in the worker's language — but only if <code>ANTHROPIC_API_KEY</code> is set server-side. The Korean report, translations, signs and training cards are hand-built demo content.</td>
+          <td>A queued pipeline (transcribe → translate → classify → draft) with retries, a per-request budget, and a review queue. Every generation is stored with the record it produced, so a manager can see what the draft was based on.</td>
+        </tr>
+        <tr>
+          <td class="first">Authentication</td>
+          <td>None. The demo server is open, CORS <code>*</code>, reachable by anyone who has the tunnel URL.</td>
+          <td>Identity per person (worker / supervisor / manager / auditor), issued per site, revocable on the day someone leaves a crew. The worker's phone holds no long-lived secret.</td>
+        </tr>
+        <tr>
+          <td class="first">Worker's language</td>
+          <td>Sent in the payload and hidden at the dashboard's UI layer — the table shows English only, and the language appears in a click-to-reveal modal.</td>
+          <td>A restricted field enforced server-side: the general report API doesn't return it at all. A UI convention is not access control.</td>
+        </tr>
+        <tr>
+          <td class="first">Transport</td>
+          <td>A Cloudflare quick tunnel with a random hostname hardcoded in the app and both dashboards; it changes on every restart and dies with the laptop.</td>
+          <td>A stable HTTPS endpoint with a real certificate, config supplied to the client at build time, and no shared secret living in a client binary.</td>
+        </tr>
+        <tr>
+          <td class="first">Dashboards</td>
+          <td>Poll the same open endpoint every few seconds and fall back to seed data when it's unreachable.</td>
+          <td>Read-only APIs per role, paginated, with the aggregate endpoint physically unable to return individual records.</td>
+        </tr>
+        <tr>
+          <td class="first">Tests</td>
+          <td><code>node server/e2e-test.js</code> — 27 checks against a throwaway server on its own port, including that AI feedback never blocks a submit.</td>
+          <td>Same contract tests kept as the safety net, wired into CI, plus tests that a supervisor's token cannot read another site's reports.</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="tbl-caption">The demo column is not aspirational — it describes <code>server/server.js</code> as it exists in this repo. The proposed column is a design, not a commitment to any vendor or price.</div>
+  </div>
+
+  <div class="section-title">The lifecycle of one report</div>
+  <div class="card">
+    <h2>Status is about the work, not the danger</h2>
+    <p>Severity (low / medium / high) is what the worker says about the hazard. Status is where the report is in someone's queue. Keeping them separate is what makes "how many high-severity reports are still untouched?" a question the system can actually answer.</p>
+    <div class="statuses">
+      <span>Submitted</span><span>Processing</span><span>Ready for review</span><span>Assigned</span><span>Corrective action logged</span><span>Resolved</span>
+    </div>
+    <ul>
+      <li><b>Submitted</b> — the record is already durable and visible to the supervisor, <em>before</em> any AI step runs. Generation is an enhancement on top of a saved report, never a gate in front of one.</li>
+      <li><b>Processing</b> — transcription, translation and drafting run as jobs. If a job fails or times out, the report falls through to <b>Ready for review</b> with a plain-text description rather than being blocked or auto-approved.</li>
+      <li><b>Assigned</b> — a named person is accountable, on the correct layer of the 원청/하청 chain.</li>
+      <li><b>Corrective action logged</b> — the Safety &amp; Health Manager records what was done, matching the investigation duty the governance model assigns to that role. Evidence is additive: the original report is never edited.</li>
+      <li><b>Resolved</b> — closes the loop, and feeds the aggregate compliance view.</li>
+    </ul>
+  </div>
+
+  <div class="section-title">System capability map</div>
+  <p class="lede">The governance model lists seven capabilities the system must provide. These are the same seven, one line each on how the backend would carry them.</p>
+  <div class="assumptions">
+    <div class="card">
+      <h2>Report intake <span class="badge warn">Proposed</span></h2>
+      <p>Offline-tolerant capture: a report queues on the phone if the site has no signal, then syncs. Photo, marked area, category, severity, location, description. The worker proposes severity and category; a supervisor can correct them.</p>
+    </div>
+    <div class="card">
+      <h2>Triage &amp; assignment <span class="badge warn">Proposed</span></h2>
+      <p>Rules on high-severity reports so that none sits untouched, an escalation path that works across the subcontracting chain, and a visible owner per report rather than a flat "employer" field.</p>
+    </div>
+    <div class="card">
+      <h2>Label generation <span class="badge warn">Proposed</span></h2>
+      <p>Signage wording comes from a fixed lookup table — signal word from severity, hazard name from category — rendered in Korean plus the worker's language. Real signs state a hazard; they don't read like an incident report, and the worker's own words stay available for comparison.</p>
+    </div>
+    <div class="card">
+      <h2>Training content <span class="badge warn">Proposed</span></h2>
+      <p>An approved report becomes a training card (photo, translated caption, short quiz) for the same crew. Human approval gates what gets taught, so a mis-translation never becomes curriculum.</p>
+    </div>
+    <div class="card">
+      <h2>Compliance dashboard <span class="badge warn">Proposed</span></h2>
+      <p>Site- and company-level aggregates: counts, categories, repeat locations, action times. No individual report content, no worker identity.</p>
+    </div>
+    <div class="card">
+      <h2>Access control &amp; privacy <span class="badge warn">Proposed</span></h2>
+      <p>Role- and site-scoped authorization at the API. The worker's language is one restricted field, readable only by the Safety &amp; Health Manager in the context of a sign or follow-up material.</p>
+    </div>
+    <div class="card">
+      <h2>Audit trail <span class="badge warn">Proposed</span></h2>
+      <p>Append-only. Corrections are new entries; the original submission stays intact and attributable, so "what did the worker actually report" always has an answer.</p>
+    </div>
+    <div class="card">
+      <h2>Notifications <span class="badge warn">Proposed</span></h2>
+      <p>The one capability the governance model doesn't yet list: getting a high-severity report in front of a named person on a crew's phone, and confirming they saw it.</p>
+    </div>
+  </div>
+
+  <div class="section-title">Who can see what</div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr><th>Data</th><th>Worker</th><th>Site supervisor</th><th>Safety &amp; Health Manager</th><th>Government</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="first">Own reports</td>
+          <td class="yes">Yes</td><td class="yes">Yes, own sites</td><td class="yes">Yes, own sites</td><td class="no">No</td>
+        </tr>
+        <tr>
+          <td class="first">Another worker's reports</td>
+          <td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td>
+        </tr>
+        <tr>
+          <td class="first">Source language</td>
+          <td>Its own only</td><td class="no">No</td><td>Yes — restricted field</td><td class="no">No</td>
+        </tr>
+        <tr>
+          <td class="first">Raw photo / audio</td>
+          <td>Its own</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="no">No</td>
+        </tr>
+        <tr>
+          <td class="first">Individual identity</td>
+          <td>Its own</td><td>Site-level</td><td class="yes">Yes</td><td class="no">No</td>
+        </tr>
+        <tr>
+          <td class="first">Site aggregates</td>
+          <td class="no">No</td><td class="yes">Yes</td><td class="yes">Yes</td><td class="yes">Yes</td>
+        </tr>
+        <tr>
+          <td class="first">Edit a submitted report</td>
+          <td class="no">No</td><td class="no">No</td><td class="no">No</td><td class="no">No</td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="tbl-caption">Distilled from the governance model's six-actor obligations. The reason the language field is restricted at all is structural, not cosmetic: an E-9 visa holder needs their employer's consent to change workplaces, so anything that identifies a reporting worker to the people holding that leverage is a reason not to report.</div>
+  </div>
+
+  <div class="section-title">What's deliberately not decided</div>
+  <div class="assumptions">
+    <div class="card">
+      <h2>Retention &amp; deletion <span class="badge open">Open question</span></h2>
+      <p>No policy exists yet for how long reports and photos are kept, who may delete them, or on what legal basis. This has to be settled before a real pilot, not after — it changes the schema, not just a settings screen.</p>
+    </div>
+    <div class="card">
+      <h2>Response time <span class="badge open">Open question</span></h2>
+      <p>No source sets a required time-to-action on a high-severity report. "Every high-severity report has a named owner" is a defensible product default; it should not be presented as a legal deadline.</p>
+    </div>
+    <div class="card">
+      <h2>Role collapse on small sites <span class="badge open">Open question</span></h2>
+      <p>On a small site the supervisor and the Safety &amp; Health Manager may be one person. The access rules must state what happens when the roles merge — the restricted language field becomes much weaker if a single login holds both.</p>
+    </div>
+    <div class="card">
+      <h2>Government access <span class="badge open">Open question</span></h2>
+      <p>Aggregate-only is this project's proposal, not a confirmed legal requirement. Any move toward per-report government access needs a specific legal basis and a visible audit entry.</p>
+    </div>
+    <div class="card">
+      <h2>Korean privacy law <span class="badge open">Open question</span></h2>
+      <p>Sending a worker's speech, photos and location labels to a hosted model means personal data leaves the site. Korean personal-data law would govern purpose limitation, retention, overseas transfer and the processor contract — a legal question to confirm before building, not a checkbox after.</p>
+    </div>
+    <div class="card">
+      <h2>Where it runs <span class="badge open">Open question</span></h2>
+      <p>Korean-region hosting and whatever public-sector certification a government customer requires are both plausible constraints for this buyer, and neither is settled here. Flagged as a consideration for a pilot conversation.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>What this page is, and isn't.</b> The only backend code that exists in this repo is <code>server/server.js</code> (an in-memory store for the live demo) and its test <code>server/e2e-test.js</code>. Everything labelled <span class="badge warn">Proposed</span> is a design — no service, vendor, price or certification is committed, and nothing here implies government adoption, a pilot, or measured results. The point of the page is that a reviewer can see which half of the story is built and which half is a plan, in about a minute.
+  </div>
+</main>
+
+<div class="proto-nav" id="proto-nav">
+  <button class="proto-nav-btn" id="proto-nav-btn" aria-expanded="false" aria-controls="proto-nav-menu">Navigation</button>
+  <div class="proto-nav-menu" id="proto-nav-menu" hidden>
+    <span class="current">Backend architecture (this page)</span>
+    <a href="deck.html">Pitch deck</a>
+    <a href="supervisor.html">Supervisor &amp; worker app</a>
+    <a href="manager.html">Management dashboard</a>
+    <a href="government.html">Government dashboard</a>
+    <a href="knowledge.html">Knowledge &amp; sources</a>
+    <a href="governance.html">Governance model</a>
+    <a href="pitch-prep.html">Pitch prep</a>
+    <a href="index.html">All prototypes ↗</a>
+  </div>
+</div>
+
+<style>
+  .proto-nav { position: fixed; right: 18px; bottom: 18px; z-index: 999; font-family: 'IBM Plex Sans', Arial, sans-serif; display: flex; align-items: flex-end; gap: 8px; }
+  .proto-nav-btn { font-size: 12.5px; font-weight: 700; padding: 11px 18px; border-radius: 999px; background: #242424; color: #F7F3EA; border: none; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,0.28); }
+  .proto-nav-menu { position: absolute; right: 0; bottom: calc(100% + 10px); background: #242424; color: #F7F3EA; border-radius: 14px; padding: 10px; display: flex; flex-direction: column; gap: 2px; min-width: 220px; box-shadow: 0 20px 44px rgba(0,0,0,0.32); }
+  .proto-nav-menu .current { font-size: 11.5px; font-weight: 700; color: #ACA495; padding: 8px 12px 4px; }
+  .proto-nav-menu a { font-size: 13px; font-weight: 600; color: #F7F3EA; text-decoration: none; padding: 9px 12px; border-radius: 8px; }
+  .proto-nav-menu a:hover { background: rgba(255,255,255,0.08); }
+</style>
+<script>
+  (function () {
+    var btn = document.getElementById('proto-nav-btn');
+    var menu = document.getElementById('proto-nav-menu');
+    var wrap = document.getElementById('proto-nav');
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var willOpen = menu.hidden;
+      menu.hidden = !willOpen;
+      btn.setAttribute('aria-expanded', String(willOpen));
+    });
+    document.addEventListener('click', function (e) {
+      if (!wrap.contains(e.target)) { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+    });
+  })();
+</script>
