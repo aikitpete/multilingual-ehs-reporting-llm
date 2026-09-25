@@ -229,6 +229,19 @@
     </div>
 
     <section class="view on" id="view-reports">
+      <div class="panel ai-panel">
+        <div class="ai-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
+          AI site report
+        </div>
+        <div id="site-report-empty" class="empty-hint">Not generated yet — summarizes every report currently on this page: category and location breakdowns, repeat-location flags, and prioritized recommendations.</div>
+        <div id="site-report-content" class="site-report" style="display:none"></div>
+        <button type="button" class="ai-generate-btn" id="site-report-btn" style="width:100%; justify-content:center; margin-top:12px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
+          <span id="site-report-label">Generate site report</span>
+        </button>
+      </div>
+
       <div class="stats">
         <div class="stat"><span class="n">18</span><span class="l" data-i18n="stat.open">Open reports, this month</span></div>
         <div class="stat"><span class="n">4</span><span class="l" data-i18n="stat.high">High severity</span></div>
@@ -252,18 +265,6 @@
         </div>
       </div>
 
-      <div class="panel ai-panel">
-        <div class="ai-badge">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
-          AI site report
-        </div>
-        <div id="site-report-empty" class="empty-hint">Not generated yet — summarizes every report currently on this page: category and location breakdowns, repeat-location flags, and prioritized recommendations.</div>
-        <div id="site-report-content" class="site-report" style="display:none"></div>
-        <button type="button" class="ai-generate-btn" id="site-report-btn" style="width:100%; justify-content:center; margin-top:12px">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.5 4.5L18 9l-4.5 1.5L12 15l-1.5-4.5L6 9l4.5-1.5L12 3z"/><path d="M19 15l.7 2.1L22 18l-2.3.9L19 21l-.7-2.1L16 18l2.3-.9L19 15z"/></svg>
-          <span id="site-report-label">Generate site report</span>
-        </button>
-      </div>
       <div class="panel">
         <div class="panel-head"><h2 data-i18n="panel.recent">Recent reports</h2><span class="btn-link" data-i18n="action.export" id="inline-export-link">Export</span></div>
         <table id="reports-table">
@@ -1061,71 +1062,92 @@
     renderLocationBreakdown();
     renderCharts();
 
-    document.getElementById('site-report-btn').addEventListener('click', function () {
-      var btn = document.getElementById('site-report-btn');
-      var label = document.getElementById('site-report-label');
+    function buildSiteReportHtml() {
+      var rows = currentRowsData();
+      var total = rows.length;
+      var high = rows.filter(function (r) { return r.sev === 'High'; }).length;
+      var byCat = tally(rows, 'cat');
+      var byLoc = tally(rows, 'loc');
+      var repeatLocs = byLoc.filter(function (l) { return l.count >= 2; });
+      var topCat = byCat[0];
+
+      // Cross-referenced insight the charts/lists above don't compute on
+      // their own -- severity concentrated by location, and whether the
+      // leading category traces back to one specific place rather than
+      // being spread evenly (a site-condition signal vs. a training gap).
+      var highRows = rows.filter(function (r) { return r.sev === 'High'; });
+      var highByLoc = tally(highRows, 'loc');
+      var topHighLoc = highByLoc[0];
+      var topCatByLoc = tally(rows.filter(function (r) { return r.cat === topCat.key; }), 'loc');
+      var topCatConcentration = topCatByLoc[0] ? Math.round((topCatByLoc[0].count / topCat.count) * 100) : 0;
+
+      var html = '';
+      html += '<h4>Summary</h4><p>' + total + ' reports on record, ' + high + ' at high severity.</p>';
+
+      var insights = [];
+      if (topHighLoc && topHighLoc.count >= 2) {
+        insights.push('<b>' + topHighLoc.key + '</b> accounts for ' + topHighLoc.count + ' of the ' + high + ' high-severity reports — a concentration, not scattered incidents.');
+      }
+      if (topCatByLoc[0] && topCat.count >= 2 && topCatConcentration >= 50) {
+        insights.push(topCatConcentration + '% of ' + topCat.key.toLowerCase() + ' reports trace back to <b>' + topCatByLoc[0].key + '</b>, pointing to a site-specific condition there rather than a workforce-wide gap.');
+      }
+      if (repeatLocs.length) {
+        insights.push(repeatLocs.length + ' location' + (repeatLocs.length > 1 ? 's have' : ' has') + ' repeat reports this quarter and should be prioritized for a walkthrough, not treated as isolated incidents.');
+      }
+      if (!insights.length) insights.push('Hazards are broadly distributed across categories and locations this quarter — no single site or type dominates yet.');
+
+      html += '<h4>Key insight</h4><ul>' + insights.map(function (i) { return '<li>' + i + '</li>'; }).join('') + '</ul>';
+
+      var recs = [];
+      byCat.forEach(function (c) {
+        recs.push('<b>' + c.key + '</b> (' + c.count + ' report' + (c.count > 1 ? 's' : '') + '): ' + (CAT_PREVENTION[c.key] || CAT_PREVENTION.Other));
+      });
+      repeatLocs.forEach(function (l) {
+        recs.push('Schedule a full walkthrough of <b>' + l.key + '</b> — ' + l.count + ' separate reports this quarter suggests a systemic issue, not isolated incidents.');
+      });
+      if (high > 0) recs.push(high + ' high-severity report' + (high > 1 ? 's remain' : ' remains') + ' open — confirm corrective action is logged for each before next review.');
+
+      html += '<h4>Recommendations</h4><ul>' + recs.map(function (r) { return '<li>' + r + '</li>'; }).join('') + '</ul>';
+      return html;
+    }
+
+    function showSiteReport(html, skipAnim) {
       var empty = document.getElementById('site-report-empty');
       var content = document.getElementById('site-report-content');
-      if (btn.disabled) return;
-      btn.disabled = true;
-      var defaultLabel = label.textContent;
-      label.innerHTML = 'Generating<span class="ai-loading-dots"></span>';
-      setTimeout(function () {
-        var rows = currentRowsData();
-        var total = rows.length;
-        var high = rows.filter(function (r) { return r.sev === 'High'; }).length;
-        var byCat = tally(rows, 'cat');
-        var byLoc = tally(rows, 'loc');
-        var repeatLocs = byLoc.filter(function (l) { return l.count >= 2; });
-        var topCat = byCat[0];
-        var topLoc = byLoc[0];
-
-        // Cross-referenced insight the charts/lists above don't compute on
-        // their own -- severity concentrated by location, and whether the
-        // leading category traces back to one specific place rather than
-        // being spread evenly (a site-condition signal vs. a training gap).
-        var highRows = rows.filter(function (r) { return r.sev === 'High'; });
-        var highByLoc = tally(highRows, 'loc');
-        var topHighLoc = highByLoc[0];
-        var topCatByLoc = tally(rows.filter(function (r) { return r.cat === topCat.key; }), 'loc');
-        var topCatConcentration = topCatByLoc[0] ? Math.round((topCatByLoc[0].count / topCat.count) * 100) : 0;
-
-        var html = '';
-        html += '<h4>Summary</h4><p>' + total + ' reports on record, ' + high + ' at high severity.</p>';
-
-        var insights = [];
-        if (topHighLoc && topHighLoc.count >= 2) {
-          insights.push('<b>' + topHighLoc.key + '</b> accounts for ' + topHighLoc.count + ' of the ' + high + ' high-severity reports — a concentration, not scattered incidents.');
-        }
-        if (topCatByLoc[0] && topCat.count >= 2 && topCatConcentration >= 50) {
-          insights.push(topCatConcentration + '% of ' + topCat.key.toLowerCase() + ' reports trace back to <b>' + topCatByLoc[0].key + '</b>, pointing to a site-specific condition there rather than a workforce-wide gap.');
-        }
-        if (repeatLocs.length) {
-          insights.push(repeatLocs.length + ' location' + (repeatLocs.length > 1 ? 's have' : ' has') + ' repeat reports this quarter and should be prioritized for a walkthrough, not treated as isolated incidents.');
-        }
-        if (!insights.length) insights.push('Hazards are broadly distributed across categories and locations this quarter — no single site or type dominates yet.');
-
-        html += '<h4>Key insight</h4><ul>' + insights.map(function (i) { return '<li>' + i + '</li>'; }).join('') + '</ul>';
-
-        var recs = [];
-        byCat.forEach(function (c) {
-          recs.push('<b>' + c.key + '</b> (' + c.count + ' report' + (c.count > 1 ? 's' : '') + '): ' + (CAT_PREVENTION[c.key] || CAT_PREVENTION.Other));
-        });
-        repeatLocs.forEach(function (l) {
-          recs.push('Schedule a full walkthrough of <b>' + l.key + '</b> — ' + l.count + ' separate reports this quarter suggests a systemic issue, not isolated incidents.');
-        });
-        if (high > 0) recs.push(high + ' high-severity report' + (high > 1 ? 's remain' : ' remains') + ' open — confirm corrective action is logged for each before next review.');
-
-        html += '<h4>Recommendations</h4><ul>' + recs.map(function (r) { return '<li>' + r + '</li>'; }).join('') + '</ul>';
-
-        content.innerHTML = html;
-        empty.style.display = 'none';
-        content.style.display = '';
+      content.innerHTML = html;
+      empty.style.display = 'none';
+      content.style.display = '';
+      if (!skipAnim) {
         content.classList.remove('ai-reveal');
         void content.offsetWidth;
         content.classList.add('ai-reveal');
-        label.textContent = 'Regenerate';
+      }
+      document.getElementById('site-report-label').textContent = 'Regenerate';
+    }
+
+    // Preload the last-generated report on open, so it's the first thing a
+    // viewer sees instead of an empty state requiring a click.
+    if (MOBILE_SERVER_URL) {
+      fetch(MOBILE_SERVER_URL + '/ai-report/site').then(function (r) { return r.json(); }).then(function (res) {
+        if (res && res.html) showSiteReport(res.html, true);
+      }).catch(function () {});
+    }
+
+    document.getElementById('site-report-btn').addEventListener('click', function () {
+      var btn = document.getElementById('site-report-btn');
+      var label = document.getElementById('site-report-label');
+      if (btn.disabled) return;
+      btn.disabled = true;
+      label.innerHTML = 'Generating<span class="ai-loading-dots"></span>';
+      setTimeout(function () {
+        var html = buildSiteReportHtml();
+        showSiteReport(html, false);
         btn.disabled = false;
+        if (MOBILE_SERVER_URL) {
+          fetch(MOBILE_SERVER_URL + '/ai-report/site', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ html: html }),
+          }).catch(function () {});
+        }
       }, 1100);
     });
 

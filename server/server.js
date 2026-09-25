@@ -7,6 +7,9 @@ const http = require('http');
 const PORT = process.env.PORT || 4001;
 const reports = [];
 const trainingMaterials = [];
+// Last-generated AI report per dashboard (key: "site" or "gov"), so a
+// reload shows the previous result immediately instead of an empty state.
+const aiReportCache = {};
 
 // Real LLM call when an API key is configured; otherwise (or on any
 // failure/timeout) falls back to `fallback: true` with no feedback text,
@@ -226,6 +229,31 @@ const server = http.createServer((req, res) => {
     }
     console.log('Report deleted:', id);
     return send(res, 200, { ok: true });
+  }
+
+  // Persists the last-generated AI report per dashboard (key "site" or
+  // "gov") so a page reload shows it immediately, without needing to press
+  // Generate again.
+  if (req.url.indexOf('/ai-report/') === 0 && req.method === 'GET') {
+    const key = req.url.slice('/ai-report/'.length);
+    return send(res, 200, { html: aiReportCache[key] || null });
+  }
+
+  if (req.url.indexOf('/ai-report/') === 0 && req.method === 'POST') {
+    const key = req.url.slice('/ai-report/'.length);
+    let body = '';
+    req.on('data', (chunk) => { body += chunk; });
+    req.on('end', () => {
+      let data;
+      try {
+        data = JSON.parse(body);
+      } catch (e) {
+        return send(res, 400, { error: 'invalid json' });
+      }
+      aiReportCache[key] = data.html;
+      send(res, 200, { ok: true });
+    });
+    return;
   }
 
   if (req.url === '/training-materials' && req.method === 'GET') {

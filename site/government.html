@@ -248,36 +248,55 @@
     var label = document.getElementById('gov-generate-label');
     var empty = document.getElementById('gov-ai-empty');
     var content = document.getElementById('gov-ai-content');
-    var defaultLabel = label.textContent;
     var busy = false;
+
+    function buildGovReportHtml() {
+      return '<h4>Key findings</h4><ul>' +
+          '<li>Fifteen sites reported this quarter, covering 1,204 hazard submissions in aggregate.</li>' +
+          '<li>Falls remain the leading hazard category, consistent with 2025 national fatality data.</li>' +
+          '<li>Repeat high-severity reports fell 31% quarter over quarter, indicating corrective actions from the prior cycle are taking effect.</li>' +
+          '<li>Training completion sits at or above 97% across all four languages on file.</li>' +
+          '<li>Two sites (Suwon, Cheongju) have pending training records, unresolved as of this reporting period.</li>' +
+        '</ul>' +
+        '<h4>Recommendations</h4><ul>' +
+          '<li>Prioritize a compliance follow-up at Suwon and Cheongju before the next audit window, given their pending training records.</li>' +
+          '<li>Given falls remain the leading category and track national fatality trends, consider requiring a fall-protection audit at sites with elevated-work exposure.</li>' +
+          '<li>Maintain the 97% training-completion threshold as a standing licensing condition, given current performance is already at that bar.</li>' +
+          '<li>Direct operators with repeat high-severity locations to submit a corrective-action log for regulatory review, to sustain this quarter\'s improvement.</li>' +
+        '</ul>';
+    }
+
+    function showGovReport(html, skipAnim) {
+      content.innerHTML = html;
+      empty.style.display = 'none';
+      content.style.display = '';
+      if (!skipAnim) {
+        content.classList.remove('ai-reveal');
+        void content.offsetWidth;
+        content.classList.add('ai-reveal');
+      }
+      label.textContent = 'Regenerate';
+    }
+
+    // Preload the last-generated report on open, so it's the first thing a
+    // viewer sees instead of an empty state requiring a click.
+    fetch(GOV_SERVER_URL + '/ai-report/gov').then(function (r) { return r.json(); }).then(function (res) {
+      if (res && res.html) showGovReport(res.html, true);
+    }).catch(function () {});
+
     btn.addEventListener('click', function () {
       if (busy) return;
       busy = true;
       btn.disabled = true;
       label.innerHTML = 'Generating<span class="ai-loading-dots"></span>';
       setTimeout(function () {
-        content.innerHTML =
-          '<h4>Key findings</h4><ul>' +
-            '<li>Fifteen sites reported this quarter, covering 1,204 hazard submissions in aggregate.</li>' +
-            '<li>Falls remain the leading hazard category, consistent with 2025 national fatality data.</li>' +
-            '<li>Repeat high-severity reports fell 31% quarter over quarter, indicating corrective actions from the prior cycle are taking effect.</li>' +
-            '<li>Training completion sits at or above 97% across all four languages on file.</li>' +
-            '<li>Two sites (Suwon, Cheongju) have pending training records, unresolved as of this reporting period.</li>' +
-          '</ul>' +
-          '<h4>Recommendations</h4><ul>' +
-            '<li>Prioritize a compliance follow-up at Suwon and Cheongju before the next audit window, given their pending training records.</li>' +
-            '<li>Given falls remain the leading category and track national fatality trends, consider requiring a fall-protection audit at sites with elevated-work exposure.</li>' +
-            '<li>Maintain the 97% training-completion threshold as a standing licensing condition, given current performance is already at that bar.</li>' +
-            '<li>Direct operators with repeat high-severity locations to submit a corrective-action log for regulatory review, to sustain this quarter\'s improvement.</li>' +
-          '</ul>';
-        empty.style.display = 'none';
-        content.style.display = '';
-        content.classList.remove('ai-reveal');
-        void content.offsetWidth;
-        content.classList.add('ai-reveal');
-        label.textContent = defaultLabel;
+        var html = buildGovReportHtml();
+        showGovReport(html, false);
         btn.disabled = false;
         busy = false;
+        fetch(GOV_SERVER_URL + '/ai-report/gov', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ html: html }),
+        }).catch(function () {});
       }, 1100);
     });
   })();
