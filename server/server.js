@@ -96,13 +96,17 @@ async function getAiPhotoDescription({ imageBase64, mimeType, lang, category }) 
             'You are helping a construction-site worker file a hazard report using a generic example photo for this hazard category (no real photo was taken).',
             `Hazard category: ${category}.`,
             `Write a short, plausible, first-person example description of this kind of hazard, in this language: ${lang || 'en'}.`,
+            'Write it the way a busy worker would type it quickly on a phone -- short, direct, not grammatically polished. Not a formal report sentence.',
             'Keep it under 25 words, plain language, no preamble, no markdown.',
             'Reply with ONLY the description text.',
           ].join('\n') },
       ];
 
   const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), AI_VISION_TIMEOUT_MS);
+  // The text-only (sample-photo) path is much cheaper than a vision call --
+  // give it its own shorter timeout so a dead key/network fails fast instead
+  // of waiting out the vision budget for a call that never sends an image.
+  const timer = setTimeout(() => controller.abort(), imageBase64 ? AI_VISION_TIMEOUT_MS : 5000);
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
