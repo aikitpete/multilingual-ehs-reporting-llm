@@ -879,6 +879,14 @@
 
     var SEV_CHART_COLOR = { High: 'var(--high)', Medium: 'var(--med)', Low: 'var(--low)' };
     var CAT_CHART_COLOR = { Fall: '#C2402A', Electrical: '#C97A1F', Fire: '#B23A3A', Heat: '#3D7A34', Chemical: '#6B4FA0', Other: '#8C8983' };
+    var CAT_PREVENTION = {
+      Fall: 'Require a guardrail and harness-anchor check before any work at height, logged on the daily safety checklist.',
+      Electrical: 'Enforce lockout/tagout on exposed wiring found near moisture, and schedule a licensed electrician inspection for the affected area.',
+      Fire: 'Clear combustible material from fire-exit paths and verify extinguisher placement and inspection dates in the affected zone.',
+      Heat: 'Enforce scheduled hydration and shade breaks during peak heat-index hours, and brief crews on heat-illness warning signs.',
+      Chemical: 'Confirm PPE availability and ventilation adequacy in storage areas, and verify SDS postings are current for all stored chemicals.',
+      Other: 'Assign a safety lead to triage this report directly and document the corrective action taken.',
+    };
 
     function renderCharts() {
       var rows = currentRowsData();
@@ -959,11 +967,13 @@
         }).join('') + '</ul>';
 
         var recs = [];
+        byCat.forEach(function (c) {
+          recs.push('<b>' + c.key + '</b> (' + c.count + ' report' + (c.count > 1 ? 's' : '') + '): ' + (CAT_PREVENTION[c.key] || CAT_PREVENTION.Other));
+        });
         repeatLocs.forEach(function (l) {
           recs.push('Schedule a full walkthrough of <b>' + l.key + '</b> — ' + l.count + ' separate reports this quarter suggests a systemic issue, not isolated incidents.');
         });
         if (high > 0) recs.push(high + ' high-severity report' + (high > 1 ? 's remain' : ' remains') + ' open — confirm corrective action is logged for each before next review.');
-        recs.push('Leading hazard type is ' + topCat.key.toLowerCase() + ' (' + topCat.count + ' of ' + total + ') — consider a targeted toolbox talk this week.');
 
         html += '<h4>Recommendations</h4><ul>' + recs.map(function (r) { return '<li>' + r + '</li>'; }).join('') + '</ul>';
 
