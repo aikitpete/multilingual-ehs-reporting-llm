@@ -1,5 +1,7 @@
 # AnjeonTok (안전톡)
 
+[![License](https://img.shields.io/badge/license-PolyForm%20Strict%201.0.0-lightgrey)](LICENSE) [![Pitch deck](https://img.shields.io/badge/pitch%20deck-live-brightgreen)](https://anjeontok.netlify.app) ![React Native](https://img.shields.io/badge/React%20Native-20232A?logo=react&logoColor=61DAFB) ![Expo](https://img.shields.io/badge/Expo-000020?logo=expo&logoColor=white) ![Node.js](https://img.shields.io/badge/Node.js-339933?logo=nodedotjs&logoColor=white) ![Netlify](https://img.shields.io/badge/Netlify-00C7B7?logo=netlify&logoColor=white)
+
 Multilingual hazard reporting for construction sites. A worker reports a hazard in their own language. The system turns it into one structured record and routes that record to the people who need it: a site report in the supervisor's language, warning signs, training material, and aggregate compliance data.
 
 Built as a prototype for Korean construction sites, where a large share of the workforce does not read Korean. The design doesn't depend on the market. Swap the target language and the signage table and the same pipeline applies anywhere a crew and its supervisors do not share a language.
