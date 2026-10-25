@@ -93,4 +93,4 @@ To point the app and dashboards at your own server, set `SERVER_URL` in `mobile-
 
 ## Licence
 
-Source-available for evaluation, not open source. You're welcome to read, clone and run it locally to assess the work. Any other use needs written permission. See [`LICENSE`](LICENSE). The Expo template files under `mobile-app/` keep their own MIT licence.
+[PolyForm Strict 1.0.0](LICENSE): source-available, noncommercial, no changes or redistribution. [`NOTICE`](NOTICE) adds permission to read, clone and run the code locally to evaluate the work, and covers names, third-party material and model training. The Expo template files under `mobile-app/` keep their own MIT licence. Anything else needs written permission.

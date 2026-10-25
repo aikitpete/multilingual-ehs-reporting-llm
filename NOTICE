@@ -1,0 +1,29 @@
+AnjeonTok (안전톡)
+
+This repository is licensed under the PolyForm Strict License 1.0.0
+(see LICENSE). The notes below add to it without changing it.
+
+Additional permission for evaluation
+  Anyone may view, clone and run this repository locally to evaluate the work
+  for the purpose of deciding whether to commission or collaborate on related
+  work, even where that decision is commercial. This permission covers
+  evaluation only. It does not allow use in any product, service, tender or
+  client deliverable, redistribution, or changes.
+
+Names and marks
+  "AnjeonTok", "안전톡" and "AIKIMBO" are not licensed.
+
+Third-party material
+  Files under mobile-app/ that come from the Expo project template are covered
+  by the MIT licence in mobile-app/LICENSE. Hazard photographs and the sources
+  cited in docs/ remain the property of their respective owners.
+
+Machine learning
+  Use of this repository to train or fine-tune machine-learning models is not
+  permitted.
+
+No safety assurance
+  This is a concept prototype. It is not suitable for use in a real
+  safety-critical setting.
+
+Permission requests: https://www.petegerhat.com
