@@ -1,121 +1,92 @@
-# 안전톡 (AnjeonTok) — safety-kr
+# AnjeonTok (안전톡)
 
-AI-assisted worker-hazard reporting for Korean construction sites, sized to
-the 2027 Labor Ministry budget (₩3.8B industrial-safety AI assistant line +
-₩2B worker-reporting tech/demos) and the new amendment requiring employers
-to ensure newly hired foreign workers complete basic safety/health
-education.
+Multilingual hazard reporting for construction sites. A worker reports a hazard in their own language. The system turns it into one structured record and routes that record to the people who need it: a site report in the supervisor's language, warning signs, training material, and aggregate compliance data.
 
-Not part of `aikitpete/task-force` — separate venture, not yet linked to any
-F-1-D goal. See `docs/DECISIONS.md` for why.
+Built as a prototype for Korean construction sites, where a large share of the workforce does not read Korean. The design doesn't depend on the market. Swap the target language and the signage table and the same pipeline applies anywhere a crew and its supervisors do not share a language.
 
-**Name:** 안전톡 (AnjeonTok) — 안전 ("safety") + 톡, the same "talk" suffix
-Koreans already read as chat/messaging from KakaoTalk. Bilingual, and the
-Korean half reads as "safety chat" without translation. `safety-kr` remains
-the repo/codename; 안전톡 is the product-facing brand used in the deck and
-mockups.
+**Pitch deck:** https://anjeontok.netlify.app
+**Authors:** Peter Gerhat, Calvin Milliken, Aron Berger
+**Contact:** [LinkedIn](https://www.linkedin.com/in/aikitpete) · [petegerhat.com](https://www.petegerhat.com)
 
-## The pitch
+## The problem
 
-Foreign construction workers (Vietnamese / Uzbek / Chinese / English
-speaking) pick their language **once**, then report hazards by voice:
+A worker can see a hazard and still not report it, because reporting means writing in a language they don't use. The supervisor who receives reports in five languages, or none, has no reliable way to triage them. Regulators, meanwhile, increasingly expect multilingual safety material, documented training and traceable corrective actions.
 
-1. Hold a button, describe the hazard.
-2. Add a photo (mark the danger area), hazard category, severity, location,
-   description.
+In 2025, 286 construction workers died in investigated workplace accidents in Korea (Ministry of Employment and Labor). Sources for every figure on the deck are in [`docs/RESEARCH.md`](docs/RESEARCH.md).
 
-The AI turns that into:
-- A professional **Korean-language report for site managers**, with an
-  option to generate printable warning labels (Korean + the worker's
-  language) for what was found.
-- A professional **Korean-language dashboard for government**, aggregating
-  the same data for compliance reporting.
+## What it does
 
-Collected photos/reports double as training material, delivered back to
-workers through the same mobile app.
+1. The worker picks a language once, then reports by voice or text, with a photo and one marked danger area.
+2. A model translates and structures the report against a fixed schema.
+3. One record fans out to four outputs:
 
-## Deliverables
+| Output | Audience | Notes |
+|---|---|---|
+| Site safety report | Supervisor, safety manager | Review, assign an owner, log the corrective action |
+| Warning sign | The site | Local language plus the worker's language, printed |
+| Training card | The crew | Photo, translated caption, short quiz, back into the same app |
+| Compliance report | Government, legal | Aggregate counts and trends only |
 
-Live at **https://anjeontok.netlify.app/** (deployed from `site/` on every
-push to `master`). The pitch deck is the home page and links to every
-prototype, the knowledge/governance pages, and the two PDF reports.
+## Design decisions worth reading
 
-### The deck
+- **The fork is the point.** The worker's language and identity are stripped before the record reaches the supervisor table or the government view. Access is restricted by the API, not by hiding a column in the UI.
+- **The model doesn't write the sign.** Signal words and hazard names (위험, 추락) come from a fixed signage table. The model only fills the free-text fields, so a printed sign always reads like a real sign.
+- **Structured output, not prose.** The translation step returns JSON against a schema, with a `needs_review` flag. Anything unclear goes to a person before a sign or translation is used.
+- **The original is kept.** The worker's own words are stored unedited, so the translation is never the only version on record.
+- **Governance first.** Six actors (worker, supervisor, safety manager, business owner, government, the system itself), each with MUST / SHOULD / CAN obligations mapped to a system capability. See [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md).
 
-- [x] **HTML deck (Title / Problem / Solution / Demo)** — plain HTML, large
-      TV-friendly type, real animation and multi-page PDF export. This is
-      the only deck now — see `docs/HANDOFF.md`.
-      — https://anjeontok.netlify.app/
+## What is real and what is not
 
-### Prototypes
+This is a concept prototype, not a product. We've kept the table below honest about what runs and what doesn't.
 
-- [x] Mobile app mockup — supervisor & worker, one page with a toggle
-      outside the phone frame to switch modes (mockup only, no real iOS
-      build) — https://anjeontok.netlify.app/supervisor.html
-- [x] Management dashboard — reporting + an ordering/design page for
-      warning signage in Korean + the worker's native language
-      — https://anjeontok.netlify.app/manager.html
-- [x] Government dashboard — the aggregate data view the ministry needs
-      — https://anjeontok.netlify.app/government.html
-
-### Knowledge
-
-- [x] Knowledge & sources — which regulatory/budget figures on the deck are
-      independently confirmed vs. Peter's own sourced claims, with links.
-      See `docs/RESEARCH.md` for the full detail.
-      — https://anjeontok.netlify.app/knowledge.html
-- [x] Governance model — six actors (worker, supervisor, safety manager,
-      business owner, government, the system itself), each with
-      MUST/SHOULD/CAN obligations tagged to a system capability, meant to
-      seed future use-case/requirements work. See `docs/GOVERNANCE.md`.
-      — https://anjeontok.netlify.app/governance.html
-
-### Sample reports
-
-Two generated PDF reports, matching the deck's "one report, four outputs"
-diagram, linked from the demo index's **Reports** group (open in the
-browser's native PDF viewer). Source HTML + PDF kept in `reports/`.
-
-- Site Safety Report — one worker's hazard report, structured for a site
-  supervisor.
-- Compliance Report — aggregate compliance data for government & legal
-  review (no individual report content, per the governance model's access
-  rules).
-
-## Deploying the static site (`site/`)
-
-`site/` is the source of truth for everything above: `index.html` is the pitch
-deck (home page), the prototypes are sibling pages (`supervisor.html`,
-`manager.html`, `government.html`, `knowledge.html`, `governance.html`,
-`backend.html`) and the PDF reports live in `site/reports/`.
-Cross-links use relative paths, so the site works anywhere it is hosted.
-
-Netlify (`anjeontok.netlify.app`) deploys from this repo; `netlify.toml` sets
-the publish directory to `site`, so there is no build step. Pushing to
-`master` redeploys.
-
-### Access control
-
-`netlify/edge-functions/auth.ts` runs on every request: a `/login` page, a 30-day
-session cookie, `/logout`, and a "Signed in as … · Log out" badge on every page:
-
-| Who | Sees |
+| Part | State |
 |---|---|
-| Anyone | the pitch deck (`/`) only |
-| `team` login | + supervisor app, management and government dashboards, PDF reports |
-| `admin` login | + knowledge & sources, governance model, backend architecture |
+| Mobile app (Expo / React Native) | Runs. Five languages, report flow, training tab. Posts to the demo server. |
+| Demo server (`server/`) | Runs. In-memory store, no auth, no persistence. One real model call (`/ai-feedback`). |
+| Management and government dashboards | Static pages that poll the demo server. Report generation is simulated. |
+| Translation and structuring pipeline | **Design only.** Documented with an example prompt and output. Not running code. |
+| Multi-tenant access control, audit trail | Specified in the governance model. We haven't built it. |
 
-Anything not listed in the function is admin-only (default deny). The repo
-holds only salted SHA-256 hashes, never the passwords. To rotate one: compute
-`sha256("anjeontok-v1:" + newPassword)` as hex, paste it into `USERS` in
-`auth.ts`, push. Optional: set a `SESSION_SECRET` env var in Netlify so session
-cookies are signed with a secret that isn't in the repo.
+[`site/backend.html`](site/backend.html) marks each step as running today or proposed.
 
-Each prototype's "Export PDF" button relies on a Claude-Artifact-only
-capability (`window.claude`) and degrades gracefully to "PDF unavailable
-here" once deployed outside that environment — this is expected, not a bug.
+## Repo layout
 
-## Status
+```
+mobile-app/   Expo app: reporting, training, i18n (en, ko, vi, uz, zh)
+server/       Minimal Node demo server and an end-to-end test
+site/         Pitch deck and prototype pages (deployed to Netlify)
+reports/      Sample PDF reports (source HTML plus PDF)
+docs/         Research, governance model, decisions log, status
+netlify/      Edge function that handles login for the non-public pages
+```
 
-See `docs/STATUS.md`. Working notes / rationale for the less-obvious calls:
-`docs/DECISIONS.md`. Continuity notes for the next session: `docs/HANDOFF.md`.
+## Run it locally
+
+```bash
+# demo server (port 4001)
+node server/server.js
+node server/e2e-test.js        # critical-path test, starts its own throwaway server
+
+# mobile app
+cd mobile-app && npm install && npx expo start
+
+# static pages
+python3 -m http.server -d site 8000
+```
+
+Set `ANTHROPIC_API_KEY` before starting the server if you want the real model call. Without it the endpoint falls back to canned output.
+
+To point the app and dashboards at your own server, set `SERVER_URL` in `mobile-app/App.js`, `MOBILE_SERVER_URL` in `site/manager.html` and `GOV_SERVER_URL` in `site/government.html`.
+
+## Hosting and access
+
+`site/` deploys to Netlify on every push to `master`. `netlify.toml` sets the publish directory, so there is no build step. The pitch deck is public. The prototypes and internal pages sit behind a login, handled by [`netlify/edge-functions/auth.ts`](netlify/edge-functions/auth.ts): session cookie, two roles, default-deny for any path not listed. If you'd like to see the prototypes, get in touch and we'll set you up with a login.
+
+## Documentation
+
+| File | Contents |
+|---|---|
+| [`docs/RESEARCH.md`](docs/RESEARCH.md) | Regulatory and budget claims, each checked against a source |
+| [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md) | Actors, obligations, capability map, open questions |
+| [`docs/DECISIONS.md`](docs/DECISIONS.md) | Dated log of non-obvious calls and the reasons |
+| [`docs/STATUS.md`](docs/STATUS.md) | What changed most recently |
