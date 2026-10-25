@@ -90,3 +90,7 @@ To point the app and dashboards at your own server, set `SERVER_URL` in `mobile-
 | [`docs/GOVERNANCE.md`](docs/GOVERNANCE.md) | Actors, obligations, capability map, open questions |
 | [`docs/DECISIONS.md`](docs/DECISIONS.md) | Dated log of non-obvious calls and the reasons |
 | [`docs/STATUS.md`](docs/STATUS.md) | What changed most recently |
+
+## Licence
+
+Source-available for evaluation, not open source. You're welcome to read, clone and run it locally to assess the work. Any other use needs written permission. See [`LICENSE`](LICENSE). The Expo template files under `mobile-app/` keep their own MIT licence.

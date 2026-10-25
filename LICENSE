@@ -1,0 +1,31 @@
+AnjeonTok (안전톡) - Source-Available Evaluation License
+
+Copyright (c) 2026 Peter Gerhat, Calvin Milliken and Aron Berger.
+All rights reserved.
+
+This repository is published so that others can read and evaluate the work.
+It is not open source. No licence is granted except as stated below.
+
+1. Permitted. You may view this repository, clone it, and run it locally
+   for the sole purpose of evaluating the work (for example, assessing the
+   authors' skills or deciding whether to commission related work).
+
+2. Not permitted without prior written permission from the copyright
+   holders: using the code, designs, documents, text or data, in whole or
+   in part, in any product, service, pitch, tender or client deliverable;
+   copying, modifying, redistributing or sublicensing it; hosting it for
+   others; and training or fine-tuning machine-learning models on it.
+
+3. Names and marks. "AnjeonTok", "안전톡" and "AIKIMBO" are not licensed.
+
+4. Third-party material. Files under mobile-app/ that originate from the
+   Expo project template are covered by the MIT licence in
+   mobile-app/LICENSE. Hazard photographs and third-party sources cited in
+   docs/ remain the property of their respective owners.
+
+5. No warranty. The work is provided "as is", without warranty of any kind.
+   This is a concept prototype and is not safe or suitable for use in a
+   real safety-critical setting.
+
+To ask for permission to use or license the work, contact Peter Gerhat:
+https://www.petegerhat.com
