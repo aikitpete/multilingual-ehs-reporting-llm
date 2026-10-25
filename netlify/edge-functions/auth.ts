@@ -23,6 +23,8 @@ const RULES: Array<[RegExp, number]> = [
   [/^\/reports\/[\w.-]+\.pdf$/, 1],
   [/^\/(pitch-prep|knowledge|governance|backend)(\.html)?$/, 2],
 ];
+const ADMIN_LINK =
+  /<a\s[^>]*href="\/?(?:pitch-prep|knowledge|governance|backend)(?:\.html)?"[^>]*>[\s\S]*?<\/a>[ \t]*\r?\n?/gi;
 const COOKIE = "at_session";
 const SESSION_DAYS = 30;
 
@@ -178,6 +180,8 @@ export default async (request: Request, context: Context) => {
     headers.set("Cache-Control", "private, no-cache");
     headers.delete("content-length"); headers.delete("content-encoding");
     let body = await res.text();
+    // Menu items for admin-only pages are hidden unless signed in as admin.
+    if (have < 2) body = body.replace(ADMIN_LINK, "");
     const i = body.toLowerCase().lastIndexOf("</body>");
     const b = badge(user);
     body = i >= 0 ? body.slice(0, i) + b + body.slice(i) : body + b;
