@@ -47,10 +47,6 @@ prototype, the knowledge/governance pages, and the two PDF reports.
       the only deck now — see `docs/HANDOFF.md`.
       — https://anjeontok.netlify.app/
 
-  The two earlier 7-slide Slides-format decks (the original "Pitch deck" and
-  the from-scratch "AnjeonTok Launch Deck" redesign) have been deleted; this
-  HTML deck fully replaced them.
-
 ### Prototypes
 
 - [x] Mobile app mockup — supervisor & worker, one page with a toggle
