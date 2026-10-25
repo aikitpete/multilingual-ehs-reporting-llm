@@ -1,5 +1,12 @@
 # Status
 
+2026-10-25 — Hosting moved off Claude artifacts: `site/` is now the source of
+truth and is deployed at https://anjeontok.netlify.app/ (deck = `index.html`,
+all other pages and the PDF reports linked from it). The old demo index was
+retired; all claude.ai artifact links in these docs now point to Netlify.
+The backend URL in `manager.html`, `government.html` and `mobile-app/App.js`
+is still an expired trycloudflare tunnel (pages fall back to demo data).
+
 2026-09-25 (latest) — Added explicit "Generate with AI" buttons (Warning
 Labels, the report modal's management-report analysis, and a new Training
 Materials tab) instead of content that just appeared reactively — each
@@ -25,7 +32,7 @@ orange, after an interim warm-charcoal attempt was rejected as "looking
 like mud." See `docs/DECISIONS.md` for the exact tokens and a real
 dark-mode contrast bug this surfaced and fixed.
 
-- **The deck** (`https://claude.ai/artifact/GD94Scrk1hUGMjoFTfND9S`) — the
+- **The deck** (`https://anjeontok.netlify.app/`) — the
   only deck. Problem slide's four points sit in an equal 2x2 grid, ending
   on a measured (not alarmist) statement of executive personal liability
   under Korea's safety law. The June 18, 2026 law reference now states
@@ -36,7 +43,7 @@ dark-mode contrast bug this surfaced and fixed.
   real CSS bug (a leftover `position: relative` from the old 3-output
   version) fixed, plus bigger/legible pills and a fixed label-overlap issue.
 - **Supervisor & worker mockup**
-  (`https://claude.ai/artifact/1BcqqqNseS5SCXSHTjS7Ty`) — full i18n across
+  (`https://anjeontok.netlify.app/supervisor.html`) — full i18n across
   5 languages (Vietnamese default, Uzbek, Chinese, Korean, English); hazard
   reports never name the reporter's language in the UI. The tacky hand
   illustration and "PROTOTYPE" ribbon were removed; the rugged case is
@@ -44,15 +51,15 @@ dark-mode contrast bug this surfaced and fixed.
   hazard photos (scaffold plank, water-break area, B2 corridor) replace
   the last gradient placeholders. The mode toggle stays English regardless
   of app language and no longer overlaps the phone.
-- **Management dashboard** (`https://claude.ai/artifact/W7QuAyMGnjkjT1CZbXudum`)
+- **Management dashboard** (`https://anjeontok.netlify.app/manager.html`)
   — Warning Labels is now a real generator (9 reports × 4 languages,
   regenerates live), with a quantity stepper and order confirmation. Added
   a "Corrective action" field to the report modal (closes a governance-
   coverage gap: the Safety & Health Manager's incident-investigation duty
   had no UI). Added an English/Korean toggle for the dashboard's own
   interface chrome, backed by an inline translations object.
-- **Knowledge & sources** (`https://claude.ai/artifact/CnfwLoVuvfeqDGvePKhKqJ`)
-  and **Governance model** (`https://claude.ai/artifact/VZEtVvrA6tYLZsiB2baQ81`)
+- **Knowledge & sources** (`https://anjeontok.netlify.app/knowledge.html`)
+  and **Governance model** (`https://anjeontok.netlify.app/governance.html`)
   — the June 18, 2026 OSH Act amendment is now independently confirmed
   (previously only the vaguer "Sept 22" framing existed); added cultural/
   structural context on Korea's 원청/하청 subcontracting chain and E-9 visa

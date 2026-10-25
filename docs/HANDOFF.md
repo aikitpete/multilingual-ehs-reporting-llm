@@ -12,7 +12,7 @@ going without re-deriving context.
 
 ## The deck: the HTML deck
 
-**https://claude.ai/artifact/GD94Scrk1hUGMjoFTfND9S** — 4 slides (Title,
+**https://anjeontok.netlify.app/** — 4 slides (Title,
 Problem, Solution, Demo), plain HTML (not the Slides artifact type), large
 TV-friendly type, real CSS animation (Ken Burns hero photo, scroll-triggered
 reveals, an animated waveform), scroll-snap keyboard/swipe navigation, and a
@@ -28,7 +28,7 @@ their artifact URLs no longer resolve; don't relink them.
 
 ## The demo index (the one link to everything)
 
-**https://claude.ai/artifact/9yQt4JXfhugfVSZFfc59qc** — split into three
+**https://anjeontok.netlify.app/** — split into three
 groups: **Slide deck** (the HTML deck), **Prototypes** (the three below),
 and **Knowledge** (the sources page). Update this page whenever a deck/
 prototype/knowledge page is added, merged, or an existing one's URL changes.
@@ -36,17 +36,17 @@ prototype/knowledge page is added, merged, or an existing one's URL changes.
 ## The three prototypes
 
 - Supervisor & worker mobile mockup — one artifact, mode toggle outside the
-  phone frame switches between the two — `https://claude.ai/artifact/1BcqqqNseS5SCXSHTjS7Ty`.
+  phone frame switches between the two — `https://anjeontok.netlify.app/supervisor.html`.
   Full i18n: Vietnamese (default), Uzbek, Chinese, Korean, English, driven
   by a `STRINGS`/`data-i18n` system in the page's own script, not a
   separate JSON file (Claude Artifacts don't load external files at
   runtime) — see `docs/DECISIONS.md`.
-- Management dashboard — `https://claude.ai/artifact/W7QuAyMGnjkjT1CZbXudum`
-- Government dashboard — `https://claude.ai/artifact/7U9dGUEWVq3m3EKDeSKbUx`
+- Management dashboard — `https://anjeontok.netlify.app/manager.html`
+- Government dashboard — `https://anjeontok.netlify.app/government.html`
 
 ## Knowledge & sources
 
-**https://claude.ai/artifact/CnfwLoVuvfeqDGvePKhKqJ** — for each
+**https://anjeontok.netlify.app/knowledge.html** — for each
 regulatory/budget claim on the deck, states whether it's independently
 confirmed (with source links) or Peter's own sourced claim. Full detail in
 `docs/RESEARCH.md`; update both together if new research changes a claim's
@@ -98,7 +98,7 @@ Share menu before anyone outside this session can open the links.
   `docs/PROJECT_CONTEXT.md`** — `PROJECT_CONTEXT.md` now exists (the founding
   brief); the other three still don't, because there's no code and no fixed
   requirements yet — this is still a pitch/demo, not a build.
-- **No local copy of any artifact's source lives in this repo.** Everything
+- **(Outdated since 2026-10-25: `site/` is now the source of truth, hosted on Netlify.)** Previously: no local copy of any artifact's source lived in this repo. Everything
   is authored and published directly as Claude Artifacts from a session's
   scratchpad. Consider mirroring source into a `prototypes/` folder here if
   cross-session continuity becomes a bigger problem than it has been.
@@ -109,7 +109,7 @@ Share menu before anyone outside this session can open the links.
 
 1. Read `docs/DECISIONS.md` first, especially the two most recent entries —
    they cover the HTML deck's content rules and the stat-verification gap.
-2. Open the [demo index](https://claude.ai/artifact/9yQt4JXfhugfVSZFfc59qc)
+2. Open the [demo index](https://anjeontok.netlify.app/)
    to see current state of everything before changing anything.
 3. Unless told otherwise, edit **only the HTML deck**
    (`GD94Scrk1hUGMjoFTfND9S`) — the two Slides decks are frozen unless Peter

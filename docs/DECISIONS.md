@@ -245,7 +245,7 @@ PDF page via html2canvas + jsPDF, not a screenshot of one view).
 Peter then asked to condense that HTML deck to **4 slides — Title, Problem,
 Solution, Demo — with TV-screen-friendly (large, sparse) text**, and said
 **"from now focus only on the HTML slide."** That HTML deck
-(`https://claude.ai/artifact/GD94Scrk1hUGMjoFTfND9S`) is the one to keep
+(`https://anjeontok.netlify.app/`) is the one to keep
 iterating on going forward; the two Slides-artifact decks still exist and are
 still linked from the nav page, but are no longer the active target for
 edits unless Peter says otherwise.
