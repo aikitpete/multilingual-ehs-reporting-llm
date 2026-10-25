@@ -103,7 +103,8 @@ the publish directory to `site`, so there is no build step. Pushing to
 
 ### Access control
 
-`netlify/edge-functions/auth.ts` (HTTP Basic auth, runs on every request):
+`netlify/edge-functions/auth.ts` runs on every request: a `/login` page, a 30-day
+session cookie, `/logout`, and a "Signed in as … · Log out" badge on every page:
 
 | Who | Sees |
 |---|---|
@@ -114,7 +115,8 @@ the publish directory to `site`, so there is no build step. Pushing to
 Anything not listed in the function is admin-only (default deny). The repo
 holds only salted SHA-256 hashes, never the passwords. To rotate one: compute
 `sha256("anjeontok-v1:" + newPassword)` as hex, paste it into `USERS` in
-`auth.ts`, push.
+`auth.ts`, push. Optional: set a `SESSION_SECRET` env var in Netlify so session
+cookies are signed with a secret that isn't in the repo.
 
 Each prototype's "Export PDF" button relies on a Claude-Artifact-only
 capability (`window.claude`) and degrades gracefully to "PDF unavailable
