@@ -101,6 +101,21 @@ Netlify (`anjeontok.netlify.app`) deploys from this repo; `netlify.toml` sets
 the publish directory to `site`, so there is no build step. Pushing to
 `master` redeploys.
 
+### Access control
+
+`netlify/edge-functions/auth.ts` (HTTP Basic auth, runs on every request):
+
+| Who | Sees |
+|---|---|
+| Anyone | the pitch deck (`/`) only |
+| `team` login | + supervisor app, management and government dashboards, PDF reports |
+| `admin` login | + pitch prep, knowledge & sources, governance model, backend architecture |
+
+Anything not listed in the function is admin-only (default deny). The repo
+holds only salted SHA-256 hashes, never the passwords. To rotate one: compute
+`sha256("anjeontok-v1:" + newPassword)` as hex, paste it into `USERS` in
+`auth.ts`, push.
+
 Each prototype's "Export PDF" button relies on a Claude-Artifact-only
 capability (`window.claude`) and degrades gracefully to "PDF unavailable
 here" once deployed outside that environment — this is expected, not a bug.

@@ -5,3 +5,5 @@
   for = "/*"
   [headers.values]
     X-Frame-Options = "SAMEORIGIN"
+
+# Access control lives in netlify/edge-functions/auth.ts (path "/*").
