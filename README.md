@@ -73,9 +73,6 @@ prototype, the knowledge/governance pages, and the two PDF reports.
       MUST/SHOULD/CAN obligations tagged to a system capability, meant to
       seed future use-case/requirements work. See `docs/GOVERNANCE.md`.
       — https://anjeontok.netlify.app/governance.html
-- [x] Pitch prep — a hackathon-jury simulation: likely praise, the
-      toughest questions, and answers to rehearse.
-      — https://anjeontok.netlify.app/pitch-prep.html
 
 ### Sample reports
 
@@ -94,7 +91,7 @@ browser's native PDF viewer). Source HTML + PDF kept in `reports/`.
 `site/` is the source of truth for everything above: `index.html` is the pitch
 deck (home page), the prototypes are sibling pages (`supervisor.html`,
 `manager.html`, `government.html`, `knowledge.html`, `governance.html`,
-`backend.html`, `pitch-prep.html`) and the PDF reports live in `site/reports/`.
+`backend.html`) and the PDF reports live in `site/reports/`.
 Cross-links use relative paths, so the site works anywhere it is hosted.
 
 Netlify (`anjeontok.netlify.app`) deploys from this repo; `netlify.toml` sets
@@ -110,7 +107,7 @@ session cookie, `/logout`, and a "Signed in as … · Log out" badge on every pa
 |---|---|
 | Anyone | the pitch deck (`/`) only |
 | `team` login | + supervisor app, management and government dashboards, PDF reports |
-| `admin` login | + pitch prep, knowledge & sources, governance model, backend architecture |
+| `admin` login | + knowledge & sources, governance model, backend architecture |
 
 Anything not listed in the function is admin-only (default deny). The repo
 holds only salted SHA-256 hashes, never the passwords. To rotate one: compute
